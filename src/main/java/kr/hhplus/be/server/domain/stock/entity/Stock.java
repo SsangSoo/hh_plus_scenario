@@ -17,10 +17,6 @@ public class Stock {
     @Column(name = "quantity", nullable = false)
     private Long quantity;
 
-    @Version
-    @Column(name = "stock_version", nullable = false)
-    private Long stockVersion;
-
     @Column(name = "created_date", nullable = false, updatable = false)
     private LocalDateTime createdDate;
 
@@ -38,10 +34,6 @@ public class Stock {
 
     public Long getQuantity() {
         return quantity;
-    }
-
-    public Long getStockVersion() {
-        return stockVersion;
     }
 
     public LocalDateTime getCreatedDate() {

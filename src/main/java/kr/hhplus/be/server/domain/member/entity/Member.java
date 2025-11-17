@@ -1,10 +1,16 @@
 package kr.hhplus.be.server.domain.member.entity;
 
 import jakarta.persistence.*;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
 @Entity
+@Getter
+@Table(name = "MEMBER")
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Member {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -20,33 +26,18 @@ public class Member {
     @Column(name = "address")
     private String address;
 
-    @Column(name = "create_date", nullable = false)
+    @Column(name = "create_date", nullable = false,  updatable = false)
     private LocalDateTime createDate;
 
     @Column(name = "modified_date", nullable = false)
     private LocalDateTime modifiedDate;
 
-    public Long getId() {
-        return id;
-    }
 
-    public String getName() {
-        return name;
-    }
-
-    public Integer getAge() {
-        return age;
-    }
-
-    public String getAddress() {
-        return address;
-    }
-
-    public LocalDateTime getCreateDate() {
-        return createDate;
-    }
-
-    public LocalDateTime getModifiedDate() {
-        return modifiedDate;
+    public Member(String name, Integer age, String address) {
+        this.name = name;
+        this.age = age;
+        this.address = address;
+        this.createDate = LocalDateTime.now();
+        this.modifiedDate = createDate;
     }
 }

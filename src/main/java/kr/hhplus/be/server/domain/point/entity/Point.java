@@ -1,10 +1,16 @@
 package kr.hhplus.be.server.domain.point.entity;
 
 import jakarta.persistence.*;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
+@Getter
 @Entity
+@Table(name = "PRODUCT")
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Point {
 
     @Column(name = "id")
@@ -17,7 +23,7 @@ public class Point {
     @Column(name = "point", nullable = false)
     private Long point;
 
-    @Column(name = "create_date", nullable = false)
+    @Column(name = "create_date", nullable = false, updatable = false)
     private LocalDateTime createDate;
 
     @Column(name = "modified_date", nullable = false)

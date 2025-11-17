@@ -1,10 +1,16 @@
 package kr.hhplus.be.server.domain.pointhistory.entity;
 
 import jakarta.persistence.*;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
+@Getter
 @Entity
+@Table(name = "POINT_HISTORY")
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class PointHistory {
 
     @Column(name = "id")

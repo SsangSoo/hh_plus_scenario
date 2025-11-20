@@ -26,8 +26,8 @@ public class Member {
     @Column(name = "address")
     private String address;
 
-    @Column(name = "create_date", nullable = false,  updatable = false)
-    private LocalDateTime createDate;
+    @Column(name = "created_date", nullable = false,  updatable = false)
+    private LocalDateTime createdDate;
 
     @Column(name = "modified_date", nullable = false)
     private LocalDateTime modifiedDate;
@@ -37,7 +37,7 @@ public class Member {
         this.name = name;
         this.age = age;
         this.address = address;
-        this.createDate = LocalDateTime.now();
-        this.modifiedDate = createDate;
+        this.createdDate = LocalDateTime.now();
+        this.modifiedDate = createdDate;
     }
 }

@@ -1,4 +1,4 @@
-package kr.hhplus.be.server.domain.global.exception;
+package kr.hhplus.be.server.global.exeption.business;
 
 public class BusinessLogicRuntimeException extends RuntimeException {
 

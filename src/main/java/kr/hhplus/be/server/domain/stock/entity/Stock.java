@@ -1,10 +1,16 @@
 package kr.hhplus.be.server.domain.stock.entity;
 
 import jakarta.persistence.*;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
+@Getter
 @Entity
+@Table(name = "STOCK")
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Stock {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -23,24 +29,24 @@ public class Stock {
     @Column(name = "modified_date", nullable = false)
     private LocalDateTime modifiedDate;
 
+    @Column(name = "deleted", nullable = false)
+    private Boolean deleted;
 
-    public Long getId() {
-        return id;
+    public static Stock register(Long productId) {
+        Stock stock = new Stock();
+
+        stock.productId = productId;
+
+        stock.quantity = 0L;
+        stock.createdDate = LocalDateTime.now();
+        stock.modifiedDate = stock.createdDate;
+        stock.deleted = false;
+        return stock;
     }
 
-    public Long getProductId() {
-        return productId;
+    public void delete() {
+        deleted = true;
     }
 
-    public Long getQuantity() {
-        return quantity;
-    }
-
-    public LocalDateTime getCreatedDate() {
-        return createdDate;
-    }
-
-    public LocalDateTime getModifiedDate() {
-        return modifiedDate;
-    }
 }
+

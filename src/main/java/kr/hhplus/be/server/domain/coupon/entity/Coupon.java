@@ -26,8 +26,8 @@ public class Coupon {
     @Column(name = "amount", nullable = false)
     private Long amount;
 
-    @Column(name = "create_date",  nullable = false, updatable = false)
-    private LocalDateTime createDate;
+    @Column(name = "created_date",  nullable = false, updatable = false)
+    private LocalDateTime createdDate;
 
     @Column(name = "modified_date",  nullable = false)
     private LocalDateTime modifiedDate;
@@ -44,8 +44,8 @@ public class Coupon {
         this.coupon = coupon;
         this.expiryDate = expiryDate;
         this.amount = amount;
-        this.createDate = LocalDateTime.now();
-        this.modifiedDate = createDate;
+        this.createdDate = LocalDateTime.now();
+        this.modifiedDate = createdDate;
         this.discountRate = discountRate;
     }
 

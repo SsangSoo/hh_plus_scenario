@@ -1,5 +1,6 @@
 package kr.hhplus.be.server.domain.product.entity;
 
+import kr.hhplus.be.server.domain.product.service.request.RegisterProductServiceRequest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -16,7 +17,26 @@ class ProductTest {
         Long productPrice = 1000L;
 
         // when : 상품 생성
-        Product product = Product.of(productName, productPrice);
+        Product product = Product.register(productName, productPrice);
+
+        // then : 상품의 생성 여부 / 생성 시 주입된 값들 검증
+        assertThat(product).isNotNull();
+        assertThat(product.getName()).isEqualTo(productName);
+        assertThat(product.getPrice()).isEqualTo(productPrice);
+        assertThat(product.getCreatedDate()).isEqualTo(product.getModifiedDate());
+        assertThat(product.getDeleted()).isFalse();
+        assertThat(product.getId()).isNull();
+    }
+
+    @Test
+    @DisplayName("요청으로부터 상품을 생성한다.")
+    void productCreateByRequestTest() {
+        // given : 상품 생성시 필요한 값 설정
+        String productName = "고급 볼펜";
+        Long productPrice = 1000L;
+
+        // when : 상품 생성
+        Product product = Product.register(new RegisterProductServiceRequest(productName, productPrice));
 
         // then : 상품의 생성 여부 / 생성 시 주입된 값들 검증
         assertThat(product).isNotNull();
@@ -31,7 +51,7 @@ class ProductTest {
         String productName = "고급 볼펜";
         Long productPrice = 1000L;
 
-        Product product = Product.of(productName, productPrice);
+        Product product = Product.register(productName, productPrice);
 
         // when : 상품 삭제
         product.delete();

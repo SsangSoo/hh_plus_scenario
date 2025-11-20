@@ -13,8 +13,12 @@ public interface ProductRepository extends JpaRepository<Product,Long> {
     @Query(
             value = "SELECT quantity " +
                     "FROM STOCK " +
-                    "WHERE product_id = :productId",
+                    "WHERE product_id = :productId AND " +
+                    "deleted = false"
+            ,
             nativeQuery = true
     )
     Optional<Long> retrieveStockByProductId(Long productId);
+
+    Optional<Product> findByIdAndDeletedFalse(Long id);
 }

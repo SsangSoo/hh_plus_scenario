@@ -36,10 +36,9 @@ class ProductControllerTest extends RestDocsControllerSupport {
         Long price = 0L;
 
         RegisterProductRequest request = new RegisterProductRequest(productName, price);
-        ProductResponse response = ProductResponse.from(Product.register(request.toServiceRequest()), 0L);
-
-        Util.setId(response, 1L);
-
+        Product product = Product.register(request.toServiceRequest());
+        Util.setId(product, 1L);
+        ProductResponse response = ProductResponse.from(product, 0L);
 
         given(productService.registerProduct(any()))
                 .willReturn(response);

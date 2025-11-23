@@ -40,5 +40,55 @@ class StockTest {
 
     }
 
+    @Test
+    @DisplayName("재고를 추가한다.")
+    void addStockTest() {
+        // given : productId 세팅 및 Stock 생성
+        Long productId = 1L;
+
+        Stock stock = Stock.register(productId);
+
+        // when : 재고 추가
+        stock.addStock(4L);
+
+        // then
+        assertThat(stock.getQuantity()).isEqualTo(4L);
+    }
+
+    @Test
+    @DisplayName("재고를 차감한다.")
+    void deductedStockTest() {
+        // given : productId 세팅 및 Stock 생성
+        Long productId = 1L;
+
+        Stock stock = Stock.register(productId);
+
+        // 재고 추가
+        stock.addStock(4L);
+
+        // when : 재고 차감
+        stock.deductedStock(2L);
+
+        // then
+        assertThat(stock.getQuantity()).isEqualTo(2L);
+    }
+
+    @Test
+    @DisplayName("재고를 차감할 때 차감하려는 재고의 수가 더 크면 안 된다.")
+    void deductedStockValidTest() {
+        // given : productId 세팅 및 Stock 생성
+        Long productId = 1L;
+
+        Stock stock = Stock.register(productId);
+
+        // 재고 추가
+        stock.addStock(4L);
+
+        // when // then
+        assertThatThrownBy(() -> stock.deductedStock(5L))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("현재 재고보다 차감하려는 재고가 많습니다.");
+    }
+
 }
 

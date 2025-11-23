@@ -1,6 +1,7 @@
 package kr.hhplus.be.server.domain.pointhistory.entity;
 
 import jakarta.persistence.*;
+import kr.hhplus.be.server.domain.pointhistory.service.request.RegisterPointHistoryRequest;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -36,45 +37,17 @@ public class PointHistory {
     @Column(name = "total_point", nullable = false)
     private Long totalPoint;
 
-    @Column(name = "modified_date")
-    private LocalDateTime modifiedDate;
+    public static PointHistory register(RegisterPointHistoryRequest request, State state) {
+        PointHistory  pointHistory = new PointHistory();
 
+        pointHistory.memberId = request.memberId();
+        pointHistory.pointId = request.pointId();
+        pointHistory.pointAmount = request.pointAmount();
+        pointHistory.createdDate = request.createdDate();
+        pointHistory.totalPoint = request.totalPoint();
+        pointHistory.state = state;
 
-    enum State {
-
-        CHARGE, USE, REFUND
-
+        return pointHistory;
     }
 
-    public Long getId() {
-        return id;
-    }
-
-    public Long getMemberId() {
-        return memberId;
-    }
-
-    public Long getPointId() {
-        return pointId;
-    }
-
-    public Long getPointAmount() {
-        return pointAmount;
-    }
-
-    public State getState() {
-        return state;
-    }
-
-    public LocalDateTime getCreatedDate() {
-        return createdDate;
-    }
-
-    public Long getTotalPoint() {
-        return totalPoint;
-    }
-
-    public LocalDateTime getModifiedDate() {
-        return modifiedDate;
-    }
 }

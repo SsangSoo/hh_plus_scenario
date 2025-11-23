@@ -17,7 +17,7 @@ class ProductTest {
         Long productPrice = 1000L;
 
         // when : 상품 생성
-        Product product = Product.register(productName, productPrice);
+        Product product = Product.register(new RegisterProductServiceRequest(productName, productPrice));
 
         // then : 상품의 생성 여부 / 생성 시 주입된 값들 검증
         assertThat(product).isNotNull();
@@ -51,7 +51,7 @@ class ProductTest {
         String productName = "고급 볼펜";
         Long productPrice = 1000L;
 
-        Product product = Product.register(productName, productPrice);
+        Product product = Product.register(new RegisterProductServiceRequest(productName, productPrice));
 
         // when : 상품 삭제
         product.delete();

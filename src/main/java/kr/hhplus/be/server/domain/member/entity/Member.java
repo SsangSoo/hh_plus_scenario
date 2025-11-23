@@ -1,10 +1,12 @@
 package kr.hhplus.be.server.domain.member.entity;
 
 import jakarta.persistence.*;
+import kr.hhplus.be.server.domain.member.service.request.RegisterMemberServiceRequest;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Entity
@@ -20,8 +22,8 @@ public class Member {
     @Column(name = "name", nullable = false)
     private String name;
 
-    @Column(name = "age")
-    private Integer age;
+    @Column(name = "birth_date")
+    private String birthDate;
 
     @Column(name = "address")
     private String address;
@@ -32,12 +34,30 @@ public class Member {
     @Column(name = "modified_date", nullable = false)
     private LocalDateTime modifiedDate;
 
+    @Column(name = "deleted")
+    private Boolean deleted;
 
-    public Member(String name, Integer age, String address) {
-        this.name = name;
-        this.age = age;
-        this.address = address;
-        this.createdDate = LocalDateTime.now();
-        this.modifiedDate = createdDate;
+
+    public static Member register(RegisterMemberServiceRequest request) {
+        return register(request.name(), request.birthDate(), request.address());
     }
+
+    private static Member register(String name, String birthDate, String address) {
+        Member member = new Member();
+
+        member.name = name;
+        member.birthDate = birthDate;
+        member.address = address;
+
+        member.createdDate = LocalDateTime.now();
+        member.modifiedDate = member.createdDate;
+        member.deleted = false;
+
+        return member;
+    }
+
+    public void delete() {
+        this.deleted = true;
+    }
+
 }

@@ -38,7 +38,7 @@ public class Product {
         return register(request.productName(), request.quantity());
     }
 
-    public static Product register(String name, long price) {
+    private static Product register(String name, long price) {
         Product product = new Product();
 
         product.name =  name;
@@ -54,5 +54,6 @@ public class Product {
     public void delete() {
         deleted = true;
     }
+
 
 }

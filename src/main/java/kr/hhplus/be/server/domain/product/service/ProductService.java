@@ -41,12 +41,14 @@ public class ProductService {
 
     @Transactional
     public void removeProduct(Long productId) {
-        Product product = productRepository.findById(productId)
+        // 상품 확인
+        Product product = productRepository.findByIdAndDeletedFalse(productId)
                 .orElseThrow(() -> new BusinessLogicRuntimeException(NOT_FOUND_PRODUCT));
 
         product.delete();
 
-        Stock stock = stockRepository.findByProductId(productId)
+        // 재고 확인
+        Stock stock = stockRepository.findByProductIdAndDeletedFalse(productId)
                 .orElseThrow(() -> new BusinessLogicRuntimeException(NOT_FOUND_PRODUCT));
 
         stock.delete();
@@ -60,7 +62,7 @@ public class ProductService {
 
         // 2. 재고 조회
         Long quantity = productRepository.retrieveStockByProductId(productId)
-                .orElseThrow(() -> new BusinessLogicRuntimeException(NOT_FOUND_Stock));
+                .orElseThrow(() -> new BusinessLogicRuntimeException(NOT_FOUND_STOCK));
 
         // 3. 반환
         return ProductResponse.from(product, quantity);

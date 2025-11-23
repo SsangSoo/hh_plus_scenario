@@ -127,17 +127,16 @@ class ProductServiceTest {
         Long stockId = 1L;
 
         // Product 생성
-        Product product = Product.register(productName, productPrice);
+        Product product = Product.register(new RegisterProductServiceRequest(productName, productPrice));
         setId(product, productId);
 
         // Stock 생성
         Stock stock = Stock.register(productId);
         setId(stock, stockId);
 
-
         // removeProduct 내부 repository 호출 메서드 Mocking처리
-        given(productRepository.findById(anyLong())).willReturn(Optional.of(product));
-        given(stockRepository.findByProductId(anyLong())).willReturn(Optional.of(stock));
+        given(productRepository.findByIdAndDeletedFalse(anyLong())).willReturn(Optional.of(product));
+        given(stockRepository.findByProductIdAndDeletedFalse(anyLong())).willReturn(Optional.of(stock));
 
         // when : 상품 삭제
         productService.removeProduct(productId);
@@ -160,7 +159,7 @@ class ProductServiceTest {
         Long stockId = 1L;
 
         // Product 생성
-        Product product = Product.register(productName, productPrice);
+        Product product = Product.register(new RegisterProductServiceRequest(productName, productPrice));
         setId(product, productId);
 
         // Stock 생성
@@ -168,8 +167,8 @@ class ProductServiceTest {
         setId(stock, stockId);
 
         // removeProduct 내부 repository 호출 메서드 Mocking처리
-        given(productRepository.findById(anyLong())).willReturn(Optional.of(product));
-        given(stockRepository.findByProductId(anyLong())).willReturn(Optional.of(stock));
+        given(productRepository.findByIdAndDeletedFalse(anyLong())).willReturn(Optional.of(product));
+        given(stockRepository.findByProductIdAndDeletedFalse(anyLong())).willReturn(Optional.of(stock));
 
         // 상품 삭제
         productService.removeProduct(productId);
@@ -177,6 +176,8 @@ class ProductServiceTest {
         // 상품/재고의 삭제 확인
         assertThat(product.getDeleted()).isTrue();
         assertThat(stock.getDeleted()).isTrue();
+
+        given(productRepository.findByIdAndDeletedFalse(anyLong())).willReturn(Optional.empty());
 
         // when // then
         assertThatThrownBy(() -> productService.retrieveProduct(productId))
@@ -195,7 +196,7 @@ class ProductServiceTest {
         Long productPrice = 1000L;
         Long productQuantity = 23L;
 
-        Product product = Product.register(productName, productPrice);
+        Product product = Product.register(new RegisterProductServiceRequest(productName, productPrice));
         setId(product, productId);
 
         // id로 상품 조회

@@ -44,6 +44,25 @@ public class Stock {
         return stock;
     }
 
+    /**
+     * 추후 단위 혹은 정해진 값에 따라 변경 가능
+     * @param quantity
+     */
+    public void addStock(Long quantity) {
+        this.quantity += quantity;
+    }
+
+    /**
+     * 재고 차감
+     * @param quantity
+     */
+    public void deductedStock(Long quantity) {
+        if(this.quantity < quantity) {
+            throw new IllegalArgumentException("현재 재고보다 차감하려는 재고가 많습니다.");
+        }
+        this.quantity -= quantity;
+    }
+
     public void delete() {
         deleted = true;
     }

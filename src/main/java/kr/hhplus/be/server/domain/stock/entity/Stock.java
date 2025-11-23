@@ -1,6 +1,7 @@
 package kr.hhplus.be.server.domain.stock.entity;
 
 import jakarta.persistence.*;
+import kr.hhplus.be.server.domain.base.BaseEntity;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -11,7 +12,7 @@ import java.time.LocalDateTime;
 @Entity
 @Table(name = "STOCK")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Stock {
+public class Stock extends BaseEntity {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
@@ -23,12 +24,6 @@ public class Stock {
     @Column(name = "quantity", nullable = false)
     private Long quantity;
 
-    @Column(name = "created_date", nullable = false, updatable = false)
-    private LocalDateTime createdDate;
-
-    @Column(name = "modified_date", nullable = false)
-    private LocalDateTime modifiedDate;
-
     @Column(name = "deleted", nullable = false)
     private Boolean deleted;
 
@@ -38,8 +33,6 @@ public class Stock {
         stock.productId = productId;
 
         stock.quantity = 0L;
-        stock.createdDate = LocalDateTime.now();
-        stock.modifiedDate = stock.createdDate;
         stock.deleted = false;
         return stock;
     }
@@ -57,10 +50,21 @@ public class Stock {
      * @param quantity
      */
     public void deductedStock(Long quantity) {
-        if(this.quantity < quantity) {
+        if(validateStock(quantity)) {
+            this.quantity -= quantity;
+        }
+    }
+
+    /**
+     * 재고 차감 가능 확인
+     * @param quantity
+     * @return
+     */
+    public boolean validateStock(Long quantity) {
+        if (this.quantity < quantity) {
             throw new IllegalArgumentException("현재 재고보다 차감하려는 재고가 많습니다.");
         }
-        this.quantity -= quantity;
+        return this.quantity >= quantity;
     }
 
     public void delete() {

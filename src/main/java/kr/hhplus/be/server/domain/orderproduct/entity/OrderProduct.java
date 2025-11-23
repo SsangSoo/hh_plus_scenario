@@ -24,18 +24,18 @@ public class OrderProduct {
     @Column(name = "order_id", nullable = false, updatable = false)
     private Long orderId;
 
-    @Column(name = "price", nullable = false, updatable = false)
-    private Integer quantity;
+    @Column(name = "quantity", nullable = false, updatable = false)
+    private Long quantity;
 
     @Column(name = "created_date", nullable = false,  updatable = false)
     private LocalDateTime createdDate;
 
-
-
-    public OrderProduct(Long productId, Long orderId, Integer quantity) {
-        this.productId = productId;
-        this.orderId = orderId;
-        this.quantity = quantity;
-        this.createdDate =  LocalDateTime.now();
+    public static OrderProduct register(Long productId, Long orderId, Long quantity) {
+        OrderProduct orderProduct = new OrderProduct();
+        orderProduct.productId = productId;
+        orderProduct.orderId = orderId;
+        orderProduct.quantity = quantity;
+        orderProduct.createdDate = LocalDateTime.now();
+        return orderProduct;
     }
 }

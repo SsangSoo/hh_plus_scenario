@@ -1,6 +1,7 @@
 package kr.hhplus.be.server.domain.point.entity;
 
 import jakarta.persistence.*;
+import kr.hhplus.be.server.domain.base.BaseEntity;
 import kr.hhplus.be.server.domain.point.service.request.ChargePoint;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -12,7 +13,7 @@ import java.time.LocalDateTime;
 @Entity
 @Table(name = "POINT")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Point {
+public class Point extends BaseEntity {
 
     @Column(name = "id")
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -24,12 +25,6 @@ public class Point {
     @Column(name = "point", nullable = false)
     private Long point;
 
-    @Column(name = "created_date", nullable = false, updatable = false)
-    private LocalDateTime createdDate;
-
-    @Column(name = "modified_date", nullable = false)
-    private LocalDateTime modifiedDate;
-
     @Column(name = "deleted")
     private Boolean deleted;
 
@@ -39,8 +34,6 @@ public class Point {
         point.memberId = memberId;
         point.point = 0L;
 
-        point.createdDate = LocalDateTime.now();
-        point.modifiedDate = point.createdDate;
         point.deleted = false;
 
         return point;
@@ -60,6 +53,18 @@ public class Point {
         point += chargePoint.point();
         return point;
     }
+
+    public void use(Long totalAmount) {
+        validationPoint(totalAmount);
+        point -= totalAmount;
+    }
+
+    public void validationPoint(Long validationPoint) {
+        if (point < validationPoint) {
+            throw new IllegalArgumentException("사용하려는 포인트가 부족합니다.");
+        }
+    }
+
 
 
 

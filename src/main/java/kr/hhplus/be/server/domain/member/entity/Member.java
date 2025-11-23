@@ -1,6 +1,7 @@
 package kr.hhplus.be.server.domain.member.entity;
 
 import jakarta.persistence.*;
+import kr.hhplus.be.server.domain.base.BaseEntity;
 import kr.hhplus.be.server.domain.member.service.request.RegisterMemberServiceRequest;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -13,7 +14,7 @@ import java.time.LocalDateTime;
 @Getter
 @Table(name = "MEMBER")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Member {
+public class Member extends BaseEntity {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
@@ -28,11 +29,6 @@ public class Member {
     @Column(name = "address")
     private String address;
 
-    @Column(name = "created_date", nullable = false,  updatable = false)
-    private LocalDateTime createdDate;
-
-    @Column(name = "modified_date", nullable = false)
-    private LocalDateTime modifiedDate;
 
     @Column(name = "deleted")
     private Boolean deleted;
@@ -49,8 +45,6 @@ public class Member {
         member.birthDate = birthDate;
         member.address = address;
 
-        member.createdDate = LocalDateTime.now();
-        member.modifiedDate = member.createdDate;
         member.deleted = false;
 
         return member;

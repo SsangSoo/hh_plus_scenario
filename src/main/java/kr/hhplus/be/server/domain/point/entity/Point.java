@@ -3,6 +3,8 @@ package kr.hhplus.be.server.domain.point.entity;
 import jakarta.persistence.*;
 import kr.hhplus.be.server.domain.base.BaseEntity;
 import kr.hhplus.be.server.domain.point.service.request.ChargePoint;
+import kr.hhplus.be.server.global.exeption.business.BusinessLogicMessage;
+import kr.hhplus.be.server.global.exeption.business.BusinessLogicRuntimeException;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -34,6 +36,8 @@ public class Point extends BaseEntity {
         point.memberId = memberId;
         point.point = 0L;
 
+        point.createdDate = LocalDateTime.now();
+        point.modifiedDate = point.createdDate;
         point.deleted = false;
 
         return point;
@@ -43,13 +47,15 @@ public class Point extends BaseEntity {
         this.deleted = true;
     }
 
-
     /**
      * 추후 단위 혹은 정해진 값에 따라 로직 변경될 수 있음
      * @param chargePoint
      * @return
      */
     public Long charge(ChargePoint chargePoint) {
+        if(chargePoint.point() <= 0) {
+            throw new IllegalStateException(BusinessLogicMessage.CHARGE_POINT_NOT_POSITIVE.getMessage());
+        }
         point += chargePoint.point();
         return point;
     }

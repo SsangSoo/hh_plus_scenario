@@ -27,15 +27,16 @@ public class PointHistory {
     @Column(name = "point_amount", nullable = false)
     private Long pointAmount;
 
-    @Column(name = "state", nullable = false)
-    @Enumerated(EnumType.STRING)
-    private State state;
-
     @Column(name = "created_date", nullable = false)
     private LocalDateTime createdDate;
 
     @Column(name = "total_point", nullable = false)
     private Long totalPoint;
+
+
+    @Column(name = "state", nullable = false)
+    @Enumerated(EnumType.STRING)
+    private State state;
 
     public static PointHistory register(RegisterPointHistoryRequest request, State state) {
         PointHistory  pointHistory = new PointHistory();

@@ -7,6 +7,8 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
+
 @Getter
 @Entity
 @Table(name = "PAYMENT")
@@ -23,9 +25,6 @@ public class Payment extends BaseEntity {
     @Column(name = "total_amount")
     private Long totalAmount;
 
-    @Column(name = "final_amount")
-    private Long finalAmount;
-
     @Column(name = "payment_state")
     private PaymentState paymentState;
 
@@ -39,8 +38,10 @@ public class Payment extends BaseEntity {
 
         payment.orderId = orderId;
         payment.totalAmount = totalAmount;
-        payment.finalAmount = totalAmount;
         payment.paymentState = PaymentState.PAYMENT_COMPLETE;
+
+        payment.createdDate = LocalDateTime.now();
+        payment.modifiedDate = payment.createdDate;
 
         return payment;
     }

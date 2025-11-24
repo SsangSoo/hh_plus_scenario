@@ -33,6 +33,9 @@ public class Stock extends BaseEntity {
         stock.productId = productId;
 
         stock.quantity = 0L;
+
+        stock.createdDate = LocalDateTime.now();
+        stock.modifiedDate = stock.createdDate;
         stock.deleted = false;
         return stock;
     }

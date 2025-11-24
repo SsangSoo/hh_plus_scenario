@@ -7,6 +7,8 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
+
 @Getter
 @Entity
 @Table(name = "PRODUCT")
@@ -37,6 +39,8 @@ public class Product extends BaseEntity {
         product.name =  name;
         product.price = price;
 
+        product.createdDate = LocalDateTime.now();
+        product.modifiedDate = product.createdDate;
         product.deleted = false;
 
         return product;

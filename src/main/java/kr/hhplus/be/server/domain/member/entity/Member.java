@@ -7,7 +7,6 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Entity
@@ -29,7 +28,6 @@ public class Member extends BaseEntity {
     @Column(name = "address")
     private String address;
 
-
     @Column(name = "deleted")
     private Boolean deleted;
 
@@ -45,6 +43,8 @@ public class Member extends BaseEntity {
         member.birthDate = birthDate;
         member.address = address;
 
+        member.createdDate = LocalDateTime.now();
+        member.modifiedDate = member.createdDate;
         member.deleted = false;
 
         return member;

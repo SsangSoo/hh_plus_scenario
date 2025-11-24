@@ -1,63 +1,54 @@
 package kr.hhplus.be.server.domain.coupon.entity;
 
 import jakarta.persistence.*;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
+@Getter
 @Entity
+@Table(name = "COUPON")
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Coupon {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private Long id;
 
-    @Column(name = "coupon", nullable = false)
+    @Column(name = "coupon", nullable = false, updatable = false)
     private String coupon;
 
-    @Column(name = "expiry_date", nullable = false)
+    @Column(name = "expiry_date", nullable = false, updatable = false)
     private LocalDateTime expiryDate;
 
     @Column(name = "amount", nullable = false)
     private Long amount;
 
-    @Version
-    @Column(name = "coupon_version", nullable = false)
-    private Long couponVersion;
-
-    @Column(name = "create_date",  nullable = false)
-    private LocalDateTime createDate;
+    @Column(name = "created_date",  nullable = false, updatable = false)
+    private LocalDateTime createdDate;
 
     @Column(name = "modified_date",  nullable = false)
     private LocalDateTime modifiedDate;
 
+    @Column(name = "discountRate", nullable = false, updatable = false)
+    private Integer discountRate;
 
 
-
-    public Long getId() {
-        return id;
+    public Coupon(String coupon, LocalDateTime expiryDate, Long amount) {
+        this(coupon, expiryDate, amount, 10);
     }
 
-    public String getCoupon() {
-        return coupon;
+    public Coupon(String coupon, LocalDateTime expiryDate, Long amount, Integer discountRate) {
+        this.coupon = coupon;
+        this.expiryDate = expiryDate;
+        this.amount = amount;
+        this.createdDate = LocalDateTime.now();
+        this.modifiedDate = createdDate;
+        this.discountRate = discountRate;
     }
 
-    public LocalDateTime getExpiryDate() {
-        return expiryDate;
-    }
 
-    public Long getAmount() {
-        return amount;
-    }
 
-    public Long getCouponVersion() {
-        return couponVersion;
-    }
-
-    public LocalDateTime getCreateDate() {
-        return createDate;
-    }
-
-    public LocalDateTime getModifiedDate() {
-        return modifiedDate;
-    }
 }

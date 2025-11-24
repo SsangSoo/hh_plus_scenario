@@ -1,11 +1,18 @@
 package kr.hhplus.be.server.domain.stock.entity;
 
 import jakarta.persistence.*;
+import kr.hhplus.be.server.domain.base.BaseEntity;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
+@Getter
 @Entity
-public class Stock {
+@Table(name = "STOCK")
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+public class Stock extends BaseEntity {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
@@ -17,38 +24,55 @@ public class Stock {
     @Column(name = "quantity", nullable = false)
     private Long quantity;
 
-    @Version
-    @Column(name = "stock_version", nullable = false)
-    private Long stockVersion;
+    @Column(name = "deleted", nullable = false)
+    private Boolean deleted;
 
-    @Column(name = "created_date", nullable = false, updatable = false)
-    private LocalDateTime createdDate;
+    public static Stock register(Long productId) {
+        Stock stock = new Stock();
 
-    @Column(name = "modified_date", nullable = false)
-    private LocalDateTime modifiedDate;
+        stock.productId = productId;
 
+        stock.quantity = 0L;
 
-    public Long getId() {
-        return id;
+        stock.createdDate = LocalDateTime.now();
+        stock.modifiedDate = stock.createdDate;
+        stock.deleted = false;
+        return stock;
     }
 
-    public Long getProductId() {
-        return productId;
+    /**
+     * 추후 단위 혹은 정해진 값에 따라 변경 가능
+     * @param quantity
+     */
+    public void addStock(Long quantity) {
+        this.quantity += quantity;
     }
 
-    public Long getQuantity() {
-        return quantity;
+    /**
+     * 재고 차감
+     * @param quantity
+     */
+    public void deductedStock(Long quantity) {
+        if(validateStock(quantity)) {
+            this.quantity -= quantity;
+        }
     }
 
-    public Long getStockVersion() {
-        return stockVersion;
+    /**
+     * 재고 차감 가능 확인
+     * @param quantity
+     * @return
+     */
+    public boolean validateStock(Long quantity) {
+        if (this.quantity < quantity) {
+            throw new IllegalArgumentException("현재 재고보다 차감하려는 재고가 많습니다.");
+        }
+        return this.quantity >= quantity;
     }
 
-    public LocalDateTime getCreatedDate() {
-        return createdDate;
+    public void delete() {
+        deleted = true;
     }
 
-    public LocalDateTime getModifiedDate() {
-        return modifiedDate;
-    }
 }
+

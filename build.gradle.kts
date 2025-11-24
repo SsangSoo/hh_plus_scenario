@@ -2,7 +2,26 @@ plugins {
 	java
 	id("org.springframework.boot") version "3.4.1"
 	id("io.spring.dependency-management") version "1.1.7"
+    id("com.epages.restdocs-api-spec") version "0.18.2"
 }
+
+openapi3 {
+    setServer("http://localhost:8080")
+    title = "restdocs-swagger API 문서"
+    description = "Spring REST Docs with SwaggerUI."
+    version = "0.0.1"
+    format = "yaml"
+}
+
+tasks.register<Copy>("copyOasToSwagger") {
+    doFirst{
+        project.delete("src/main/resource/static/swagger-ui/openapi3.yaml")
+    }
+    from("${buildDir}/api-spec/openapi3.yaml")
+    into("src/main/resources/static/swagger-ui/")
+    dependsOn("openapi3")
+}
+
 
 fun getGitHash(): String {
 	return providers.exec {
@@ -34,9 +53,11 @@ dependencies {
 	implementation("org.springframework.boot:spring-boot-starter-actuator")
 	implementation("org.springframework.boot:spring-boot-starter-data-jpa")
 	implementation("org.springframework.boot:spring-boot-starter-web")
-
     // Swagger
-    implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.0.0")
+    implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.14")
+
+    compileOnly("org.projectlombok:lombok")
+    annotationProcessor("org.projectlombok:lombok")
 
     // DB
 	runtimeOnly("com.mysql:mysql-connector-j")
@@ -46,10 +67,17 @@ dependencies {
 	testImplementation("org.springframework.boot:spring-boot-testcontainers")
 	testImplementation("org.testcontainers:junit-jupiter")
 	testImplementation("org.testcontainers:mysql")
+	testImplementation("org.springframework.restdocs:spring-restdocs-mockmvc")
+	testImplementation("com.epages:restdocs-api-spec-mockmvc:0.18.2")
+
 	testRuntimeOnly("org.junit.platform:junit-platform-launcher")
+
+    testCompileOnly("org.projectlombok:lombok")
+    testAnnotationProcessor("org.projectlombok:lombok")
 }
 
 tasks.withType<Test> {
 	useJUnitPlatform()
 	systemProperty("user.timezone", "UTC")
 }
+

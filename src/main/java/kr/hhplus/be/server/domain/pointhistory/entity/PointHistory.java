@@ -1,10 +1,17 @@
 package kr.hhplus.be.server.domain.pointhistory.entity;
 
 import jakarta.persistence.*;
+import kr.hhplus.be.server.domain.pointhistory.service.request.RegisterPointHistoryRequest;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
+@Getter
 @Entity
+@Table(name = "POINT_HISTORY")
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class PointHistory {
 
     @Column(name = "id")
@@ -20,55 +27,28 @@ public class PointHistory {
     @Column(name = "point_amount", nullable = false)
     private Long pointAmount;
 
-    @Column(name = "state", nullable = false)
-    @Enumerated(EnumType.STRING)
-    private State state;
-
     @Column(name = "created_date", nullable = false)
     private LocalDateTime createdDate;
 
     @Column(name = "total_point", nullable = false)
     private Long totalPoint;
 
-    @Column(name = "modified_date")
-    private LocalDateTime modifiedDate;
 
+    @Column(name = "state", nullable = false)
+    @Enumerated(EnumType.STRING)
+    private State state;
 
-    enum State {
+    public static PointHistory register(RegisterPointHistoryRequest request, State state) {
+        PointHistory  pointHistory = new PointHistory();
 
-        CHARGE, USE, REFUND
+        pointHistory.memberId = request.memberId();
+        pointHistory.pointId = request.pointId();
+        pointHistory.pointAmount = request.pointAmount();
+        pointHistory.createdDate = request.createdDate();
+        pointHistory.totalPoint = request.totalPoint();
+        pointHistory.state = state;
 
+        return pointHistory;
     }
 
-    public Long getId() {
-        return id;
-    }
-
-    public Long getMemberId() {
-        return memberId;
-    }
-
-    public Long getPointId() {
-        return pointId;
-    }
-
-    public Long getPointAmount() {
-        return pointAmount;
-    }
-
-    public State getState() {
-        return state;
-    }
-
-    public LocalDateTime getCreatedDate() {
-        return createdDate;
-    }
-
-    public Long getTotalPoint() {
-        return totalPoint;
-    }
-
-    public LocalDateTime getModifiedDate() {
-        return modifiedDate;
-    }
 }

@@ -7,6 +7,32 @@ servers:
 - url: http://localhost:8080
 tags: []
 paths:
+  /api/order:
+    post:
+      tags:
+      - api
+      operationId: 상품 주문 및 결제
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/api-order959951670"
+            examples:
+              상품 주문 및 결제:
+                value: "{\"memberId\":1,\"orderProductRequest\":{\"productId\":1,\"\
+                  quantity\":3}}"
+      responses:
+        "200":
+          description: "200"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/api-order-1169713443"
+              examples:
+                상품 주문 및 결제:
+                  value: "{\"orderId\":1,\"memberId\":1,\"orderDate\":\"2025-11-24T13:50:30\"\
+                    ,\"paymentId\":1,\"totalAmount\":12000,\"paymentState\":\"PAYMENT_COMPLETE\"\
+                    }"
   /api/product:
     post:
       tags:
@@ -30,10 +56,103 @@ paths:
               examples:
                 상품 생성:
                   value: "{\"id\":1,\"productName\":\"클린 아키텍처\",\"price\":0,\"quantity\"\
-                    :0,\"createDate\":\"2025-11-19T22:21:14\",\"modifiedDate\":\"\
-                    2025-11-19T22:21:14\"}"
+                    :0,\"createDate\":\"2025-11-24T13:50:31\",\"modifiedDate\":\"\
+                    2025-11-24T13:50:31\"}"
+  /api/point/charge:
+    post:
+      tags:
+      - api
+      operationId: 포인트 충전
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/api-point-charge40556258"
+            examples:
+              포인트 충전:
+                value: "{\"memberId\":1,\"chargePoint\":3000}"
+      responses:
+        "200":
+          description: "200"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/api-point-charge1292573121"
+              examples:
+                포인트 충전:
+                  value: "{\"id\":1,\"memberId\":1,\"point\":3000}"
+  /api/product/{productId}:
+    get:
+      tags:
+      - api
+      operationId: 상품 조회
+      parameters:
+      - name: productId
+        in: path
+        description: 조회할 상품 Id
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: "200"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/api-product923223259"
+              examples:
+                상품 조회:
+                  value: "{\"id\":1,\"productName\":\"클린 아키텍처\",\"price\":1000,\"\
+                    quantity\":0,\"createDate\":\"2025-11-24T13:50:31\",\"modifiedDate\"\
+                    :\"2025-11-24T13:50:31\"}"
+  /api/point/{memberId}/retrieve:
+    get:
+      tags:
+      - api
+      operationId: 포인트 조회
+      parameters:
+      - name: memberId
+        in: path
+        description: 조회할 회원 Id
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: "200"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/api-point-charge1292573121"
+              examples:
+                포인트 조회:
+                  value: "{\"id\":1,\"memberId\":1,\"point\":3000}"
 components:
   schemas:
+    api-order959951670:
+      type: object
+      properties:
+        orderProductRequest:
+          type: object
+          properties:
+            quantity:
+              type: number
+              description: 주문 상품 수량
+            productId:
+              type: number
+              description: 상품 Id
+        memberId:
+          type: number
+          description: 회원 Id
+    api-point-charge40556258:
+      type: object
+      properties:
+        chargePoint:
+          type: number
+          description: 충전 포인트
+        memberId:
+          type: number
+          description: 회원 Id
     api-product-1533132377:
       type: object
       properties:
@@ -43,6 +162,39 @@ components:
         productName:
           type: string
           description: 상품 이름
+    api-order-1169713443:
+      type: object
+      properties:
+        totalAmount:
+          type: number
+          description: 총 주문 금액
+        orderId:
+          type: number
+          description: 주문 Id
+        paymentId:
+          type: number
+          description: 결제 Id
+        paymentState:
+          type: string
+          description: 결제 상태
+        orderDate:
+          type: string
+          description: 주문 일시
+        memberId:
+          type: number
+          description: 회원 Id
+    api-point-charge1292573121:
+      type: object
+      properties:
+        id:
+          type: number
+          description: 포인트 Id
+        point:
+          type: number
+          description: 충전 후 point
+        memberId:
+          type: number
+          description: 회원 Id
     api-product923223259:
       type: object
       properties:

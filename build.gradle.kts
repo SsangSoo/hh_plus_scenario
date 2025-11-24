@@ -14,11 +14,9 @@ openapi3 {
 }
 
 tasks.register<Copy>("copyOasToSwagger") {
-    doFirst{
-        project.delete("src/main/resource/static/swagger-ui/openapi3.yaml")
-    }
+    delete("src/main/resource/static/openapi3.yaml")
     from("${buildDir}/api-spec/openapi3.yaml")
-    into("src/main/resources/static/swagger-ui/")
+    into("src/main/resources/static/")
     dependsOn("openapi3")
 }
 

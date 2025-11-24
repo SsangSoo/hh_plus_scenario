@@ -1,0 +1,66 @@
+openapi: 3.0.1
+info:
+  title: restdocs-swagger API 문서
+  description: Spring REST Docs with SwaggerUI.
+  version: 0.0.1
+servers:
+- url: http://localhost:8080
+tags: []
+paths:
+  /api/product:
+    post:
+      tags:
+      - api
+      operationId: 상품 생성
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/api-product-1533132377"
+            examples:
+              상품 생성:
+                value: "{\"productName\":\"클린 아키텍처\",\"price\":0}"
+      responses:
+        "201":
+          description: "201"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/api-product923223259"
+              examples:
+                상품 생성:
+                  value: "{\"id\":1,\"productName\":\"클린 아키텍처\",\"price\":0,\"quantity\"\
+                    :0,\"createDate\":\"2025-11-19T22:21:14\",\"modifiedDate\":\"\
+                    2025-11-19T22:21:14\"}"
+components:
+  schemas:
+    api-product-1533132377:
+      type: object
+      properties:
+        price:
+          type: number
+          description: 상품 가격
+        productName:
+          type: string
+          description: 상품 이름
+    api-product923223259:
+      type: object
+      properties:
+        quantity:
+          type: number
+          description: 재고
+        price:
+          type: number
+          description: 상품 가격
+        modifiedDate:
+          type: string
+          description: 수정일
+        id:
+          type: number
+          description: 상품 ID
+        productName:
+          type: string
+          description: 상품 이름
+        createDate:
+          type: string
+          description: 생성일

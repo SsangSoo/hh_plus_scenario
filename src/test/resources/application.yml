@@ -1,0 +1,8 @@
+spring:
+  jpa:
+    hibernate:
+      ddl-auto: create   # 테스트에서만 테이블 새로 생성
+    properties:
+      hibernate:
+        format_sql: true
+        show_sql: true

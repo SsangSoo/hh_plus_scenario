@@ -1,11 +1,30 @@
 # 인프라 구조도 - e-commerce 서비스
 
+## 인프라 아키텍처 개요
+
 <div><img src="image/인프라구조도.png"></div>
+
+### 주요 컴포넌트
+
+|컴포넌트| 기술 스택               |역할|
+|-|---------------------|-|
+|WAS| Spring Boot(Docker) | 비즈니스 로직 처리|
+|Database| MySQL | 애플리케이션 데이터 영구 저장|
+
+
+
+### 요청 처리 흐름
+
+1. 사용자 요청
+2. WAS로 접근
+3. 비즈니스 로직 처리(RDB 및 Redis 조회)
+4. 응답 반환
+
+### 배포 전략
+- 미선정
 
 
 모든 ADR(Architecture Decision Record : 아키텍처에 대한 의사결정 문서) 작성자는 `김성수` 본인입니다.
-
-
 
 
 <details>

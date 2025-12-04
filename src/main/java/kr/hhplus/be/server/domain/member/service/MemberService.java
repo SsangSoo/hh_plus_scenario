@@ -53,9 +53,10 @@ public class MemberService {
         // 회원 Id로 포인트 찾기
         Point point = pointRepository.findPointByMemberIdAndDeletedFalse(member.getId())
                 .orElseThrow(() -> new BusinessLogicRuntimeException(BusinessLogicMessage.NOT_FOUND_MEMBER_POINT));
-
         // 포인트 삭제
         point.delete();
     }
+
+
 
 }

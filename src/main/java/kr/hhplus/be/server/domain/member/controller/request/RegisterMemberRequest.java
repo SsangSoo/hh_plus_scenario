@@ -10,15 +10,16 @@ public record RegisterMemberRequest(
 
         @NotBlank(message = "이름은 필수입니다.")
         String name,
-
         @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyyMMdd")
         LocalDate birthDate,
-
         String address
+//        String password,
+//        String passwordConfirm
 ) {
-
 
     public RegisterMemberServiceRequest toServiceRequest() {
         return new RegisterMemberServiceRequest(name, birthDate.toString(), address);
     }
+
+
 }

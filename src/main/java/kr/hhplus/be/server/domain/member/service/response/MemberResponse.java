@@ -30,6 +30,17 @@ public class MemberResponse {
                 .build();
     }
 
+    public static MemberResponse of(Long id, String name, String birthDate, String address, LocalDateTime createdDate, LocalDateTime modifiedDate) {
+        return MemberResponse.builder()
+                .id(id)
+                .name(name)
+                .birthDate(birthDate)
+                .address(address)
+                .createdDate(createdDate.withNano(0))
+                .modifiedDate(modifiedDate.withNano(0))
+                .build();
+    }
+
     @Builder
     private MemberResponse(Long id, String name, String birthDate, String address, LocalDateTime createdDate, LocalDateTime modifiedDate) {
         this.id = id;

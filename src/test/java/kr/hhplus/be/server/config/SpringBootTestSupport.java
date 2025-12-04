@@ -66,4 +66,5 @@ public abstract class SpringBootTestSupport {
 
     @Autowired
     protected StockRepository stockRepository;
+
 }

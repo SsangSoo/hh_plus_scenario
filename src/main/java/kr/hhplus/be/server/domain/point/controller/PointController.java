@@ -23,9 +23,9 @@ public class PointController {
         return ResponseEntity.ok(response);
     }
 
-    @GetMapping("/{memberId}/retrieve")
+    @GetMapping("/{memberId}")
     public ResponseEntity<PointResponse> retrieve(@PathVariable("memberId") Long memberId) {
-        PointResponse pointResponse = pointService.retrieve(memberId);
-        return  ResponseEntity.ok(pointResponse);
+        PointResponse response = pointService.retrieve(memberId);
+        return  ResponseEntity.ok(response);
     }
 }

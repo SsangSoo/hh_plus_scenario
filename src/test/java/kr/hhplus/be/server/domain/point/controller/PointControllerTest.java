@@ -72,6 +72,8 @@ class PointControllerTest extends RestDocsControllerSupport {
                 ));
     }
 
+
+
     @Test
     void retrievePointTest() throws Exception {
         // given
@@ -92,7 +94,7 @@ class PointControllerTest extends RestDocsControllerSupport {
 
         // when // then
         mockMvc.perform(
-                        MockMvcRequestBuilders.get("/api/point/{memberId}/retrieve", memberId)                                .accept(MediaType.APPLICATION_JSON)
+                        MockMvcRequestBuilders.get("/api/point/{memberId}", memberId)                                .accept(MediaType.APPLICATION_JSON)
                                 .accept(MediaType.APPLICATION_JSON)
                 )
                 .andExpect(status().isOk())

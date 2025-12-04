@@ -33,7 +33,6 @@ class RegisterProductRequestTest extends ControllerTestSupport {
                 .andExpect(jsonPath("$.errors[0].field").value("price"))
                 .andExpect(jsonPath("$.errors[0].value").value("-1"))
                 .andExpect(jsonPath("$.errors[0].reason").value("가격은 0이상 이어야 합니다."));
-
     }
 
     @Test

@@ -1,4 +1,4 @@
-package kr.hhplus.be.server.domain.payment.service.response;
+package kr.hhplus.be.server.domain.payment.facade.service.response;
 
 import kr.hhplus.be.server.domain.payment.entity.Payment;
 import lombok.Getter;

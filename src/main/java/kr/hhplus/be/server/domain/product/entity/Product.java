@@ -30,7 +30,7 @@ public class Product extends BaseEntity {
 
 
     public static Product register(RegisterProductServiceRequest request) {
-        return register(request.productName(), request.quantity());
+        return register(request.productName(), request.price());
     }
 
     private static Product register(String name, long price) {

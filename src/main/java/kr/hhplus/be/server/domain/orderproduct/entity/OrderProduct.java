@@ -2,6 +2,8 @@ package kr.hhplus.be.server.domain.orderproduct.entity;
 
 
 import jakarta.persistence.*;
+import kr.hhplus.be.server.domain.base.BaseEntity;
+import kr.hhplus.be.server.domain.orderproduct.service.request.OrderProductServiceRequest;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -12,7 +14,7 @@ import java.time.LocalDateTime;
 @Getter
 @Table(name = "ORDER_PRODUCT")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class OrderProduct {
+public class OrderProduct extends BaseEntity {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
@@ -27,15 +29,14 @@ public class OrderProduct {
     @Column(name = "quantity", nullable = false, updatable = false)
     private Long quantity;
 
-    @Column(name = "created_date", nullable = false,  updatable = false)
-    private LocalDateTime createdDate;
+    public static OrderProduct register(OrderProductServiceRequest request, Long orderId) {
+        return new OrderProduct(request.productId(), request.quantity(), orderId);
+    }
 
-    public static OrderProduct register(Long productId, Long orderId, Long quantity) {
-        OrderProduct orderProduct = new OrderProduct();
-        orderProduct.productId = productId;
-        orderProduct.orderId = orderId;
-        orderProduct.quantity = quantity;
-        orderProduct.createdDate = LocalDateTime.now();
-        return orderProduct;
+    private OrderProduct(Long productId, Long quantity, Long orderId) {
+        this.productId = productId;
+        this.quantity = quantity;
+        this.orderId = orderId;
+        this.createdDate = LocalDateTime.now();
     }
 }

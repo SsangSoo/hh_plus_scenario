@@ -2,7 +2,7 @@ package kr.hhplus.be.server.domain.order.service.response;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import kr.hhplus.be.server.domain.order.entity.Order;
-import kr.hhplus.be.server.domain.payment.service.response.PaymentResponse;
+import kr.hhplus.be.server.domain.payment.facade.service.response.PaymentResponse;
 import lombok.Getter;
 
 import java.time.LocalDateTime;
@@ -10,13 +10,13 @@ import java.time.LocalDateTime;
 @Getter
 public class OrderResponse {
 
-    Long orderId;
-    Long memberId;
+    private Long orderId;
+    private Long memberId;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss")
-    LocalDateTime orderDate;
-    Long paymentId;
-    Long totalAmount;
-    String paymentState;
+    private LocalDateTime orderDate;
+    private Long paymentId;
+    private Long totalAmount;
+    private String paymentState;
 
 
     public static OrderResponse from(Order order, PaymentResponse paymentResponse) {

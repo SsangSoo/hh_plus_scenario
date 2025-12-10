@@ -11,12 +11,14 @@ import kr.hhplus.be.server.domain.product.controller.request.RegisterProductRequ
 import kr.hhplus.be.server.domain.product.service.response.ProductResponse;
 import kr.hhplus.be.server.domain.stock.controller.request.AddStockRequest;
 import kr.hhplus.be.server.domain.stock.service.response.StockResponse;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDate;
 
 import static org.assertj.core.api.Assertions.*;
+import static org.mockito.Mockito.when;
 
 class OrderIntegratedTest extends SpringBootTestSupport {
 
@@ -37,7 +39,7 @@ class OrderIntegratedTest extends SpringBootTestSupport {
         // 상품의 재고를 채운다.
         StockResponse stockResponse = stockService.addStock(new AddStockRequest(productResponse.getId(), 30L).toAddStock());
 
-        OrderRequest orderRequest = new OrderRequest(memberResponse.getId(), new OrderProductRequest(productResponse.getId(), 5L));
+        OrderRequest orderRequest = new OrderRequest(memberResponse.getId(), new OrderProductRequest(productResponse.getId(), 5L), "POINT");
 
         // when : 주문을 한다.
         orderService.order(orderRequest.toServiceRequest());

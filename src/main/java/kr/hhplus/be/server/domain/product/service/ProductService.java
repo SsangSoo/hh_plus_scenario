@@ -44,14 +44,13 @@ public class ProductService {
         // 상품 확인
         Product product = productRepository.findByIdAndDeletedFalse(productId)
                 .orElseThrow(() -> new BusinessLogicRuntimeException(NOT_FOUND_PRODUCT));
-
         product.delete();
 
         // 재고 확인
         Stock stock = stockRepository.findByProductIdAndDeletedFalse(productId)
                 .orElseThrow(() -> new BusinessLogicRuntimeException(NOT_FOUND_PRODUCT));
-
         stock.delete();
+
     }
 
     @Transactional(readOnly = true)

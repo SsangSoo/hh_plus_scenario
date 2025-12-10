@@ -18,6 +18,6 @@ public interface StockRepository extends JpaRepository<Stock, Long> {
     Optional<Stock> findByProductIdAndDeletedFalse(Long productId);
 
     @Lock(LockModeType.PESSIMISTIC_WRITE)
-    @Query("select s from Stock s where s.id = :id and s.deleted = false")
-    Stock findbyIdForUpdate(Long id);
+    @Query("select s from Stock s where s.productId = :productId and s.deleted = false and s.quantity >= :quantity")
+    Optional<Stock> findByProductIdForUpdate(Long productId, Long quantity);
 }

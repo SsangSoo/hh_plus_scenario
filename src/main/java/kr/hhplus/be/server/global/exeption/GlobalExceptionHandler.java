@@ -61,6 +61,7 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
     }
 
+
     /**
      * 기타 예상 못한 예외
      */

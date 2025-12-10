@@ -1,5 +1,7 @@
 package kr.hhplus.be.server.domain.stock.entity;
 
+import kr.hhplus.be.server.global.exeption.business.BusinessLogicMessage;
+import kr.hhplus.be.server.global.exeption.business.BusinessLogicRuntimeException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -86,8 +88,8 @@ class StockTest {
 
         // when // then
         assertThatThrownBy(() -> stock.deductedStock(5L))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("현재 재고보다 차감하려는 재고가 많습니다.");
+                .isInstanceOf(BusinessLogicRuntimeException.class)
+                .hasMessage(BusinessLogicMessage.STOCK_IS_NOT_ENOUGH.getMessage());
     }
 
 }

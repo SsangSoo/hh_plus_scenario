@@ -2,7 +2,8 @@ package kr.hhplus.be.server.domain.payment.entity;
 
 import jakarta.persistence.*;
 import kr.hhplus.be.server.domain.base.BaseEntity;
-import kr.hhplus.be.server.domain.payment.service.request.PaymentServiceRequest;
+import kr.hhplus.be.server.domain.order.controller.request.PaymentMethod;
+import kr.hhplus.be.server.domain.payment.facade.service.request.PaymentServiceRequest;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -25,23 +26,29 @@ public class Payment extends BaseEntity {
     @Column(name = "total_amount")
     private Long totalAmount;
 
+
     @Column(name = "payment_state")
     private PaymentState paymentState;
 
 
     public static Payment register(PaymentServiceRequest request) {
-        return register(request.orderId(), request.totalAmount());
+        return register(request.orderId(), request.totalAmount(), request.paymentMethod());
     }
 
-    private static Payment register(Long orderId, Long totalAmount) {
+    private static Payment register(Long orderId, Long totalAmount, PaymentMethod paymentMethod) {
         Payment payment = new Payment();
 
         payment.orderId = orderId;
         payment.totalAmount = totalAmount;
-        payment.paymentState = PaymentState.PAYMENT_COMPLETE;
 
         payment.createdDate = LocalDateTime.now();
         payment.modifiedDate = payment.createdDate;
+
+        switch (paymentMethod) {
+            case POINT -> payment.paymentState = PaymentState.PAYMENT_COMPLETE;
+            case CREDIT_CARD -> payment.paymentState = PaymentState.PENDING;
+            case BANK_TRANSFER ->  payment.paymentState = PaymentState.PENDING;
+        }
 
         return payment;
     }

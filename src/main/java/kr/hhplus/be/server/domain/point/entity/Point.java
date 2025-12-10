@@ -53,12 +53,10 @@ public class Point extends BaseEntity {
      * @return
      */
     public Long charge(ChargePoint chargePoint) {
-        if(chargePoint.point() <= 0) {
-            throw new IllegalStateException(BusinessLogicMessage.CHARGE_POINT_NOT_POSITIVE.getMessage());
-        }
         point += chargePoint.point();
         return point;
     }
+
 
     public void use(Long totalAmount) {
         validationPoint(totalAmount);
@@ -67,7 +65,7 @@ public class Point extends BaseEntity {
 
     public void validationPoint(Long validationPoint) {
         if (point < validationPoint) {
-            throw new IllegalArgumentException("사용하려는 포인트가 부족합니다.");
+            throw new BusinessLogicRuntimeException(BusinessLogicMessage.POINT_IS_NOT_ENOUGH.getMessage());
         }
     }
 

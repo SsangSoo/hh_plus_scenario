@@ -2,6 +2,8 @@ package kr.hhplus.be.server.domain.stock.entity;
 
 import jakarta.persistence.*;
 import kr.hhplus.be.server.domain.base.BaseEntity;
+import kr.hhplus.be.server.global.exeption.business.BusinessLogicMessage;
+import kr.hhplus.be.server.global.exeption.business.BusinessLogicRuntimeException;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -53,9 +55,8 @@ public class Stock extends BaseEntity {
      * @param quantity
      */
     public void deductedStock(Long quantity) {
-        if(validateStock(quantity)) {
-            this.quantity -= quantity;
-        }
+        validationStock(quantity);
+        this.quantity -= quantity;
     }
 
     /**
@@ -63,11 +64,10 @@ public class Stock extends BaseEntity {
      * @param quantity
      * @return
      */
-    public boolean validateStock(Long quantity) {
-        if (this.quantity < quantity) {
-            throw new IllegalArgumentException("현재 재고보다 차감하려는 재고가 많습니다.");
+    public void validationStock(Long quantity) {
+        if(this.quantity < quantity) {
+            throw new BusinessLogicRuntimeException(BusinessLogicMessage.STOCK_IS_NOT_ENOUGH);
         }
-        return this.quantity >= quantity;
     }
 
     public void delete() {

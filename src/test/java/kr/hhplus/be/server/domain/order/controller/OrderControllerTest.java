@@ -4,12 +4,13 @@ import kr.hhplus.be.server.config.RestDocsControllerSupport;
 import kr.hhplus.be.server.config.Util;
 import kr.hhplus.be.server.domain.order.controller.request.OrderProductRequest;
 import kr.hhplus.be.server.domain.order.controller.request.OrderRequest;
+import kr.hhplus.be.server.domain.order.controller.request.PaymentMethod;
 import kr.hhplus.be.server.domain.order.entity.Order;
 import kr.hhplus.be.server.domain.order.service.OrderService;
 import kr.hhplus.be.server.domain.order.service.response.OrderResponse;
 import kr.hhplus.be.server.domain.payment.entity.Payment;
-import kr.hhplus.be.server.domain.payment.service.request.PaymentServiceRequest;
-import kr.hhplus.be.server.domain.payment.service.response.PaymentResponse;
+import kr.hhplus.be.server.domain.payment.facade.service.request.PaymentServiceRequest;
+import kr.hhplus.be.server.domain.payment.facade.service.response.PaymentResponse;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
@@ -38,17 +39,17 @@ class OrderControllerTest extends RestDocsControllerSupport {
         Long memberId = 1L;
         Long productId = 1L;
         Long quantity = 3L;
+        String paymentMethod = "POINT";
 
-        OrderRequest request = new OrderRequest(memberId, new OrderProductRequest(productId, quantity));
+        OrderRequest request = new OrderRequest(memberId, new OrderProductRequest(productId, quantity), paymentMethod);
 
         Long orderId = 1L;
         Order order = Order.rigester(memberId);
         Util.setId(order, orderId);
 
         Long paymentId = 1L;
-        Payment payment = Payment.register(new PaymentServiceRequest(orderId, 4000 * quantity));
+        Payment payment = Payment.register(new PaymentServiceRequest(orderId, 4000L * quantity, PaymentMethod.valueOf(paymentMethod), memberId));
         Util.setId(payment, paymentId);
-
 
         OrderResponse response = OrderResponse.from(order, PaymentResponse.from(payment));
 
@@ -73,7 +74,8 @@ class OrderControllerTest extends RestDocsControllerSupport {
                         requestFields(
                                 fieldWithPath("memberId").description("회원 Id"),
                                 fieldWithPath("orderProductRequest.productId").description("상품 Id"),
-                                fieldWithPath("orderProductRequest.quantity").description("주문 상품 수량")
+                                fieldWithPath("orderProductRequest.quantity").description("주문 상품 수량"),
+                                fieldWithPath("paymentMethod").description("결제 방식")
                         ),
                         responseFields(
                                 fieldWithPath("orderId").description("주문 Id"),

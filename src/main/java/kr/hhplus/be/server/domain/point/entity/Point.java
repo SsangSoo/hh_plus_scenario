@@ -1,10 +1,10 @@
 package kr.hhplus.be.server.domain.point.entity;
 
 import jakarta.persistence.*;
-import kr.hhplus.be.server.domain.base.BaseEntity;
+import kr.hhplus.be.server.common.base.BaseTimeEntity;
 import kr.hhplus.be.server.domain.point.service.request.ChargePoint;
-import kr.hhplus.be.server.global.exeption.business.BusinessLogicMessage;
-import kr.hhplus.be.server.global.exeption.business.BusinessLogicRuntimeException;
+import kr.hhplus.be.server.common.exeption.business.BusinessLogicMessage;
+import kr.hhplus.be.server.common.exeption.business.BusinessLogicRuntimeException;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -15,7 +15,7 @@ import java.time.LocalDateTime;
 @Entity
 @Table(name = "POINT")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Point extends BaseEntity {
+public class Point extends BaseTimeEntity {
 
     @Column(name = "id")
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)

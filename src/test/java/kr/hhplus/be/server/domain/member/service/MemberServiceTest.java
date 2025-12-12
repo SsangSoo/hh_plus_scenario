@@ -7,7 +7,7 @@ import kr.hhplus.be.server.domain.member.service.request.RegisterMemberServiceRe
 import kr.hhplus.be.server.domain.member.service.response.MemberResponse;
 import kr.hhplus.be.server.domain.point.entity.Point;
 import kr.hhplus.be.server.domain.point.repository.PointRepository;
-import kr.hhplus.be.server.global.exeption.business.BusinessLogicRuntimeException;
+import kr.hhplus.be.server.common.exeption.business.BusinessLogicRuntimeException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

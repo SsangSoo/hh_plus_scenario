@@ -3,22 +3,20 @@ package kr.hhplus.be.server.integration;
 import kr.hhplus.be.server.config.SpringBootTestSupport;
 import kr.hhplus.be.server.domain.member.controller.request.RegisterMemberRequest;
 import kr.hhplus.be.server.domain.member.service.response.MemberResponse;
-import kr.hhplus.be.server.domain.order.controller.request.OrderProductRequest;
-import kr.hhplus.be.server.domain.order.controller.request.OrderRequest;
+import kr.hhplus.be.server.domain.order.interfaces.web.request.OrderProductRequest;
+import kr.hhplus.be.server.domain.order.interfaces.web.request.OrderRequest;
 import kr.hhplus.be.server.domain.point.controller.request.ChargePointRequest;
 import kr.hhplus.be.server.domain.point.service.response.PointResponse;
 import kr.hhplus.be.server.domain.product.controller.request.RegisterProductRequest;
 import kr.hhplus.be.server.domain.product.service.response.ProductResponse;
 import kr.hhplus.be.server.domain.stock.controller.request.AddStockRequest;
 import kr.hhplus.be.server.domain.stock.service.response.StockResponse;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDate;
 
 import static org.assertj.core.api.Assertions.*;
-import static org.mockito.Mockito.when;
 
 class OrderIntegratedTest extends SpringBootTestSupport {
 
@@ -42,7 +40,7 @@ class OrderIntegratedTest extends SpringBootTestSupport {
         OrderRequest orderRequest = new OrderRequest(memberResponse.getId(), new OrderProductRequest(productResponse.getId(), 5L), "POINT");
 
         // when : 주문을 한다.
-        orderService.order(orderRequest.toServiceRequest());
+        placeOrderService.order(orderRequest.toServiceRequest());
             // 주문시 포인트 차감이 이뤄줘야 하고,
             // 재고가 차감되어야 하며,
             // 결제가 이루어져야 한다.

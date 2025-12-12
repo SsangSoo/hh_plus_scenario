@@ -1,12 +1,11 @@
 package kr.hhplus.be.server.domain.stock.service;
 
-import kr.hhplus.be.server.domain.product.entity.Product;
 import kr.hhplus.be.server.domain.stock.entity.Stock;
 import kr.hhplus.be.server.domain.stock.repository.StockRepository;
 import kr.hhplus.be.server.domain.stock.service.request.AddStock;
 import kr.hhplus.be.server.domain.stock.service.response.StockResponse;
-import kr.hhplus.be.server.global.exeption.business.BusinessLogicMessage;
-import kr.hhplus.be.server.global.exeption.business.BusinessLogicRuntimeException;
+import kr.hhplus.be.server.common.exeption.business.BusinessLogicMessage;
+import kr.hhplus.be.server.common.exeption.business.BusinessLogicRuntimeException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

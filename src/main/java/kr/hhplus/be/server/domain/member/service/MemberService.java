@@ -6,8 +6,8 @@ import kr.hhplus.be.server.domain.member.service.request.RegisterMemberServiceRe
 import kr.hhplus.be.server.domain.member.service.response.MemberResponse;
 import kr.hhplus.be.server.domain.point.entity.Point;
 import kr.hhplus.be.server.domain.point.repository.PointRepository;
-import kr.hhplus.be.server.global.exeption.business.BusinessLogicMessage;
-import kr.hhplus.be.server.global.exeption.business.BusinessLogicRuntimeException;
+import kr.hhplus.be.server.common.exeption.business.BusinessLogicMessage;
+import kr.hhplus.be.server.common.exeption.business.BusinessLogicRuntimeException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

@@ -1,7 +1,7 @@
 package kr.hhplus.be.server.domain.stock.entity;
 
-import kr.hhplus.be.server.global.exeption.business.BusinessLogicMessage;
-import kr.hhplus.be.server.global.exeption.business.BusinessLogicRuntimeException;
+import kr.hhplus.be.server.common.exeption.business.BusinessLogicMessage;
+import kr.hhplus.be.server.common.exeption.business.BusinessLogicRuntimeException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 

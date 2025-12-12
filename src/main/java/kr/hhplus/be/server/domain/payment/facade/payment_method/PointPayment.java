@@ -1,7 +1,6 @@
 package kr.hhplus.be.server.domain.payment.facade.payment_method;
 
-import kr.hhplus.be.server.domain.coupon.entity.Coupon;
-import kr.hhplus.be.server.domain.order.controller.request.PaymentMethod;
+import kr.hhplus.be.server.domain.order.interfaces.web.request.PaymentMethod;
 import kr.hhplus.be.server.domain.payment.facade.service.request.PaymentServiceRequest;
 import kr.hhplus.be.server.domain.point.entity.Point;
 import kr.hhplus.be.server.domain.point.repository.PointRepository;
@@ -9,8 +8,8 @@ import kr.hhplus.be.server.domain.pointhistory.entity.PointHistory;
 import kr.hhplus.be.server.domain.pointhistory.entity.State;
 import kr.hhplus.be.server.domain.pointhistory.repository.PointHistoryRepository;
 import kr.hhplus.be.server.domain.pointhistory.service.request.RegisterPointHistoryRequest;
-import kr.hhplus.be.server.global.exeption.business.BusinessLogicMessage;
-import kr.hhplus.be.server.global.exeption.business.BusinessLogicRuntimeException;
+import kr.hhplus.be.server.common.exeption.business.BusinessLogicMessage;
+import kr.hhplus.be.server.common.exeption.business.BusinessLogicRuntimeException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;

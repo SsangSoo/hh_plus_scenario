@@ -1,9 +1,9 @@
 package kr.hhplus.be.server.domain.stock.entity;
 
 import jakarta.persistence.*;
-import kr.hhplus.be.server.domain.base.BaseEntity;
-import kr.hhplus.be.server.global.exeption.business.BusinessLogicMessage;
-import kr.hhplus.be.server.global.exeption.business.BusinessLogicRuntimeException;
+import kr.hhplus.be.server.common.base.BaseTimeEntity;
+import kr.hhplus.be.server.common.exeption.business.BusinessLogicMessage;
+import kr.hhplus.be.server.common.exeption.business.BusinessLogicRuntimeException;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -14,7 +14,7 @@ import java.time.LocalDateTime;
 @Entity
 @Table(name = "STOCK")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Stock extends BaseEntity {
+public class Stock extends BaseTimeEntity {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")

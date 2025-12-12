@@ -1,7 +1,8 @@
 package kr.hhplus.be.server.domain.member.entity;
 
 import jakarta.persistence.*;
-import kr.hhplus.be.server.domain.base.BaseEntity;
+import kr.hhplus.be.server.common.base.BaseEntity;
+import kr.hhplus.be.server.common.base.BaseTimeEntity;
 import kr.hhplus.be.server.domain.member.service.request.RegisterMemberServiceRequest;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -28,8 +29,6 @@ public class Member extends BaseEntity {
     @Column(name = "address")
     private String address;
 
-    @Column(name = "deleted")
-    private Boolean deleted;
 
 
     public static Member register(RegisterMemberServiceRequest request) {
@@ -50,8 +49,5 @@ public class Member extends BaseEntity {
         return member;
     }
 
-    public void delete() {
-        this.deleted = true;
-    }
 
 }

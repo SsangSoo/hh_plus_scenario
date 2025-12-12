@@ -1,6 +1,6 @@
 package kr.hhplus.be.server.domain.product.service;
 
-import kr.hhplus.be.server.global.exeption.business.BusinessLogicRuntimeException;
+import kr.hhplus.be.server.common.exeption.business.BusinessLogicRuntimeException;
 import kr.hhplus.be.server.domain.product.controller.request.RegisterProductRequest;
 import kr.hhplus.be.server.domain.product.entity.Product;
 import kr.hhplus.be.server.domain.product.repository.ProductRepository;

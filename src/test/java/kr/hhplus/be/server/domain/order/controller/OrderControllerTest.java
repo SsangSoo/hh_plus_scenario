@@ -2,12 +2,13 @@ package kr.hhplus.be.server.domain.order.controller;
 
 import kr.hhplus.be.server.config.RestDocsControllerSupport;
 import kr.hhplus.be.server.config.Util;
-import kr.hhplus.be.server.domain.order.controller.request.OrderProductRequest;
-import kr.hhplus.be.server.domain.order.controller.request.OrderRequest;
-import kr.hhplus.be.server.domain.order.controller.request.PaymentMethod;
-import kr.hhplus.be.server.domain.order.entity.Order;
-import kr.hhplus.be.server.domain.order.service.OrderService;
-import kr.hhplus.be.server.domain.order.service.response.OrderResponse;
+import kr.hhplus.be.server.domain.order.application.PlaceOrderService;
+import kr.hhplus.be.server.domain.order.domain.model.Order;
+import kr.hhplus.be.server.domain.order.interfaces.web.OrderController;
+import kr.hhplus.be.server.domain.order.interfaces.web.request.OrderProductRequest;
+import kr.hhplus.be.server.domain.order.interfaces.web.request.OrderRequest;
+import kr.hhplus.be.server.domain.order.interfaces.web.request.PaymentMethod;
+import kr.hhplus.be.server.domain.order.application.response.OrderResponse;
 import kr.hhplus.be.server.domain.payment.entity.Payment;
 import kr.hhplus.be.server.domain.payment.facade.service.request.PaymentServiceRequest;
 import kr.hhplus.be.server.domain.payment.facade.service.response.PaymentResponse;
@@ -25,7 +26,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 class OrderControllerTest extends RestDocsControllerSupport {
 
-    private final OrderService orderService = mock(OrderService.class);
+    private final PlaceOrderService orderService = mock(PlaceOrderService.class);
 
     @Override
     protected Object initContoller() {
@@ -44,7 +45,7 @@ class OrderControllerTest extends RestDocsControllerSupport {
         OrderRequest request = new OrderRequest(memberId, new OrderProductRequest(productId, quantity), paymentMethod);
 
         Long orderId = 1L;
-        Order order = Order.rigester(memberId);
+        Order order = Order.create(memberId);
         Util.setId(order, orderId);
 
         Long paymentId = 1L;

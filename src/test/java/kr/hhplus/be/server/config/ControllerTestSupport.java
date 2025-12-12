@@ -3,8 +3,8 @@ package kr.hhplus.be.server.config;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import kr.hhplus.be.server.domain.member.controller.MemberController;
 import kr.hhplus.be.server.domain.member.service.MemberService;
-import kr.hhplus.be.server.domain.order.controller.OrderController;
-import kr.hhplus.be.server.domain.order.service.OrderService;
+import kr.hhplus.be.server.domain.order.application.PlaceOrderService;
+import kr.hhplus.be.server.domain.order.interfaces.web.OrderController;
 import kr.hhplus.be.server.domain.point.controller.PointController;
 import kr.hhplus.be.server.domain.point.service.PointService;
 import kr.hhplus.be.server.domain.product.controller.ProductController;
@@ -38,5 +38,5 @@ public abstract class ControllerTestSupport {
     protected PointService pointService;
 
     @MockitoBean
-    protected OrderService orderService;
+    protected PlaceOrderService placeOrderService;
 }

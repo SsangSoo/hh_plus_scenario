@@ -1,0 +1,81 @@
+package kr.hhplus.be.server.domain.order.application;
+
+import kr.hhplus.be.server.domain.member.entity.Member;
+import kr.hhplus.be.server.domain.member.repository.MemberRepository;
+import kr.hhplus.be.server.domain.order.domain.model.Order;
+import kr.hhplus.be.server.domain.order.domain.repository.OrderRepository;
+import kr.hhplus.be.server.domain.orderproduct.service.OrderProductService;
+import kr.hhplus.be.server.domain.order.application.request.OrderServiceRequest;
+import kr.hhplus.be.server.domain.order.application.response.OrderResponse;
+import kr.hhplus.be.server.domain.payment.facade.service.PaymentService;
+import kr.hhplus.be.server.domain.payment.facade.service.request.PaymentServiceRequest;
+import kr.hhplus.be.server.domain.payment.facade.service.response.PaymentResponse;
+import kr.hhplus.be.server.domain.product.entity.Product;
+import kr.hhplus.be.server.domain.product.repository.ProductRepository;
+import kr.hhplus.be.server.domain.stock.service.StockService;
+import kr.hhplus.be.server.common.exeption.business.BusinessLogicMessage;
+import kr.hhplus.be.server.common.exeption.business.BusinessLogicRuntimeException;
+import org.springframework.transaction.annotation.Transactional;
+
+public class PlaceOrderService {
+
+    private final MemberRepository memberRepository;
+    private final ProductRepository productRepository;
+
+    private final OrderRepository orderRepository;
+
+    private final StockService stockService;
+    private final OrderProductService orderProductService;
+    private final PaymentService paymentService;
+
+
+    public PlaceOrderService(MemberRepository memberRepository, ProductRepository productRepository, OrderRepository orderRepository, StockService stockService, OrderProductService orderProductService, PaymentService paymentService) {
+        this.memberRepository = memberRepository;
+        this.productRepository = productRepository;
+        this.orderRepository = orderRepository;
+        this.stockService = stockService;
+        this.orderProductService = orderProductService;
+        this.paymentService = paymentService;
+    }
+
+
+    @Transactional
+    public OrderResponse order(OrderServiceRequest request) {
+        // 회원 찾기
+        Member member = findMember(request.memberId());
+
+        // 상품 찾기
+        Product product = findProduct(request.orderProductRequest().productId());
+
+        // 상품 Id로 재고 찾고 차감 // x-lock으로 조회
+        stockService.deductedStock(product.getId(), request.orderProductRequest().quantity());
+
+        // 주문 생성 -> 클린 아키텍처로 구조 변경
+        Order order = orderRepository.save(Order.create(member.getId()));
+
+        // 주문 상품 생성
+        orderProductService.register(request.orderProductRequest(), order.getId());
+
+        Long totalAmount = calculatePoint(product.getPrice(), request.orderProductRequest().quantity());
+
+        PaymentResponse paymentResponse = paymentService.pay(new PaymentServiceRequest(Order.create(member.getId()).getId(), totalAmount, request.paymentMethod(), member.getId()));
+
+        return OrderResponse.from(order, paymentResponse);
+    }
+
+
+    private Member findMember(Long memberId) {
+        return memberRepository.findMemberByIdAndDeletedFalse(memberId)
+                .orElseThrow(() -> new BusinessLogicRuntimeException(BusinessLogicMessage.NOT_FOUND_MEMBER));
+    }
+
+    private Product findProduct(Long productId) {
+        return productRepository.findByIdAndDeletedFalse(productId)
+                .orElseThrow(() -> new BusinessLogicRuntimeException(BusinessLogicMessage.NOT_FOUND_PRODUCT));
+    }
+
+    private Long calculatePoint(Long productPrice, Long quantity) {
+        return productPrice * quantity;
+    }
+
+}

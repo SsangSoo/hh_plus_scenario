@@ -1,31 +1,48 @@
 package kr.hhplus.be.server.domain.order.controller.request;
 
-import kr.hhplus.be.server.config.ControllerTestSupport;
-import kr.hhplus.be.server.global.exeption.business.BusinessLogicRuntimeException;
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.Validation;
+import jakarta.validation.Validator;
+import jakarta.validation.ValidatorFactory;
+import kr.hhplus.be.server.domain.order.interfaces.web.request.OrderRequest;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ArgumentsSource;
+
+import java.util.Set;
 
 import static org.assertj.core.api.Assertions.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 
-class OrderRequestTest extends ControllerTestSupport {
+class OrderRequestTest {
 
-    @Test
-    @DisplayName("결제 방식은 정해진 방식을 따라야 한다.")
-    void orderRequestPaymentMethodTest() {
-        // given
-        Long memberId = 1L;
-        Long productId = 1L;
-        Long quantity = 1L;
+    private Validator validator;
 
-        String paymentMethod = "POINTA";
-
-        OrderProductRequest orderProductRequest = new OrderProductRequest(productId, quantity);
-        OrderRequest request = new OrderRequest(memberId, orderProductRequest, paymentMethod);
-
-        // when // then
-        assertThatThrownBy(() -> request.toServiceRequest())
-                .isInstanceOf(BusinessLogicRuntimeException.class)
-                .hasMessage("지원하지 않는 결제 방식입니다.");
+    @BeforeEach
+    void setUp() {
+        ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
+        validator = factory.getValidator();
     }
 
+    @ParameterizedTest(name = "{0}")
+    @ArgumentsSource(InvalidOrderRequestProvider.class)
+    @DisplayName("OrderRequest 검증 실패 케이스")
+    void orderRequestValidationFailure(
+            String testCase,
+            OrderRequest request,
+            String expectedField,
+            String expectedMessage
+    ) {
+        // when
+        Set<ConstraintViolation<OrderRequest>> violations =
+                validator.validate(request);
+
+        // then
+        assertThat(violations).hasSize(1);
+
+        ConstraintViolation<OrderRequest> violation = violations.iterator().next();
+        assertThat(violation.getPropertyPath().toString()).isEqualTo(expectedField);
+        assertThat(violation.getMessage()).isEqualTo(expectedMessage);
+    }
 }

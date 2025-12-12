@@ -1,8 +1,8 @@
 package kr.hhplus.be.server.domain.payment.entity;
 
 import jakarta.persistence.*;
-import kr.hhplus.be.server.domain.base.BaseEntity;
-import kr.hhplus.be.server.domain.order.controller.request.PaymentMethod;
+import kr.hhplus.be.server.common.base.BaseTimeEntity;
+import kr.hhplus.be.server.domain.order.interfaces.web.request.PaymentMethod;
 import kr.hhplus.be.server.domain.payment.facade.service.request.PaymentServiceRequest;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -14,7 +14,7 @@ import java.time.LocalDateTime;
 @Entity
 @Table(name = "PAYMENT")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Payment extends BaseEntity {
+public class Payment extends BaseTimeEntity {
 
     @Column(name = "id")
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)

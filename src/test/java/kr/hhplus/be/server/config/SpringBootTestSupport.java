@@ -2,9 +2,12 @@ package kr.hhplus.be.server.config;
 
 import kr.hhplus.be.server.domain.member.repository.MemberRepository;
 import kr.hhplus.be.server.domain.member.service.MemberService;
-import kr.hhplus.be.server.domain.order.repository.OrderRepository;
-import kr.hhplus.be.server.domain.order.service.OrderService;
+import kr.hhplus.be.server.domain.order.application.PlaceOrderService;
+import kr.hhplus.be.server.domain.order.domain.repository.OrderRepository;
 import kr.hhplus.be.server.domain.orderproduct.repository.OrderProductRepository;
+import kr.hhplus.be.server.domain.payment.facade.payment_method.BankTransferPayment;
+import kr.hhplus.be.server.domain.payment.facade.payment_method.CardPayment;
+import kr.hhplus.be.server.domain.payment.facade.payment_method.PointPayment;
 import kr.hhplus.be.server.domain.payment.repository.PaymentRepository;
 import kr.hhplus.be.server.domain.payment.facade.service.PaymentDataTransportClient;
 import kr.hhplus.be.server.domain.payment.facade.service.PaymentService;
@@ -38,7 +41,7 @@ public abstract class SpringBootTestSupport {
     protected PointHistoryRepository pointHistoryRepository;
 
     @Autowired
-    protected OrderService orderService;
+    protected PlaceOrderService placeOrderService;
 
     @Autowired
     protected OrderRepository orderRepository;
@@ -67,4 +70,12 @@ public abstract class SpringBootTestSupport {
     @Autowired
     protected StockRepository stockRepository;
 
+    @Autowired
+    protected BankTransferPayment bankTransferPayment;
+
+    @Autowired
+    protected CardPayment cardPayment;
+
+    @Autowired
+    protected PointPayment pointPayment;
 }

@@ -1,13 +1,13 @@
 package kr.hhplus.be.server.domain.payment.facade.service;
 
-import kr.hhplus.be.server.domain.order.controller.request.PaymentMethod;
+import kr.hhplus.be.server.domain.order.interfaces.web.request.PaymentMethod;
 import kr.hhplus.be.server.domain.payment.entity.Payment;
 import kr.hhplus.be.server.domain.payment.facade.payment_method.PaymentStrategy;
 import kr.hhplus.be.server.domain.payment.repository.PaymentRepository;
 import kr.hhplus.be.server.domain.payment.facade.service.request.PaymentServiceRequest;
 import kr.hhplus.be.server.domain.payment.facade.service.response.PaymentResponse;
-import kr.hhplus.be.server.global.exeption.business.BusinessLogicMessage;
-import kr.hhplus.be.server.global.exeption.business.BusinessLogicRuntimeException;
+import kr.hhplus.be.server.common.exeption.business.BusinessLogicMessage;
+import kr.hhplus.be.server.common.exeption.business.BusinessLogicRuntimeException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 

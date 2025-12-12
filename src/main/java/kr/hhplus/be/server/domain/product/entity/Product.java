@@ -1,7 +1,7 @@
 package kr.hhplus.be.server.domain.product.entity;
 
 import jakarta.persistence.*;
-import kr.hhplus.be.server.domain.base.BaseEntity;
+import kr.hhplus.be.server.common.base.BaseTimeEntity;
 import kr.hhplus.be.server.domain.product.service.request.RegisterProductServiceRequest;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -13,7 +13,7 @@ import java.time.LocalDateTime;
 @Entity
 @Table(name = "PRODUCT")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Product extends BaseEntity {
+public class Product extends BaseTimeEntity {
 
     @Id @Column(name = "id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)

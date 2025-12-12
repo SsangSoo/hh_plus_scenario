@@ -1,42 +1,50 @@
 package kr.hhplus.be.server.domain.member.controller.request;
 
-import kr.hhplus.be.server.config.ControllerTestSupport;
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.Validation;
+import jakarta.validation.Validator;
+import jakarta.validation.ValidatorFactory;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
-import org.springframework.http.MediaType;
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ArgumentsSource;
 
-import java.time.LocalDate;
+import java.util.Set;
 
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.assertj.core.api.Assertions.assertThat;
 
 
-class RegisterMemberRequestTest extends ControllerTestSupport {
+class RegisterMemberRequestTest {
 
+    private Validator validator;
 
-    @Test
-    @DisplayName("회원 생성시 이름은 필수다.")
-    void registerMemberRequestValidNameTest() throws Exception {
-        // given
-        String name = "";
-
-        RegisterMemberRequest request = new RegisterMemberRequest(name, LocalDate.now(), "주소");
-
-        // when // then
-        mockMvc.perform(
-                        MockMvcRequestBuilders.post("/api/member")
-                                .contentType(MediaType.APPLICATION_JSON)
-                                .accept(MediaType.APPLICATION_JSON)
-                                .content(objectMapper.writeValueAsBytes(request))
-                )
-                .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.code").value(400))
-                .andExpect(jsonPath("$.message").value("요청 값이 유효하지 않습니다."))
-                .andExpect(jsonPath("$.errors[0].field").value("name"))
-                .andExpect(jsonPath("$.errors[0].value").value(""))
-                .andExpect(jsonPath("$.errors[0].reason").value("이름은 필수입니다."));
+    @BeforeEach
+    void setUp() {
+        ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
+        validator = factory.getValidator();
     }
+
+    @ParameterizedTest(name = "{0}")
+    @ArgumentsSource(InvalidRegisterMemberRequestProvider.class)
+    @DisplayName("RegisterMemberRequest 검증 실패 케이스")
+    void RegisterMemberValidationFailure(
+            String testCase,
+            RegisterMemberRequest request,
+            String expectedField,
+            String expectedMessage
+    ) {
+        // when
+        Set<ConstraintViolation<RegisterMemberRequest>> violations =
+                validator.validate(request);
+
+        // then
+        assertThat(violations).hasSize(1);
+
+        ConstraintViolation<RegisterMemberRequest> violation = violations.iterator().next();
+        assertThat(violation.getPropertyPath().toString()).isEqualTo(expectedField);
+        assertThat(violation.getMessage()).isEqualTo(expectedMessage);
+    }
+
 
 
 }

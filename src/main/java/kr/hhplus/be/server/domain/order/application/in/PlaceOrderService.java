@@ -1,12 +1,12 @@
-package kr.hhplus.be.server.domain.order.application;
+package kr.hhplus.be.server.domain.order.application.in;
 
 import kr.hhplus.be.server.domain.member.entity.Member;
 import kr.hhplus.be.server.domain.member.repository.MemberRepository;
 import kr.hhplus.be.server.domain.order.domain.model.Order;
 import kr.hhplus.be.server.domain.order.domain.repository.OrderRepository;
 import kr.hhplus.be.server.domain.orderproduct.service.OrderProductService;
-import kr.hhplus.be.server.domain.order.application.request.OrderServiceRequest;
-import kr.hhplus.be.server.domain.order.application.response.OrderResponse;
+import kr.hhplus.be.server.domain.order.application.in.request.OrderServiceRequest;
+import kr.hhplus.be.server.domain.order.application.out.response.OrderResponse;
 import kr.hhplus.be.server.domain.payment.facade.service.PaymentService;
 import kr.hhplus.be.server.domain.payment.facade.service.request.PaymentServiceRequest;
 import kr.hhplus.be.server.domain.payment.facade.service.response.PaymentResponse;
@@ -15,8 +15,12 @@ import kr.hhplus.be.server.domain.product.repository.ProductRepository;
 import kr.hhplus.be.server.domain.stock.service.StockService;
 import kr.hhplus.be.server.common.exeption.business.BusinessLogicMessage;
 import kr.hhplus.be.server.common.exeption.business.BusinessLogicRuntimeException;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+@Service
+@RequiredArgsConstructor
 public class PlaceOrderService {
 
     private final MemberRepository memberRepository;
@@ -28,15 +32,6 @@ public class PlaceOrderService {
     private final OrderProductService orderProductService;
     private final PaymentService paymentService;
 
-
-    public PlaceOrderService(MemberRepository memberRepository, ProductRepository productRepository, OrderRepository orderRepository, StockService stockService, OrderProductService orderProductService, PaymentService paymentService) {
-        this.memberRepository = memberRepository;
-        this.productRepository = productRepository;
-        this.orderRepository = orderRepository;
-        this.stockService = stockService;
-        this.orderProductService = orderProductService;
-        this.paymentService = paymentService;
-    }
 
 
     @Transactional

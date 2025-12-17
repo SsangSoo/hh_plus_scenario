@@ -6,8 +6,10 @@ import kr.hhplus.be.server.domain.order.domain.model.Order;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.springframework.web.bind.annotation.GetMapping;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Entity
 @Getter
@@ -15,8 +17,9 @@ import java.time.LocalDateTime;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class OrderEntity extends BaseTimeEntity {
 
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id
     @Column(name = "id")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(name = "member_id", nullable = false)
@@ -33,7 +36,5 @@ public class OrderEntity extends BaseTimeEntity {
         orderEntity.createdDate =  LocalDateTime.now();
         orderEntity.modifiedDate = orderEntity.createdDate;
         return orderEntity;
-
-
     }
 }

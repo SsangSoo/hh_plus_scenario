@@ -4,7 +4,7 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
-import kr.hhplus.be.server.domain.order.application.request.OrderServiceRequest;
+import kr.hhplus.be.server.domain.order.application.in.request.OrderServiceRequest;
 import kr.hhplus.be.server.common.validation.ValidEnum;
 
 public record OrderRequest(

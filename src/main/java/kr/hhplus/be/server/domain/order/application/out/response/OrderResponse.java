@@ -1,4 +1,4 @@
-package kr.hhplus.be.server.domain.order.application.response;
+package kr.hhplus.be.server.domain.order.application.out.response;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import kr.hhplus.be.server.domain.order.domain.model.Order;

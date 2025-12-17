@@ -2,7 +2,7 @@ package kr.hhplus.be.server.config;
 
 import kr.hhplus.be.server.domain.member.repository.MemberRepository;
 import kr.hhplus.be.server.domain.member.service.MemberService;
-import kr.hhplus.be.server.domain.order.application.PlaceOrderService;
+import kr.hhplus.be.server.domain.order.application.in.PlaceOrderService;
 import kr.hhplus.be.server.domain.order.domain.repository.OrderRepository;
 import kr.hhplus.be.server.domain.orderproduct.repository.OrderProductRepository;
 import kr.hhplus.be.server.domain.payment.facade.payment_method.BankTransferPayment;

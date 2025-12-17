@@ -3,7 +3,7 @@ package kr.hhplus.be.server.config;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import kr.hhplus.be.server.domain.member.controller.MemberController;
 import kr.hhplus.be.server.domain.member.service.MemberService;
-import kr.hhplus.be.server.domain.order.application.PlaceOrderService;
+import kr.hhplus.be.server.domain.order.application.in.PlaceOrderService;
 import kr.hhplus.be.server.domain.order.interfaces.web.OrderController;
 import kr.hhplus.be.server.domain.point.controller.PointController;
 import kr.hhplus.be.server.domain.point.service.PointService;

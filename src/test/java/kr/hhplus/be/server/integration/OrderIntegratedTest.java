@@ -1,16 +1,16 @@
 package kr.hhplus.be.server.integration;
 
 import kr.hhplus.be.server.config.SpringBootTestSupport;
-import kr.hhplus.be.server.domain.member.controller.request.RegisterMemberRequest;
-import kr.hhplus.be.server.domain.member.service.response.MemberResponse;
-import kr.hhplus.be.server.domain.order.interfaces.web.request.OrderProductRequest;
-import kr.hhplus.be.server.domain.order.interfaces.web.request.OrderRequest;
-import kr.hhplus.be.server.domain.point.controller.request.ChargePointRequest;
-import kr.hhplus.be.server.domain.point.service.response.PointResponse;
-import kr.hhplus.be.server.domain.product.controller.request.RegisterProductRequest;
-import kr.hhplus.be.server.domain.product.service.response.ProductResponse;
-import kr.hhplus.be.server.domain.stock.controller.request.AddStockRequest;
-import kr.hhplus.be.server.domain.stock.service.response.StockResponse;
+import kr.hhplus.be.server.member.presentation.dto.request.RegisterMemberRequest;
+import kr.hhplus.be.server.member.application.dto.MemberResult;
+import kr.hhplus.be.server.order.presentation.dto.request.OrderProductRequest;
+import kr.hhplus.be.server.order.presentation.dto.request.OrderRequest;
+import kr.hhplus.be.server.point.controller.request.ChargePointRequest;
+import kr.hhplus.be.server.point.service.response.PointResponse;
+import kr.hhplus.be.server.product.controller.request.RegisterProductRequest;
+import kr.hhplus.be.server.product.service.response.ProductResponse;
+import kr.hhplus.be.server.stock.controller.request.AddStockRequest;
+import kr.hhplus.be.server.stock.service.response.StockResponse;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -26,7 +26,7 @@ class OrderIntegratedTest extends SpringBootTestSupport {
         // given : 주문 결제를 위한 환경 셋팅
 
         // 회원을 생성한다.
-        MemberResponse memberResponse = memberService.register(new RegisterMemberRequest("상남자", LocalDate.now(), "주소").toServiceRequest());
+        MemberResult memberResponse = memberService.register(new RegisterMemberRequest("상남자", LocalDate.now(), "주소").toServiceRequest());
 
         // 회원의 포인트를 충전한다.
         PointResponse pointResponse = pointService.charge(new ChargePointRequest(memberResponse.getId(), 30000L).toChargePoint());

@@ -1,14 +1,14 @@
 package kr.hhplus.be.server.integration;
 
 import kr.hhplus.be.server.config.SpringBootTestSupport;
-import kr.hhplus.be.server.domain.member.entity.Member;
-import kr.hhplus.be.server.domain.member.service.request.RegisterMemberServiceRequest;
-import kr.hhplus.be.server.domain.member.service.response.MemberResponse;
-import kr.hhplus.be.server.domain.point.entity.Point;
-import kr.hhplus.be.server.domain.point.service.request.ChargePoint;
-import kr.hhplus.be.server.domain.point.service.response.PointResponse;
-import kr.hhplus.be.server.domain.pointhistory.entity.PointHistory;
-import kr.hhplus.be.server.domain.pointhistory.entity.State;
+import kr.hhplus.be.server.member.infrastructure.persistence.MemberJpaEntity;
+import kr.hhplus.be.server.member.application.dto.RegisterMemberCommand;
+import kr.hhplus.be.server.member.application.dto.MemberResult;
+import kr.hhplus.be.server.point.entity.Point;
+import kr.hhplus.be.server.point.service.request.ChargePoint;
+import kr.hhplus.be.server.point.service.response.PointResponse;
+import kr.hhplus.be.server.pointhistory.entity.PointHistory;
+import kr.hhplus.be.server.pointhistory.entity.State;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -37,10 +37,10 @@ class PointServiceIntegratedTest extends SpringBootTestSupport {
         String birthDate = LocalDate.of(1990, 1, 1).toString();
         String address = "주소";
 
-        RegisterMemberServiceRequest request = new RegisterMemberServiceRequest(name, birthDate, address);
+        RegisterMemberCommand request = new RegisterMemberCommand(name, birthDate, address);
 
         // when : 회원 생성 후 포인트 조회
-        MemberResponse response = memberService.register(request);
+        MemberResult response = memberService.register(request);
         PointResponse pointResponse = pointService.retrieve(response.getId());
 
         // then : 회원의 포인트는 0원
@@ -57,17 +57,17 @@ class PointServiceIntegratedTest extends SpringBootTestSupport {
         String birthDate = LocalDate.of(1990, 1, 1).toString();
         String address = "주소";
 
-        RegisterMemberServiceRequest request = new RegisterMemberServiceRequest(name, birthDate, address);
+        RegisterMemberCommand request = new RegisterMemberCommand(name, birthDate, address);
 
         // 회원 생성
-        MemberResponse memberResponse = memberService.register(request);
+        MemberResult memberResponse = memberService.register(request);
         PointResponse pointResponse = pointService.retrieve(memberResponse.getId());
 
         // 회원 삭제
         memberService.remove(memberResponse.getId());
 
         // then : 회원과 포인트 삭제 여부 검증
-        Member member = memberRepository.findById(memberResponse.getId()).orElseThrow();
+        MemberJpaEntity member = memberRepository.findById(memberResponse.getId()).orElseThrow();
         assertThat(member.getDeleted()).isTrue();
         Point point = pointRepository.findById(pointResponse.getId()).orElseThrow();
         assertThat(point.getDeleted()).isTrue();
@@ -81,10 +81,10 @@ class PointServiceIntegratedTest extends SpringBootTestSupport {
         String birthDate = LocalDate.of(1990, 1, 1).toString();
         String address = "주소";
 
-        RegisterMemberServiceRequest request = new RegisterMemberServiceRequest(name, birthDate, address);
+        RegisterMemberCommand request = new RegisterMemberCommand(name, birthDate, address);
 
         // 회원 생성
-        MemberResponse memberResponse = memberService.register(request);
+        MemberResult memberResponse = memberService.register(request);
 
 
         // when : 포인트 2번 충전

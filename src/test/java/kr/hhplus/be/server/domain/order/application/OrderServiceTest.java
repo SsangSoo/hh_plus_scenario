@@ -1,32 +1,32 @@
 package kr.hhplus.be.server.domain.order.application;
 
 import kr.hhplus.be.server.config.Util;
-import kr.hhplus.be.server.domain.member.entity.Member;
-import kr.hhplus.be.server.domain.member.repository.MemberRepository;
-import kr.hhplus.be.server.domain.member.service.request.RegisterMemberServiceRequest;
-import kr.hhplus.be.server.domain.order.application.in.PlaceOrderService;
-import kr.hhplus.be.server.domain.order.domain.model.Order;
-import kr.hhplus.be.server.domain.order.domain.repository.OrderRepository;
-import kr.hhplus.be.server.domain.order.interfaces.web.request.OrderProductRequest;
-import kr.hhplus.be.server.domain.order.interfaces.web.request.OrderRequest;
-import kr.hhplus.be.server.domain.order.interfaces.web.request.PaymentMethod;
-import kr.hhplus.be.server.domain.order.application.out.response.OrderResponse;
-import kr.hhplus.be.server.domain.orderproduct.entity.OrderProduct;
-import kr.hhplus.be.server.domain.orderproduct.service.OrderProductService;
-import kr.hhplus.be.server.domain.orderproduct.service.response.OrderProductResponse;
-import kr.hhplus.be.server.domain.payment.entity.Payment;
-import kr.hhplus.be.server.domain.payment.entity.PaymentState;
-import kr.hhplus.be.server.domain.payment.facade.service.PaymentService;
-import kr.hhplus.be.server.domain.payment.facade.service.request.PaymentServiceRequest;
-import kr.hhplus.be.server.domain.payment.facade.service.response.PaymentResponse;
-import kr.hhplus.be.server.domain.point.entity.Point;
-import kr.hhplus.be.server.domain.point.service.request.ChargePoint;
-import kr.hhplus.be.server.domain.product.entity.Product;
-import kr.hhplus.be.server.domain.product.repository.ProductRepository;
-import kr.hhplus.be.server.domain.product.service.request.RegisterProductServiceRequest;
-import kr.hhplus.be.server.domain.stock.entity.Stock;
-import kr.hhplus.be.server.domain.stock.service.StockService;
-import kr.hhplus.be.server.domain.stock.service.response.StockResponse;
+import kr.hhplus.be.server.member.infrastructure.persistence.MemberJpaEntity;
+import kr.hhplus.be.server.member.repository.MemberRepository;
+import kr.hhplus.be.server.member.application.dto.RegisterMemberCommand;
+import kr.hhplus.be.server.order.application.service.PlaceOrderService;
+import kr.hhplus.be.server.order.domain.model.Order;
+import kr.hhplus.be.server.order.domain.repository.OrderRepository;
+import kr.hhplus.be.server.order.presentation.dto.request.OrderProductRequest;
+import kr.hhplus.be.server.order.presentation.dto.request.OrderRequest;
+import kr.hhplus.be.server.order.presentation.dto.request.PaymentMethod;
+import kr.hhplus.be.server.order.application.dto.OrderResult;
+import kr.hhplus.be.server.orderproduct.entity.OrderProduct;
+import kr.hhplus.be.server.orderproduct.service.OrderProductService;
+import kr.hhplus.be.server.orderproduct.service.response.OrderProductResponse;
+import kr.hhplus.be.server.payment.entity.Payment;
+import kr.hhplus.be.server.payment.entity.PaymentState;
+import kr.hhplus.be.server.payment.facade.service.PaymentService;
+import kr.hhplus.be.server.payment.facade.service.request.PaymentServiceRequest;
+import kr.hhplus.be.server.payment.facade.service.response.PaymentResponse;
+import kr.hhplus.be.server.point.entity.Point;
+import kr.hhplus.be.server.point.service.request.ChargePoint;
+import kr.hhplus.be.server.product.entity.Product;
+import kr.hhplus.be.server.product.repository.ProductRepository;
+import kr.hhplus.be.server.product.service.request.RegisterProductServiceRequest;
+import kr.hhplus.be.server.stock.entity.Stock;
+import kr.hhplus.be.server.stock.service.StockService;
+import kr.hhplus.be.server.stock.service.response.StockResponse;
 import kr.hhplus.be.server.common.exeption.business.BusinessLogicMessage;
 import kr.hhplus.be.server.common.exeption.business.BusinessLogicRuntimeException;
 import lombok.extern.slf4j.Slf4j;
@@ -118,8 +118,8 @@ class OrderServiceTest {
         OrderProductRequest orderProductRequest = new OrderProductRequest(1L, 2L);
         OrderRequest orderRequest = new OrderRequest(3L, orderProductRequest, "POINT");
 
-        RegisterMemberServiceRequest memberServiceRequest = new RegisterMemberServiceRequest("name", LocalDate.of(1990, 1, 1).format(DateTimeFormatter.ofPattern("yyyyMMdd")), "주소");
-        Member member = Member.register(memberServiceRequest);
+        RegisterMemberCommand memberServiceRequest = new RegisterMemberCommand("name", LocalDate.of(1990, 1, 1).format(DateTimeFormatter.ofPattern("yyyyMMdd")), "주소");
+        MemberJpaEntity member = MemberJpaEntity.register(memberServiceRequest);
         Util.setId(member, 3L);
 
         Point point = Point.register(member.getId());
@@ -245,8 +245,8 @@ class OrderServiceTest {
         OrderRequest orderRequest = new OrderRequest(3L, orderProductRequest, "POINT");
 
         // 회원
-        RegisterMemberServiceRequest memberServiceRequest = new RegisterMemberServiceRequest("name", LocalDate.of(1990, 1, 1).format(DateTimeFormatter.ofPattern("yyyyMMdd")), "주소");
-        Member member = Member.register(memberServiceRequest);
+        RegisterMemberCommand memberServiceRequest = new RegisterMemberCommand("name", LocalDate.of(1990, 1, 1).format(DateTimeFormatter.ofPattern("yyyyMMdd")), "주소");
+        MemberJpaEntity member = MemberJpaEntity.register(memberServiceRequest);
         Util.setId(member, 3L);
 
         // 상품
@@ -287,7 +287,7 @@ class OrderServiceTest {
 
 
         // when
-        OrderResponse orderResponse = orderService.order(orderRequest.toServiceRequest());
+        OrderResult orderResponse = orderService.order(orderRequest.toServiceRequest());
 
         // then
         assertThat(orderResponse.getOrderId()).isEqualTo(order.getId());

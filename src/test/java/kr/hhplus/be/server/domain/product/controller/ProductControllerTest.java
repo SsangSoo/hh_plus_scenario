@@ -1,11 +1,12 @@
 package kr.hhplus.be.server.domain.product.controller;
 
-import kr.hhplus.be.server.domain.product.service.ProductService;
+import kr.hhplus.be.server.product.controller.ProductController;
+import kr.hhplus.be.server.product.service.ProductService;
 import kr.hhplus.be.server.config.RestDocsControllerSupport;
 import kr.hhplus.be.server.config.Util;
-import kr.hhplus.be.server.domain.product.controller.request.RegisterProductRequest;
-import kr.hhplus.be.server.domain.product.entity.Product;
-import kr.hhplus.be.server.domain.product.service.response.ProductResponse;
+import kr.hhplus.be.server.product.controller.request.RegisterProductRequest;
+import kr.hhplus.be.server.product.entity.Product;
+import kr.hhplus.be.server.product.service.response.ProductResponse;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;

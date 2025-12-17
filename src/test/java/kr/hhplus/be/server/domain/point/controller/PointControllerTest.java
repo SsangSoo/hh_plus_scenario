@@ -2,11 +2,12 @@ package kr.hhplus.be.server.domain.point.controller;
 
 import kr.hhplus.be.server.config.RestDocsControllerSupport;
 import kr.hhplus.be.server.config.Util;
-import kr.hhplus.be.server.domain.point.controller.request.ChargePointRequest;
-import kr.hhplus.be.server.domain.point.entity.Point;
-import kr.hhplus.be.server.domain.point.service.PointService;
-import kr.hhplus.be.server.domain.point.service.request.ChargePoint;
-import kr.hhplus.be.server.domain.point.service.response.PointResponse;
+import kr.hhplus.be.server.point.controller.PointController;
+import kr.hhplus.be.server.point.controller.request.ChargePointRequest;
+import kr.hhplus.be.server.point.entity.Point;
+import kr.hhplus.be.server.point.service.PointService;
+import kr.hhplus.be.server.point.service.request.ChargePoint;
+import kr.hhplus.be.server.point.service.response.PointResponse;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;

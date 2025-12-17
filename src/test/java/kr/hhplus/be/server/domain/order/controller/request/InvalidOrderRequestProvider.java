@@ -1,7 +1,7 @@
 package kr.hhplus.be.server.domain.order.controller.request;
 
-import kr.hhplus.be.server.domain.order.interfaces.web.request.OrderProductRequest;
-import kr.hhplus.be.server.domain.order.interfaces.web.request.OrderRequest;
+import kr.hhplus.be.server.order.presentation.dto.request.OrderProductRequest;
+import kr.hhplus.be.server.order.presentation.dto.request.OrderRequest;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.ArgumentsProvider;

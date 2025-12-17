@@ -1,12 +1,13 @@
 package kr.hhplus.be.server.domain.point.service;
 
 import kr.hhplus.be.server.config.Util;
-import kr.hhplus.be.server.domain.point.entity.Point;
-import kr.hhplus.be.server.domain.point.repository.PointRepository;
-import kr.hhplus.be.server.domain.point.service.request.ChargePoint;
-import kr.hhplus.be.server.domain.point.service.response.PointResponse;
-import kr.hhplus.be.server.domain.pointhistory.entity.PointHistory;
-import kr.hhplus.be.server.domain.pointhistory.repository.PointHistoryRepository;
+import kr.hhplus.be.server.point.entity.Point;
+import kr.hhplus.be.server.point.repository.PointRepository;
+import kr.hhplus.be.server.point.service.PointService;
+import kr.hhplus.be.server.point.service.request.ChargePoint;
+import kr.hhplus.be.server.point.service.response.PointResponse;
+import kr.hhplus.be.server.pointhistory.entity.PointHistory;
+import kr.hhplus.be.server.pointhistory.repository.PointHistoryRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

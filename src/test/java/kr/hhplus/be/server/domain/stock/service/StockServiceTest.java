@@ -2,10 +2,10 @@ package kr.hhplus.be.server.domain.stock.service;
 
 import kr.hhplus.be.server.common.exeption.business.BusinessLogicRuntimeException;
 import kr.hhplus.be.server.config.SpringBootTestSupport;
-import kr.hhplus.be.server.domain.product.service.request.RegisterProductServiceRequest;
-import kr.hhplus.be.server.domain.product.service.response.ProductResponse;
-import kr.hhplus.be.server.domain.stock.entity.Stock;
-import kr.hhplus.be.server.domain.stock.service.request.AddStock;
+import kr.hhplus.be.server.product.service.request.RegisterProductServiceRequest;
+import kr.hhplus.be.server.product.service.response.ProductResponse;
+import kr.hhplus.be.server.stock.entity.Stock;
+import kr.hhplus.be.server.stock.service.request.AddStock;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

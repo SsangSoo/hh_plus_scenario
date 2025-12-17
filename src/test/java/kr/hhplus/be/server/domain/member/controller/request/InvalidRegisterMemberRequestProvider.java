@@ -1,5 +1,6 @@
 package kr.hhplus.be.server.domain.member.controller.request;
 
+import kr.hhplus.be.server.member.presentation.dto.request.RegisterMemberRequest;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.ArgumentsProvider;

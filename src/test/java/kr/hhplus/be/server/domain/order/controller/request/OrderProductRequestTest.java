@@ -4,7 +4,7 @@ import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validation;
 import jakarta.validation.Validator;
 import jakarta.validation.ValidatorFactory;
-import kr.hhplus.be.server.domain.order.interfaces.web.request.OrderProductRequest;
+import kr.hhplus.be.server.order.presentation.dto.request.OrderProductRequest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.params.ParameterizedTest;

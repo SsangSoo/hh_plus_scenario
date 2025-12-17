@@ -1,7 +1,7 @@
 package kr.hhplus.be.server.common.exeption;
 
 import kr.hhplus.be.server.config.ControllerTestSupport;
-import kr.hhplus.be.server.domain.point.controller.request.ChargePointRequest;
+import kr.hhplus.be.server.point.controller.request.ChargePointRequest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;

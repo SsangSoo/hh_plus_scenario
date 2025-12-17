@@ -1,9 +1,10 @@
 package kr.hhplus.be.server.domain.member.controller;
 
 import kr.hhplus.be.server.config.RestDocsControllerSupport;
-import kr.hhplus.be.server.domain.member.controller.request.RegisterMemberRequest;
-import kr.hhplus.be.server.domain.member.service.MemberService;
-import kr.hhplus.be.server.domain.member.service.response.MemberResponse;
+import kr.hhplus.be.server.member.presentation.MemberController;
+import kr.hhplus.be.server.member.presentation.dto.request.RegisterMemberRequest;
+import kr.hhplus.be.server.member.application.service.RegisterMemberService;
+import kr.hhplus.be.server.member.application.dto.MemberResult;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
@@ -20,7 +21,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 class MemberControllerTest extends RestDocsControllerSupport {
 
-    private final MemberService memberService = mock(MemberService.class);
+    private final RegisterMemberService memberService = mock(RegisterMemberService.class);
 
     @Override
     protected Object initContoller() {
@@ -42,7 +43,7 @@ class MemberControllerTest extends RestDocsControllerSupport {
         LocalDateTime registerTime = LocalDateTime.now().withNano(0);
 
         given(memberService.register(any()))
-                .willReturn(MemberResponse.of(1L, name, birthDay.format(formatter), address, registerTime, registerTime));
+                .willReturn(MemberResult.of(1L, name, birthDay.format(formatter), address, registerTime, registerTime));
 
         // when // then
         mockMvc.perform(

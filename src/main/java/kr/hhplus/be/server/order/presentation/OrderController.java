@@ -1,0 +1,29 @@
+package kr.hhplus.be.server.order.presentation;
+
+
+import jakarta.validation.Valid;
+import kr.hhplus.be.server.order.application.service.PlaceOrderService;
+import kr.hhplus.be.server.order.application.usecase.PlaceOrderUseCase;
+import kr.hhplus.be.server.order.presentation.dto.request.OrderRequest;
+import kr.hhplus.be.server.order.application.dto.OrderResult;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+@RestController
+@RequiredArgsConstructor
+@RequestMapping("/api/order")
+public class OrderController {
+
+    private final PlaceOrderUseCase placeOrderUseCase;
+
+    @PostMapping
+    public ResponseEntity<OrderResult> order(@RequestBody @Valid OrderRequest orderRequest) {
+        OrderResult response = placeOrderUseCase.order(orderRequest.toServiceRequest());
+        return ResponseEntity.ok(response);
+    }
+
+}

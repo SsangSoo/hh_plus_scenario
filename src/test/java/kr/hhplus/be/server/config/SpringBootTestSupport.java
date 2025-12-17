@@ -1,23 +1,23 @@
 package kr.hhplus.be.server.config;
 
-import kr.hhplus.be.server.domain.member.repository.MemberRepository;
-import kr.hhplus.be.server.domain.member.service.MemberService;
-import kr.hhplus.be.server.domain.order.application.in.PlaceOrderService;
-import kr.hhplus.be.server.domain.order.domain.repository.OrderRepository;
-import kr.hhplus.be.server.domain.orderproduct.repository.OrderProductRepository;
-import kr.hhplus.be.server.domain.payment.facade.payment_method.BankTransferPayment;
-import kr.hhplus.be.server.domain.payment.facade.payment_method.CardPayment;
-import kr.hhplus.be.server.domain.payment.facade.payment_method.PointPayment;
-import kr.hhplus.be.server.domain.payment.repository.PaymentRepository;
-import kr.hhplus.be.server.domain.payment.facade.service.PaymentDataTransportClient;
-import kr.hhplus.be.server.domain.payment.facade.service.PaymentService;
-import kr.hhplus.be.server.domain.point.repository.PointRepository;
-import kr.hhplus.be.server.domain.point.service.PointService;
-import kr.hhplus.be.server.domain.pointhistory.repository.PointHistoryRepository;
-import kr.hhplus.be.server.domain.product.repository.ProductRepository;
-import kr.hhplus.be.server.domain.product.service.ProductService;
-import kr.hhplus.be.server.domain.stock.repository.StockRepository;
-import kr.hhplus.be.server.domain.stock.service.StockService;
+import kr.hhplus.be.server.member.repository.MemberRepository;
+import kr.hhplus.be.server.member.application.service.RegisterMemberService;
+import kr.hhplus.be.server.order.application.service.PlaceOrderService;
+import kr.hhplus.be.server.order.domain.repository.OrderRepository;
+import kr.hhplus.be.server.orderproduct.repository.OrderProductRepository;
+import kr.hhplus.be.server.payment.facade.payment_method.BankTransferPayment;
+import kr.hhplus.be.server.payment.facade.payment_method.CardPayment;
+import kr.hhplus.be.server.payment.facade.payment_method.PointPayment;
+import kr.hhplus.be.server.payment.repository.PaymentRepository;
+import kr.hhplus.be.server.payment.facade.service.PaymentDataTransportClient;
+import kr.hhplus.be.server.payment.facade.service.PaymentService;
+import kr.hhplus.be.server.point.repository.PointRepository;
+import kr.hhplus.be.server.point.service.PointService;
+import kr.hhplus.be.server.pointhistory.repository.PointHistoryRepository;
+import kr.hhplus.be.server.product.repository.ProductRepository;
+import kr.hhplus.be.server.product.service.ProductService;
+import kr.hhplus.be.server.stock.repository.StockRepository;
+import kr.hhplus.be.server.stock.service.StockService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
@@ -26,7 +26,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 public abstract class SpringBootTestSupport {
 
     @Autowired
-    protected MemberService memberService;
+    protected RegisterMemberService memberService;
 
     @Autowired
     protected MemberRepository memberRepository;

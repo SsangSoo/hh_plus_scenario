@@ -1,14 +1,14 @@
 package kr.hhplus.be.server.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import kr.hhplus.be.server.domain.member.controller.MemberController;
-import kr.hhplus.be.server.domain.member.service.MemberService;
-import kr.hhplus.be.server.domain.order.application.in.PlaceOrderService;
-import kr.hhplus.be.server.domain.order.interfaces.web.OrderController;
-import kr.hhplus.be.server.domain.point.controller.PointController;
-import kr.hhplus.be.server.domain.point.service.PointService;
-import kr.hhplus.be.server.domain.product.controller.ProductController;
-import kr.hhplus.be.server.domain.product.service.ProductService;
+import kr.hhplus.be.server.member.presentation.MemberController;
+import kr.hhplus.be.server.member.application.service.RegisterMemberService;
+import kr.hhplus.be.server.order.application.service.PlaceOrderService;
+import kr.hhplus.be.server.order.presentation.OrderController;
+import kr.hhplus.be.server.point.controller.PointController;
+import kr.hhplus.be.server.point.service.PointService;
+import kr.hhplus.be.server.product.controller.ProductController;
+import kr.hhplus.be.server.product.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
@@ -32,7 +32,7 @@ public abstract class ControllerTestSupport {
     protected ProductService productService;
 
     @MockitoBean
-    protected MemberService memberService;
+    protected RegisterMemberService memberService;
 
     @MockitoBean
     protected PointService pointService;

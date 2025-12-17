@@ -1,13 +1,14 @@
 package kr.hhplus.be.server.domain.product.service;
 
 import kr.hhplus.be.server.common.exeption.business.BusinessLogicRuntimeException;
-import kr.hhplus.be.server.domain.product.controller.request.RegisterProductRequest;
-import kr.hhplus.be.server.domain.product.entity.Product;
-import kr.hhplus.be.server.domain.product.repository.ProductRepository;
-import kr.hhplus.be.server.domain.product.service.request.RegisterProductServiceRequest;
-import kr.hhplus.be.server.domain.product.service.response.ProductResponse;
-import kr.hhplus.be.server.domain.stock.entity.Stock;
-import kr.hhplus.be.server.domain.stock.repository.StockRepository;
+import kr.hhplus.be.server.product.controller.request.RegisterProductRequest;
+import kr.hhplus.be.server.product.entity.Product;
+import kr.hhplus.be.server.product.repository.ProductRepository;
+import kr.hhplus.be.server.product.service.ProductService;
+import kr.hhplus.be.server.product.service.request.RegisterProductServiceRequest;
+import kr.hhplus.be.server.product.service.response.ProductResponse;
+import kr.hhplus.be.server.stock.entity.Stock;
+import kr.hhplus.be.server.stock.repository.StockRepository;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;

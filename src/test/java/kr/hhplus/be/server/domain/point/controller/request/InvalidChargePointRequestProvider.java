@@ -1,5 +1,6 @@
 package kr.hhplus.be.server.domain.point.controller.request;
 
+import kr.hhplus.be.server.point.controller.request.ChargePointRequest;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.ArgumentsProvider;

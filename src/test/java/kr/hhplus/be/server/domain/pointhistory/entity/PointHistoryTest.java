@@ -1,6 +1,8 @@
 package kr.hhplus.be.server.domain.pointhistory.entity;
 
-import kr.hhplus.be.server.domain.pointhistory.service.request.RegisterPointHistoryRequest;
+import kr.hhplus.be.server.pointhistory.entity.PointHistory;
+import kr.hhplus.be.server.pointhistory.entity.State;
+import kr.hhplus.be.server.pointhistory.service.request.RegisterPointHistoryRequest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 

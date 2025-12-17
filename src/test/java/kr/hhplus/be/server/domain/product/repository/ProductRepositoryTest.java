@@ -1,8 +1,9 @@
 package kr.hhplus.be.server.domain.product.repository;
 
 import kr.hhplus.be.server.config.SpringBootTestSupport;
-import kr.hhplus.be.server.domain.product.entity.Product;
-import kr.hhplus.be.server.domain.product.service.request.RegisterProductServiceRequest;
+import kr.hhplus.be.server.product.entity.Product;
+import kr.hhplus.be.server.product.repository.ProductRepository;
+import kr.hhplus.be.server.product.service.request.RegisterProductServiceRequest;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

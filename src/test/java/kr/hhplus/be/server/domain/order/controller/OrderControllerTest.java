@@ -2,16 +2,16 @@ package kr.hhplus.be.server.domain.order.controller;
 
 import kr.hhplus.be.server.config.RestDocsControllerSupport;
 import kr.hhplus.be.server.config.Util;
-import kr.hhplus.be.server.domain.order.application.in.PlaceOrderService;
-import kr.hhplus.be.server.domain.order.domain.model.Order;
-import kr.hhplus.be.server.domain.order.interfaces.web.OrderController;
-import kr.hhplus.be.server.domain.order.interfaces.web.request.OrderProductRequest;
-import kr.hhplus.be.server.domain.order.interfaces.web.request.OrderRequest;
-import kr.hhplus.be.server.domain.order.interfaces.web.request.PaymentMethod;
-import kr.hhplus.be.server.domain.order.application.out.response.OrderResponse;
-import kr.hhplus.be.server.domain.payment.entity.Payment;
-import kr.hhplus.be.server.domain.payment.facade.service.request.PaymentServiceRequest;
-import kr.hhplus.be.server.domain.payment.facade.service.response.PaymentResponse;
+import kr.hhplus.be.server.order.application.service.PlaceOrderService;
+import kr.hhplus.be.server.order.domain.model.Order;
+import kr.hhplus.be.server.order.presentation.OrderController;
+import kr.hhplus.be.server.order.presentation.dto.request.OrderProductRequest;
+import kr.hhplus.be.server.order.presentation.dto.request.OrderRequest;
+import kr.hhplus.be.server.order.presentation.dto.request.PaymentMethod;
+import kr.hhplus.be.server.order.application.dto.OrderResult;
+import kr.hhplus.be.server.payment.entity.Payment;
+import kr.hhplus.be.server.payment.facade.service.request.PaymentServiceRequest;
+import kr.hhplus.be.server.payment.facade.service.response.PaymentResponse;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
@@ -52,7 +52,7 @@ class OrderControllerTest extends RestDocsControllerSupport {
         Payment payment = Payment.register(new PaymentServiceRequest(orderId, 4000L * quantity, PaymentMethod.valueOf(paymentMethod), memberId));
         Util.setId(payment, paymentId);
 
-        OrderResponse response = OrderResponse.from(order, PaymentResponse.from(payment));
+        OrderResult response = OrderResult.from(order, PaymentResponse.from(payment));
 
         given(orderService.order(any()))
                 .willReturn(response);

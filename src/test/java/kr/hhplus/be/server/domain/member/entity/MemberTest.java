@@ -1,6 +1,7 @@
 package kr.hhplus.be.server.domain.member.entity;
 
-import kr.hhplus.be.server.domain.member.service.request.RegisterMemberServiceRequest;
+import kr.hhplus.be.server.member.infrastructure.persistence.MemberJpaEntity;
+import kr.hhplus.be.server.member.application.dto.RegisterMemberCommand;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -19,7 +20,7 @@ class MemberTest {
         String address = "주소";
 
         // when : 멤버 생성
-        Member member = Member.register(new RegisterMemberServiceRequest(name, birthDate, address));
+        MemberJpaEntity member = MemberJpaEntity.register(new RegisterMemberCommand(name, birthDate, address));
 
         // then : 멤버 생성 검증
         assertThat(member).isNotNull();
@@ -40,7 +41,7 @@ class MemberTest {
         String birthDate = LocalDate.of(1990, 1, 1).toString();
         String address = "주소";
 
-        Member member = Member.register(new RegisterMemberServiceRequest(name, birthDate, address));
+        MemberJpaEntity member = MemberJpaEntity.register(new RegisterMemberCommand(name, birthDate, address));
 
         // when : 멤버 삭제
         member.delete();

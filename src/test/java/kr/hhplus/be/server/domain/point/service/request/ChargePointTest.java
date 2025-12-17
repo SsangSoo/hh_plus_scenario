@@ -1,6 +1,7 @@
 package kr.hhplus.be.server.domain.point.service.request;
 
 import kr.hhplus.be.server.common.exeption.business.BusinessLogicMessage;
+import kr.hhplus.be.server.point.service.request.ChargePoint;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

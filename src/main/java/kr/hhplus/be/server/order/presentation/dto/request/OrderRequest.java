@@ -23,10 +23,10 @@ public record OrderRequest(
         String paymentMethod
 ) {
 
-    public OrderCommand toServiceRequest() {
+    public OrderCommand toOrderCommand() {
         return new OrderCommand(
                 memberId,
-                orderProductRequest.toServiceRequest(),
+                orderProductRequest.toOrderProductCommand(),
                 PaymentMethod.valueOf(paymentMethod)
         );
     }

@@ -2,7 +2,7 @@ package kr.hhplus.be.server.order.presentation.dto.request;
 
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
-import kr.hhplus.be.server.orderproduct.service.request.OrderProductServiceRequest;
+import kr.hhplus.be.server.orderproduct.application.dto.request.OrderProductServiceRequest;
 
 public record OrderProductRequest(
 
@@ -15,7 +15,7 @@ public record OrderProductRequest(
         Long quantity
 
 ) {
-    public OrderProductServiceRequest toServiceRequest() {
+    public OrderProductServiceRequest toOrderProductCommand() {
         return new OrderProductServiceRequest(productId, quantity);
     }
 }

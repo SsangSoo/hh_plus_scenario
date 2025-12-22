@@ -1,8 +1,8 @@
 package kr.hhplus.be.server.member.application.usecase;
 
-import kr.hhplus.be.server.member.application.dto.MemberResult;
+import kr.hhplus.be.server.member.presentation.dto.response.MemberResponse;
 
 public interface RetrieveMemberUseCase {
 
-    MemberResult retrieve(Long memberId);
+    MemberResponse retrieve(Long memberId);
 }

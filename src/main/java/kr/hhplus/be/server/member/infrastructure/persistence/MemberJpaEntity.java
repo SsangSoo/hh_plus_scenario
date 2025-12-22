@@ -8,7 +8,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
-import java.util.Objects;
 
 @Entity
 @Getter
@@ -33,29 +32,24 @@ public class MemberJpaEntity extends BaseEntity {
     public static MemberJpaEntity from(Member member) {
         MemberJpaEntity memberJpaEntity = new MemberJpaEntity();
 
-        if(!Objects.isNull(member.getId())) {
-            memberJpaEntity.id = member.getId();
-        }
-
         memberJpaEntity.name = member.getName();
         memberJpaEntity.birthDate = member.getBirthDate();
         memberJpaEntity.address = member.getAddress();
 
         memberJpaEntity.createdDate = LocalDateTime.now();
         memberJpaEntity.modifiedDate = memberJpaEntity.createdDate;
-        memberJpaEntity.deleted = member.isDeleted();
+        memberJpaEntity.removed = false;
 
         return memberJpaEntity;
     }
 
 
     public Member toDomain() {
-        return new Member(
+        return Member.of(
                 this.id,
                 this.name,
                 this.birthDate,
-                this.address,
-                this.deleted
+                this.address
         );
     }
 

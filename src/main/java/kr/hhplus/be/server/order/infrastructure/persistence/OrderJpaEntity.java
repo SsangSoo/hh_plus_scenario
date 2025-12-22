@@ -26,6 +26,9 @@ public class OrderJpaEntity extends BaseTimeEntity {
     @Column(name = "order_date", nullable = false, updatable = false)
     private LocalDateTime orderDate;
 
+    public Order toDomain() {
+        return Order.of(id, memberId, orderDate);
+    }
 
     public static OrderJpaEntity from(Order order) {
         OrderJpaEntity orderEntity = new OrderJpaEntity();

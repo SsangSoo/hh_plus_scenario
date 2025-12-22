@@ -1,11 +1,11 @@
 package kr.hhplus.be.server.order.application.usecase;
 
 import kr.hhplus.be.server.order.application.dto.OrderCommand;
-import kr.hhplus.be.server.order.application.dto.OrderResult;
+import kr.hhplus.be.server.order.presentation.dto.response.OrderResponse;
 
 public interface PlaceOrderUseCase {
 
-    OrderResult order(OrderCommand request);
+    OrderResponse order(OrderCommand request);
 }
 
 

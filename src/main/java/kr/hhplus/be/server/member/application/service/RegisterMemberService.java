@@ -4,9 +4,9 @@ import kr.hhplus.be.server.member.application.usecase.RegisterMemberUseCase;
 import kr.hhplus.be.server.member.domain.Member;
 import kr.hhplus.be.server.member.domain.repository.MemberRepository;
 import kr.hhplus.be.server.member.application.dto.RegisterMemberCommand;
-import kr.hhplus.be.server.member.application.dto.MemberResult;
-import kr.hhplus.be.server.point.entity.Point;
-import kr.hhplus.be.server.point.repository.PointRepository;
+import kr.hhplus.be.server.member.presentation.dto.response.MemberResponse;
+import kr.hhplus.be.server.point.domain.model.Point;
+import kr.hhplus.be.server.point.domain.repository.PointRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,16 +20,14 @@ public class RegisterMemberService implements RegisterMemberUseCase {
 
     @Override
     @Transactional
-    public MemberResult register(RegisterMemberCommand request) {
+    public MemberResponse register(RegisterMemberCommand request) {
         // 멤버 생성
-        Member savedMember = memberRepository.save(Member.create(request));
+        Member member = memberRepository.save(Member.create(request));
 
         // 멤버의 포인트 생성
-        Point point = Point.register(savedMember.getId());
-        pointRepository.save(point);
+        pointRepository.save(Point.create(member.getId()));
 
-        return MemberResult.from(savedMember);
+        return MemberResponse.from(member);
     }
-
 
 }

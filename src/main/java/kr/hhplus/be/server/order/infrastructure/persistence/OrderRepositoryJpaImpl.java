@@ -15,7 +15,6 @@ public class OrderRepositoryJpaImpl implements OrderRepository {
     public Order save(Order order) {
         OrderJpaEntity orderEntity = OrderJpaEntity.from(order);
         OrderJpaEntity saved = jpa.save(orderEntity);
-        order.assignId(saved.getId());
-        return order;
+        return saved.toDomain();
     }
 }

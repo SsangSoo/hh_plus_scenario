@@ -8,12 +8,10 @@ import lombok.Getter;
 @MappedSuperclass
 public abstract class BaseEntity extends BaseTimeEntity {
 
-    @Column(name = "deleted")
-    protected Boolean deleted = false;
+    @Column(name = "removed")
+    protected Boolean removed = false;
 
-    public void delete() {
-        this.deleted = true;
+    public void remove() {
+        this.removed = true;
     }
-
-
 }

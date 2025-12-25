@@ -9,6 +9,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 public class RegisterOrderProductService implements RegisterOrderProductUseCase {
@@ -16,11 +19,18 @@ public class RegisterOrderProductService implements RegisterOrderProductUseCase 
     private final OrderProductRepository orderProductRepository;
 
     @Transactional
-    public OrderProductResponse register(OrderProductServiceRequest request, Long orderId) {
+    public List<OrderProductResponse> register(List<OrderProductServiceRequest> requests, Long orderId) {
 
-        OrderProduct orderProduct = orderProductRepository.save(OrderProduct.create(request.productId(), orderId, request.quantity()));
+        List<OrderProduct> orderProducts = new ArrayList<>();
+        for(OrderProductServiceRequest orderProductServiceRequest : requests){
+            orderProducts.add(OrderProduct.create(orderProductServiceRequest.productId(), orderId, orderProductServiceRequest.quantity()));
+        }
 
-        return OrderProductResponse.from(orderProduct);
+        List<OrderProduct> savedOrderProducts = orderProductRepository.saveAll(orderProducts);
+
+        return savedOrderProducts.stream()
+                .map(OrderProductResponse::from)
+                .toList();
     }
 }
 

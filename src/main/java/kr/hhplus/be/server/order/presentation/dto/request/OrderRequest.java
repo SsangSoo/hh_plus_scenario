@@ -7,6 +7,8 @@ import jakarta.validation.constraints.Positive;
 import kr.hhplus.be.server.order.application.dto.OrderCommand;
 import kr.hhplus.be.server.common.validation.ValidEnum;
 
+import java.util.List;
+
 public record OrderRequest(
 
         @NotNull(message = "사용자 Id는 필수입니다.")
@@ -14,7 +16,7 @@ public record OrderRequest(
         Long memberId,
 
         @Valid
-        OrderProductRequest orderProductRequest,
+        List<OrderProductRequest> orderProductsRequest,
 
         @NotBlank(message = "결제 방식은 필수입니다.")
         @ValidEnum(
@@ -26,7 +28,9 @@ public record OrderRequest(
     public OrderCommand toOrderCommand() {
         return new OrderCommand(
                 memberId,
-                orderProductRequest.toOrderProductCommand(),
+                orderProductsRequest.stream()
+                        .map(OrderProductRequest::toOrderProductCommand)
+                        .toList(),
                 PaymentMethod.valueOf(paymentMethod)
         );
     }

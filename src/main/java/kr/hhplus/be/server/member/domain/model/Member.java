@@ -1,4 +1,4 @@
-package kr.hhplus.be.server.member.domain;
+package kr.hhplus.be.server.member.domain.model;
 
 import kr.hhplus.be.server.member.application.dto.RegisterMemberCommand;
 import lombok.Getter;

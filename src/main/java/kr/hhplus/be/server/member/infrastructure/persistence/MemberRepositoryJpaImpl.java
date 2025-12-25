@@ -2,11 +2,10 @@ package kr.hhplus.be.server.member.infrastructure.persistence;
 
 import kr.hhplus.be.server.common.exeption.business.BusinessLogicMessage;
 import kr.hhplus.be.server.common.exeption.business.BusinessLogicRuntimeException;
-import kr.hhplus.be.server.member.domain.Member;
+import kr.hhplus.be.server.member.domain.model.Member;
 import kr.hhplus.be.server.member.domain.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
-import org.springframework.transaction.annotation.Transactional;
 
 @Repository
 @RequiredArgsConstructor

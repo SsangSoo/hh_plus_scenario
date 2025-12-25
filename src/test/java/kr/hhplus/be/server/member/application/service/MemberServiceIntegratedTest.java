@@ -4,7 +4,7 @@ import kr.hhplus.be.server.common.exeption.business.BusinessLogicMessage;
 import kr.hhplus.be.server.common.exeption.business.BusinessLogicRuntimeException;
 import kr.hhplus.be.server.config.SpringBootTestSupport;
 import kr.hhplus.be.server.member.application.dto.RegisterMemberCommand;
-import kr.hhplus.be.server.member.domain.Member;
+import kr.hhplus.be.server.member.domain.model.Member;
 import kr.hhplus.be.server.member.presentation.dto.response.MemberResponse;
 import kr.hhplus.be.server.point.application.dto.request.ChargePoint;
 import kr.hhplus.be.server.point.presentation.dto.response.PointResponse;

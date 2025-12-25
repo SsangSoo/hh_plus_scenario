@@ -4,6 +4,8 @@ import kr.hhplus.be.server.order.domain.model.Order;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import java.time.LocalDateTime;
+
 import static org.assertj.core.api.Assertions.*;
 
 class OrderTest {
@@ -32,6 +34,15 @@ class OrderTest {
 
         assertThat(order.getId()).isNotNull();
         assertThat(order.getId()).isEqualTo(saveOrderId);
+    }
+
+    @Test
+    @DisplayName("of 메서드 테스트")
+    void ofTest() {
+        Order order = Order.of(1L, 1L, LocalDateTime.of(2025, 12, 2, 10, 0, 0));
+
+        assertThat(order).isNotNull();
+        assertThat(order.getId()).isEqualTo(1L);
     }
 
 }

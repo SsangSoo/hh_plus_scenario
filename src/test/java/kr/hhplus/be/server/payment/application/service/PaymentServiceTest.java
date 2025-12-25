@@ -1,5 +1,7 @@
 package kr.hhplus.be.server.payment.application.service;
 
+import kr.hhplus.be.server.common.exeption.business.BusinessLogicMessage;
+import kr.hhplus.be.server.common.exeption.business.BusinessLogicRuntimeException;
 import kr.hhplus.be.server.order.presentation.dto.request.PaymentMethod;
 import kr.hhplus.be.server.payment.application.usecase.PaymentDataTransportUseCase;
 import kr.hhplus.be.server.payment.domain.model.Payment;
@@ -20,16 +22,14 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.BDDMockito.given;
-import static org.mockito.BDDMockito.then;
-import static org.mockito.Mockito.*;
+import static org.mockito.BDDMockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class PaymentServiceTest {
 
     @Mock
     PaymentRepository paymentRepository;
-    
+
     @Mock
     PaymentDataTransportUseCase paymentDataTransportClient;
 
@@ -46,9 +46,9 @@ class PaymentServiceTest {
 //        PaymentStrategy card = mock(CardPayment.class);
 //        when(card.supportedMethod()).thenReturn(PaymentMethod.CREDIT_CARD);
 
-        PaymentStrategy point = mock(PointPayment.class);
+        PaymentStrategy point = pointPayment;
         when(point.supportedMethod()).thenReturn(PaymentMethod.POINT);
-        List<PaymentStrategy> strategies = List.of(point);
+        List<PaymentStrategy> strategies = List.of(pointPayment);
 
         paymentService = new PaymentService(
                 paymentRepository,
@@ -57,7 +57,7 @@ class PaymentServiceTest {
         );
 
     }
-    
+
     @Test
     @DisplayName("포인트 결제 로직 테스트")
     void paymentPointTest() {
@@ -81,11 +81,20 @@ class PaymentServiceTest {
         Assertions.assertThat(paymentResponse.getOrderId()).isEqualTo(paymentServiceRequest.orderId());
 
         then(paymentDataTransportClient).should(times(1)).send();
-
     }
 
+    @Test
+    @DisplayName("포인트가 부족하면 결제 실패가 된다.")
+    void paymentPointExceptionTest() {
+        // given
+        PaymentServiceRequest paymentServiceRequest = new PaymentServiceRequest(1L, 4500L, PaymentMethod.POINT, 3L);
 
-    
-    
-    
+        willThrow(new BusinessLogicRuntimeException(BusinessLogicMessage.POINT_IS_NOT_ENOUGH.getMessage()))
+                .given(pointPayment).pay(any());
+
+        // when // then
+        Assertions.assertThatThrownBy(() -> paymentService.pay(paymentServiceRequest))
+                .hasMessage(BusinessLogicMessage.POINT_IS_NOT_ENOUGH.getMessage())
+                .isInstanceOf(BusinessLogicRuntimeException.class);
+    }
 }

@@ -1,6 +1,5 @@
 package kr.hhplus.be.server.point.domain.model;
 
-import kr.hhplus.be.server.point.infrastructure.persistence.PointJpaEntity;
 import kr.hhplus.be.server.point.application.dto.request.ChargePoint;
 import kr.hhplus.be.server.common.exeption.business.BusinessLogicMessage;
 import org.junit.jupiter.api.DisplayName;
@@ -12,13 +11,10 @@ import static org.assertj.core.api.Assertions.*;
 class PointTest {
 
     @Test
-    @DisplayName("회원의 Id로 Point는 생성된다. 그리고 생성된 Point는 0원이며, 삭제 여부는 false다. 그리고 생성일자와 수정일자가 동일해야 한다.")
-    void registerPointWithMemberIdTest() {
-        // given : 회원 Id 셋팅
-        Long memberId = 1L;
-
-        // when : 포인트 생성
-        Point point = Point.create(memberId);
+    @DisplayName("회원의 Id로 Point는 생성된다. 그리고 생성된 Point는 0원이다.")
+    void createPointWithMemberIdTest() {
+        // given // when
+        Point point = Point.create(1L);
 
         // then : 포인트 생성 검증
         assertThat(point).isNotNull();
@@ -26,15 +22,40 @@ class PointTest {
         assertThat(point.getPoint()).isZero();
     }
 
+    @Test
+    @DisplayName("of 메서드 테스트")
+    void ofPointTest() {
+        // given // when
+        Point point = Point.of(1L, 1L, 3000L);
+
+        // then : 포인트 생성 검증
+        assertThat(point).isNotNull();
+        assertThat(point.getId()).isNotNull();
+        assertThat(point.getPoint()).isEqualTo(3000L);
+    }
+
+    @Test
+    @DisplayName("id를 주입할 수 있다.")
+    void assignIdTest() {
+        Point point = Point.create(1L);
+
+        assertThat(point.getId()).isNull();
+
+        point.assignId(1L);
+
+
+        assertThat(point.getId()).isNotNull();
+        assertThat(point.getId()).isEqualTo(1L);
+    }
+
 
     @Test
     @DisplayName("포인트를 충전한다.")
     void chargePointTest() {
         // given : 포인트 충전을 위한 값 설정
-        Long memberId = 1L;
-        Point point = Point.create(memberId);
+        Point point = Point.create(1L);
 
-        ChargePoint chargePoint = new ChargePoint(memberId, 100L);
+        ChargePoint chargePoint = new ChargePoint(1L, 100L);
 
         // when : 포인트 충전
         point.charge(chargePoint);
@@ -43,17 +64,45 @@ class PointTest {
         assertThat(point.getPoint()).isEqualTo(100L);
     }
 
+
     @Test
     @DisplayName("0이하의 값으로 포인트를 충전할 경우 예외가 발생한다.")
-    void cannotChargePointNegativeTest() {
+    void cannotChargePointZeroTest() {
         // given : 포인트 충전을 위한 값 설정
-        Long memberId = 1L;
-        Point point = Point.create(memberId);
+        Point point = Point.create(1L);
 
         // when // then : 0이하의 값으로 충전할 경우 예외 발생
-        assertThatThrownBy(() -> point.charge(new ChargePoint(memberId, 0L)))
+        assertThatThrownBy(() -> point.charge(new ChargePoint(1L, 0L)))
                 .isInstanceOf(IllegalStateException.class)
                 .hasMessage(BusinessLogicMessage.CHARGE_POINT_NOT_POSITIVE.getMessage());
+    }
+
+
+    @Test
+    @DisplayName("음수로 포인트를 충전할 경우 예외가 발생한다.")
+    void cannotChargePointNegativeTest() {
+        // given : 포인트 충전을 위한 값 설정
+        Point point = Point.create(1L);
+
+        // when // then : 0이하의 값으로 충전할 경우 예외 발생
+        assertThatThrownBy(() -> point.charge(new ChargePoint(1L, -1L)))
+                .isInstanceOf(IllegalStateException.class)
+                .hasMessage(BusinessLogicMessage.CHARGE_POINT_NOT_POSITIVE.getMessage());
+    }
+
+    @Test
+    @DisplayName("포인트를 사용한다.")
+    void usePointTest() {
+        // given
+        Point point = Point.of(1L, 1L, 3000L);
+
+        // when
+        point.use(1000L);
+
+        // then : 0이하의 값으로 충전할 경우 예외 발생
+        assertThat(point.getId()).isEqualTo(1L);
+        assertThat(point.getMemberId()).isEqualTo(1L);
+        assertThat(point.getPoint()).isEqualTo(2000L);
     }
 
 }

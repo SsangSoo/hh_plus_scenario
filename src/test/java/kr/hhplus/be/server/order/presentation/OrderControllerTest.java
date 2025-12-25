@@ -1,7 +1,6 @@
 package kr.hhplus.be.server.order.presentation;
 
 import kr.hhplus.be.server.config.RestDocsControllerSupport;
-import kr.hhplus.be.server.config.Util;
 import kr.hhplus.be.server.order.application.service.PlaceOrderService;
 import kr.hhplus.be.server.order.domain.model.Order;
 import kr.hhplus.be.server.order.presentation.dto.request.OrderProductRequest;
@@ -9,13 +8,13 @@ import kr.hhplus.be.server.order.presentation.dto.request.OrderRequest;
 import kr.hhplus.be.server.order.presentation.dto.request.PaymentMethod;
 import kr.hhplus.be.server.order.presentation.dto.response.OrderResponse;
 import kr.hhplus.be.server.payment.domain.model.Payment;
-import kr.hhplus.be.server.payment.infrastructure.persistence.PaymentJpaEntity;
-import kr.hhplus.be.server.payment.application.dto.request.PaymentServiceRequest;
 import kr.hhplus.be.server.payment.application.dto.response.PaymentResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+
+import java.util.List;
 
 import static com.epages.restdocs.apispec.MockMvcRestDocumentationWrapper.document;
 import static org.mockito.ArgumentMatchers.any;
@@ -44,7 +43,7 @@ class OrderControllerTest extends RestDocsControllerSupport {
         Long quantity = 3L;
         String paymentMethod = "POINT";
 
-        OrderRequest request = new OrderRequest(memberId, new OrderProductRequest(productId, quantity), paymentMethod);
+        OrderRequest request = new OrderRequest(memberId, List.of(new OrderProductRequest(productId, quantity)), paymentMethod);
 
         Long orderId = 1L;
         Order order = Order.create(memberId);
@@ -76,8 +75,8 @@ class OrderControllerTest extends RestDocsControllerSupport {
                 .andDo(document("상품 주문 및 결제",
                         requestFields(
                                 fieldWithPath("memberId").description("회원 Id"),
-                                fieldWithPath("orderProductRequest.productId").description("상품 Id"),
-                                fieldWithPath("orderProductRequest.quantity").description("주문 상품 수량"),
+                                fieldWithPath("orderProductsRequest[].productId").description("회원 Id"),
+                                fieldWithPath("orderProductsRequest[].quantity").description("주문 상품 수량"),
                                 fieldWithPath("paymentMethod").description("결제 방식")
                         ),
                         responseFields(

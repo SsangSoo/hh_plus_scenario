@@ -2,7 +2,7 @@ package kr.hhplus.be.server.member.infrastructure.persistence;
 
 import jakarta.persistence.*;
 import kr.hhplus.be.server.common.base.BaseEntity;
-import kr.hhplus.be.server.member.domain.Member;
+import kr.hhplus.be.server.member.domain.model.Member;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

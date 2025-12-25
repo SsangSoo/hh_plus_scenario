@@ -10,8 +10,6 @@ public interface StockRepository {
 
     Stock findByProductId(Long productId);
 
-    Stock findByProductIdForDeduct(Long productId, Long quantity);
-
     Stock findByProductIdForUpdate(Long productId);
 
     Long retrieveStockByProductId(Long productId);

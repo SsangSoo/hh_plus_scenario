@@ -28,13 +28,6 @@ public class StockRepositoryImpl implements StockRepository {
     }
 
     @Override
-    public Stock findByProductIdForDeduct(Long productId, Long quantity) {
-        StockJpaEntity stockJpaEntity = jpa.findByProductIdForDeduct(productId, quantity)
-                .orElseThrow(() -> new BusinessLogicRuntimeException(BusinessLogicMessage.NOT_FOUND_STOCK));
-        return stockJpaEntity.toDomain();
-    }
-
-    @Override
     public Stock findByProductIdForUpdate(Long productId) {
         StockJpaEntity stockJpaEntity = jpa.findByProductIdForUpdate(productId)
                 .orElseThrow(() -> new BusinessLogicRuntimeException(BusinessLogicMessage.NOT_FOUND_STOCK));

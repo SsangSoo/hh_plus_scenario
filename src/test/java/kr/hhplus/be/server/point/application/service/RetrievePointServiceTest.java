@@ -1,14 +1,12 @@
 package kr.hhplus.be.server.point.application.service;
 
 import kr.hhplus.be.server.member.application.dto.RegisterMemberCommand;
-import kr.hhplus.be.server.member.domain.Member;
+import kr.hhplus.be.server.member.domain.model.Member;
 import kr.hhplus.be.server.member.domain.repository.MemberRepository;
-import kr.hhplus.be.server.point.application.usecase.ChargePointUseCase;
 import kr.hhplus.be.server.point.application.usecase.RetrievePointUseCase;
 import kr.hhplus.be.server.point.domain.model.Point;
 import kr.hhplus.be.server.point.domain.repository.PointRepository;
 import kr.hhplus.be.server.point.presentation.dto.response.PointResponse;
-import kr.hhplus.be.server.pointhistory.domain.repository.PointHistoryRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

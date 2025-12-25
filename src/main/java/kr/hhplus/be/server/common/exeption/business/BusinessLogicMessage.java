@@ -5,6 +5,7 @@ import lombok.Getter;
 public enum BusinessLogicMessage {
 
     NOT_FOUND_PRODUCT("상품을 찾을 수 없습니다."),
+    NOT_FOUND_SOME_PRODUCT("찾을 수 없는 상품이 있습니다."),
     NOT_FOUND_STOCK("재고를 찾을 수 없습니다."),
 
     NOT_FOUND_MEMBER("회원을 찾을 수 없습니다."),

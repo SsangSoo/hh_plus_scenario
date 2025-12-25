@@ -8,6 +8,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @Repository
 @RequiredArgsConstructor
 public class ProductRepositoryImpl implements ProductRepository {
@@ -33,5 +35,16 @@ public class ProductRepositoryImpl implements ProductRepository {
         ProductJpaEntity productJpaEntity = jpa.findByIdAndRemovedFalse(id)
                 .orElseThrow(() -> new BusinessLogicRuntimeException(BusinessLogicMessage.NOT_FOUND_STOCK));
         productJpaEntity.remove();
+    }
+
+    @Override
+    public List<Product> findByIds(List<Long> productIdList) {
+        List<ProductJpaEntity> productJpaEntities = jpa.findIdsByIdIn(productIdList);
+        if(productIdList.size() != productJpaEntities.size()) {
+            throw new BusinessLogicRuntimeException(BusinessLogicMessage.NOT_FOUND_SOME_PRODUCT);
+        }
+        return productJpaEntities.stream()
+                .map(ProductJpaEntity::toDomain)
+                .toList();
     }
 }

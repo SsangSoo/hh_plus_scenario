@@ -2,7 +2,6 @@ package kr.hhplus.be.server.stock.domain.model;
 
 import kr.hhplus.be.server.common.exeption.business.BusinessLogicMessage;
 import kr.hhplus.be.server.common.exeption.business.BusinessLogicRuntimeException;
-import kr.hhplus.be.server.stock.infrastructure.persistence.StockJpaEntity;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -23,6 +22,29 @@ class StockTest {
         assertThat(stock).isNotNull();
         assertThat(stock.getProductId()).isEqualTo(productId);
         assertThat(stock.getQuantity()).isZero();
+    }
+
+
+    @Test
+    @DisplayName("of 테스트")
+    void ofTest() {
+        Stock stock = Stock.of(1L, 1L, 30L);
+
+        assertThat(stock).isNotNull();
+        assertThat(stock.getId()).isEqualTo(1L);
+    }
+
+    @Test
+    @DisplayName("id를 추가할 수 있다.")
+    void assignIdTest() {
+        Stock stock = Stock.create(1L);
+
+        assertThat(stock.getId()).isNull();
+
+        stock.assignId(1L);
+
+        assertThat(stock.getId()).isNotNull();
+        assertThat(stock.getId()).isEqualTo(1L);
     }
 
 
@@ -69,6 +91,8 @@ class StockTest {
                 .isInstanceOf(BusinessLogicRuntimeException.class)
                 .hasMessage(BusinessLogicMessage.STOCK_IS_NOT_ENOUGH.getMessage());
     }
+
+
 
 }
 

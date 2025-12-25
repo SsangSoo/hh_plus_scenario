@@ -1,33 +1,23 @@
 package kr.hhplus.be.server.member.application.service;
 
-import kr.hhplus.be.server.common.exeption.business.BusinessLogicMessage;
-import kr.hhplus.be.server.common.exeption.business.BusinessLogicRuntimeException;
-import kr.hhplus.be.server.config.SpringBootTestSupport;
-import kr.hhplus.be.server.config.Util;
 import kr.hhplus.be.server.member.application.usecase.RemoveMemberUseCase;
-import kr.hhplus.be.server.member.domain.Member;
+import kr.hhplus.be.server.member.domain.model.Member;
 import kr.hhplus.be.server.member.domain.repository.MemberRepository;
-import kr.hhplus.be.server.member.presentation.dto.response.MemberResponse;
 import kr.hhplus.be.server.member.application.dto.RegisterMemberCommand;
 import kr.hhplus.be.server.point.domain.model.Point;
 import kr.hhplus.be.server.point.domain.repository.PointRepository;
-import kr.hhplus.be.server.point.infrastructure.persistence.PointJpaEntity;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.BDDMockito;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.LocalDate;
-import java.util.Optional;
 
-import static org.assertj.core.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.*;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class RemoveMemberServiceTest {

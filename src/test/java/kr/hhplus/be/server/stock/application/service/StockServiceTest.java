@@ -10,6 +10,7 @@ import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -33,7 +34,7 @@ class StockServiceTest extends SpringBootTestSupport {
         for(int i = 0; i < threadCount; i++) {
             es.submit(() -> {
                 try {
-                    deductedStockUseCase.deductedStock(productResponse.getId(), 3L);
+                    deductedStockUseCase.deductedStock(Map.of(productResponse.getId(), 3L));
                 } finally {
                     latch.countDown();
                 }
@@ -45,6 +46,8 @@ class StockServiceTest extends SpringBootTestSupport {
         Stock findStock = stockRepository.findByProductId(productResponse.getId());
         Assertions.assertThat(findStock.getQuantity()).isEqualTo(29700L);
     }
+
+
 
     @Test
     @DisplayName("재고 차감시 재고를 차감할 수 없는 상태라면, 차감하지 않는다.")
@@ -64,7 +67,7 @@ class StockServiceTest extends SpringBootTestSupport {
         for(int i = 0; i < threadCount; i++) {
             es.submit(() -> {
                 try {
-                    deductedStockUseCase.deductedStock(productResponse.getId(), 4L);
+                    deductedStockUseCase.deductedStock(Map.of(productResponse.getId(), 4L));
                 } catch (BusinessLogicRuntimeException be) {
                     failCount.set(failCount.get() + 1);
                 } finally {

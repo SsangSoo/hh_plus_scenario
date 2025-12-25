@@ -42,7 +42,7 @@ public class Point {
         point -= totalAmount;
     }
 
-    public void validationPoint(Long validationPoint) {
+    private void validationPoint(Long validationPoint) {
         if (point < validationPoint) {
             throw new BusinessLogicRuntimeException(BusinessLogicMessage.POINT_IS_NOT_ENOUGH.getMessage());
         }

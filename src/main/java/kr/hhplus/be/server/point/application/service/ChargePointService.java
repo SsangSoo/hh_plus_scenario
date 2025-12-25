@@ -1,6 +1,6 @@
 package kr.hhplus.be.server.point.application.service;
 
-import kr.hhplus.be.server.member.domain.Member;
+import kr.hhplus.be.server.member.domain.model.Member;
 import kr.hhplus.be.server.member.domain.repository.MemberRepository;
 import kr.hhplus.be.server.point.application.usecase.ChargePointUseCase;
 import kr.hhplus.be.server.point.domain.model.Point;

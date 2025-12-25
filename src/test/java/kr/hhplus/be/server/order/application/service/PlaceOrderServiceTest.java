@@ -1,6 +1,6 @@
 package kr.hhplus.be.server.order.application.service;
 
-import kr.hhplus.be.server.member.domain.Member;
+import kr.hhplus.be.server.member.domain.model.Member;
 import kr.hhplus.be.server.member.domain.repository.MemberRepository;
 import kr.hhplus.be.server.member.application.dto.RegisterMemberCommand;
 import kr.hhplus.be.server.order.application.usecase.PlaceOrderUseCase;
@@ -37,15 +37,15 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.given;
 
 @Slf4j
 @ExtendWith(MockitoExtension.class)
-class PlaceOrderUseCaseTest {
+class PlaceOrderServiceTest {
 
     @Mock
     MemberRepository memberRepository;
@@ -79,7 +79,7 @@ class PlaceOrderUseCaseTest {
     void failToOrderWhenMemberNotFound() {
         // given
         OrderProductRequest orderProductRequest = new OrderProductRequest(1L, 2L);
-        OrderRequest request = new OrderRequest(3L, orderProductRequest, "POINT");
+        OrderRequest request = new OrderRequest(3L, List.of(orderProductRequest), "POINT");
 
         given(memberRepository.retrieve(3L)).willThrow(new BusinessLogicRuntimeException(BusinessLogicMessage.NOT_FOUND_MEMBER));
 
@@ -95,7 +95,7 @@ class PlaceOrderUseCaseTest {
     void failToOrderWhenProductNotFound() {
         // given
         OrderProductRequest orderProductRequest = new OrderProductRequest(1L, 2L);
-        OrderRequest orderRequest = new OrderRequest(3L, orderProductRequest, "POINT");
+        OrderRequest orderRequest = new OrderRequest(3L, List.of(orderProductRequest), "POINT");
 
         RegisterMemberCommand registerMemberCommand = new RegisterMemberCommand("name", LocalDate.of(1990, 1, 1).format(DateTimeFormatter.ofPattern("yyyyMMdd")), "주소");
         Member member = Member.create(registerMemberCommand);
@@ -106,20 +106,21 @@ class PlaceOrderUseCaseTest {
         point.assignId(3L);
 
         given(memberRepository.retrieve(anyLong())).willReturn(member);
-        given(productRepository.findById(anyLong())).willThrow(new BusinessLogicRuntimeException(BusinessLogicMessage.NOT_FOUND_PRODUCT));
+        given(productRepository.findByIds(anyList())).willThrow(new BusinessLogicRuntimeException(BusinessLogicMessage.NOT_FOUND_SOME_PRODUCT));
 
         // when // then
         assertThatThrownBy(() -> placeOrderUseCase.order(orderRequest.toOrderCommand()))
                 .isInstanceOf(BusinessLogicRuntimeException.class)
-                .hasMessage(BusinessLogicMessage.NOT_FOUND_PRODUCT.getMessage());
+                .hasMessage(BusinessLogicMessage.NOT_FOUND_SOME_PRODUCT.getMessage());
     }
+
 
     @Test
     @DisplayName("상품에 대한 재고가 존재하지 않으면 주문은 실패한다.")
     void failToOrderWhenStockOfProductNotFound() {
         // given
         OrderProductRequest orderProductRequest = new OrderProductRequest(1L, 2L);
-        OrderRequest orderRequest = new OrderRequest(3L, orderProductRequest, "POINT");
+        OrderRequest orderRequest = new OrderRequest(3L, List.of(orderProductRequest), "POINT");
 
         RegisterMemberCommand memberServiceRequest = new RegisterMemberCommand("name", LocalDate.of(1990, 1, 1).format(DateTimeFormatter.ofPattern("yyyyMMdd")), "주소");
         Member member = Member.create(memberServiceRequest);
@@ -134,8 +135,8 @@ class PlaceOrderUseCaseTest {
         product.assignId(1L);
 
         given(memberRepository.retrieve(anyLong())).willReturn(member);
-        given(productRepository.findById(anyLong())).willReturn(product);
-        given(deductedStockUseCase.deductedStock(anyLong(), anyLong())).willThrow(new BusinessLogicRuntimeException(BusinessLogicMessage.NOT_FOUND_STOCK));
+        given(productRepository.findByIds(anyList())).willReturn(List.of(product));
+        given(deductedStockUseCase.deductedStock(anyMap())).willThrow(new BusinessLogicRuntimeException(BusinessLogicMessage.NOT_FOUND_STOCK));
 
         // when // then
         assertThatThrownBy(() -> placeOrderUseCase.order(orderRequest.toOrderCommand()))
@@ -150,7 +151,7 @@ class PlaceOrderUseCaseTest {
     void failToOrderWhenStockOfProductNotEnough() {
         // given
         OrderProductRequest orderProductRequest = new OrderProductRequest(1L, 2L);
-        OrderRequest orderRequest = new OrderRequest(3L, orderProductRequest, "POINT");
+        OrderRequest orderRequest = new OrderRequest(3L, List.of(orderProductRequest), "POINT");
 
         RegisterMemberCommand memberServiceRequest = new RegisterMemberCommand("name", LocalDate.of(1990, 1, 1).format(DateTimeFormatter.ofPattern("yyyyMMdd")), "주소");
         Member member = Member.create(memberServiceRequest);
@@ -169,8 +170,8 @@ class PlaceOrderUseCaseTest {
         stock.addStock(1L);
 
         given(memberRepository.retrieve(anyLong())).willReturn(member);
-        given(productRepository.findById(anyLong())).willReturn(product);
-        given(deductedStockUseCase.deductedStock(anyLong(), anyLong())).willThrow(new BusinessLogicRuntimeException(BusinessLogicMessage.STOCK_IS_NOT_ENOUGH));
+        given(productRepository.findByIds(anyList())).willReturn(List.of(product));
+        given(deductedStockUseCase.deductedStock(anyMap())).willThrow(new BusinessLogicRuntimeException(BusinessLogicMessage.STOCK_IS_NOT_ENOUGH));
 
         // when // then
         assertThatThrownBy(() -> placeOrderUseCase.order(orderRequest.toOrderCommand()))
@@ -185,7 +186,7 @@ class PlaceOrderUseCaseTest {
         // given
         // 주문 상품 및 주문 요청
         OrderProductRequest orderProductRequest = new OrderProductRequest(1L, 2L);
-        OrderRequest orderRequest = new OrderRequest(3L, orderProductRequest, "POINT");
+        OrderRequest orderRequest = new OrderRequest(3L, List.of(orderProductRequest), "POINT");
 
         // 회원
         RegisterMemberCommand memberServiceRequest = new RegisterMemberCommand("name", LocalDate.of(1990, 1, 1).format(DateTimeFormatter.ofPattern("yyyyMMdd")), "주소");
@@ -204,8 +205,8 @@ class PlaceOrderUseCaseTest {
 
         // 회원, 포인트, 상품, 재고 Mock 처리
         given(memberRepository.retrieve(anyLong())).willReturn(member);
-        given(productRepository.findById(anyLong())).willReturn(product);
-        given(deductedStockUseCase.deductedStock(anyLong(), anyLong())).willReturn(StockResponse.from(stock));
+        given(productRepository.findByIds(anyList())).willReturn(List.of(product));
+        given(deductedStockUseCase.deductedStock(anyMap())).willReturn(List.of(StockResponse.from(stock)));
 
         // 주문
         Order order = Order.create(member.getId());
@@ -216,7 +217,7 @@ class PlaceOrderUseCaseTest {
         OrderProduct orderProduct = OrderProduct.create(product.getId(), order.getId(), orderProductRequest.quantity());
         orderProduct.assignId(1L);
         OrderProductResponse orderProductResponse = OrderProductResponse.from(orderProduct);
-        given(registerOrderProductUseCase.register(any(), any())).willReturn(orderProductResponse);
+        given(registerOrderProductUseCase.register(any(), any())).willReturn(List.of(orderProductResponse));
 
         // 총계 확인
         long totalPoint = product.getPrice() * orderProductRequest.quantity();

@@ -1,6 +1,6 @@
 package kr.hhplus.be.server.member.domain.repository;
 
-import kr.hhplus.be.server.member.domain.Member;
+import kr.hhplus.be.server.member.domain.model.Member;
 
 public interface MemberRepository {
     Member save(Member member);

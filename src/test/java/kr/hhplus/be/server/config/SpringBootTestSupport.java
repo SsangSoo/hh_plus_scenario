@@ -10,6 +10,7 @@ import kr.hhplus.be.server.order.domain.repository.OrderRepository;
 import kr.hhplus.be.server.order.infrastructure.persistence.OrderJpaRepository;
 import kr.hhplus.be.server.orderproduct.application.usecase.RegisterOrderProductUseCase;
 import kr.hhplus.be.server.orderproduct.domain.repository.OrderProductRepository;
+import kr.hhplus.be.server.orderproduct.infrastructure.persistence.OrderProductJpaRepository;
 import kr.hhplus.be.server.payment.application.service.payment_method.BankTransferPayment;
 import kr.hhplus.be.server.payment.application.service.payment_method.CardPayment;
 import kr.hhplus.be.server.payment.application.service.payment_method.PointPayment;
@@ -28,6 +29,7 @@ import kr.hhplus.be.server.product.domain.repository.ProductRepository;
 import kr.hhplus.be.server.product.infrastructure.persistence.ProductJpaRepository;
 import kr.hhplus.be.server.stock.application.usecase.AddStockUseCase;
 import kr.hhplus.be.server.stock.application.usecase.DeductedStockUseCase;
+import kr.hhplus.be.server.stock.application.usecase.RetrieveStockUseCase;
 import kr.hhplus.be.server.stock.domain.repository.StockRepository;
 import kr.hhplus.be.server.stock.infrastructure.persistence.StockJpaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -94,6 +96,9 @@ public abstract class SpringBootTestSupport {
     @Autowired
     protected RegisterOrderProductUseCase registerOrderProductUseCase;
 
+    @Autowired
+    protected OrderProductJpaRepository orderProductJpaRepository;
+
 
     // Payment
     @Autowired
@@ -123,10 +128,15 @@ public abstract class SpringBootTestSupport {
     protected DeductedStockUseCase deductedStockUseCase;
 
     @Autowired
+    protected RetrieveStockUseCase retrieveStockUseCase;
+
+    @Autowired
     protected StockRepository stockRepository;
 
     @Autowired
     protected StockJpaRepository stockJpaRepository;
+
+
 
 
     // Product

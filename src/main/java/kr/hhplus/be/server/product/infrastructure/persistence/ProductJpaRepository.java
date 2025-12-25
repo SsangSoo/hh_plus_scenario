@@ -1,8 +1,10 @@
 package kr.hhplus.be.server.product.infrastructure.persistence;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -10,4 +12,6 @@ public interface ProductJpaRepository extends JpaRepository<ProductJpaEntity,Lon
 
     Optional<ProductJpaEntity> findByIdAndRemovedFalse(Long id);
 
+    @Query("select p from ProductJpaEntity as p where p.id in :productIdList")
+    List<ProductJpaEntity> findIdsByIdIn(List<Long> productIdList);
 }

@@ -1,7 +1,7 @@
 package kr.hhplus.be.server.member.application.service;
 
 import kr.hhplus.be.server.member.application.usecase.RegisterMemberUseCase;
-import kr.hhplus.be.server.member.domain.Member;
+import kr.hhplus.be.server.member.domain.model.Member;
 import kr.hhplus.be.server.member.domain.repository.MemberRepository;
 import kr.hhplus.be.server.member.application.dto.RegisterMemberCommand;
 import kr.hhplus.be.server.member.presentation.dto.response.MemberResponse;
@@ -19,6 +19,8 @@ import java.time.LocalDate;
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.then;
+import static org.mockito.Mockito.times;
 
 
 @ExtendWith(MockitoExtension.class)
@@ -62,6 +64,9 @@ class RegisterMemberServiceTest {
         assertThat(memberResponse.getAddress()).isEqualTo(request.address());
         assertThat(memberResponse.getName()).isEqualTo(request.name());
         assertThat(memberResponse.getBirthDate()).isEqualTo(request.birthDate());
+
+        then(memberRepository).should(times(1)).save(any());
+        then(pointRepository).should(times(1)).save(any());
     }
 
 

@@ -1,6 +1,6 @@
 package kr.hhplus.be.server.member.presentation.dto.response;
 
-import kr.hhplus.be.server.member.domain.Member;
+import kr.hhplus.be.server.member.domain.model.Member;
 import lombok.Builder;
 import lombok.Getter;
 

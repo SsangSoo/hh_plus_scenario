@@ -42,4 +42,8 @@ public class PointHistory {
         this.totalPoint = totalPoint;
         this.state = state;
     }
+
+    public void assignId(Long id) {
+        this.id = id;
+    }
 }

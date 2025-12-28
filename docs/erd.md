@@ -144,6 +144,25 @@ CREATE TABLE PAYMENT (
                         created_date DATETIME NOT NULL DEFAULT current_timestamp,
                         modified_date DATETIME NOT NULL DEFAULT current_timestamp
 );
+CREATE TABLE COUPON (
+                         id BIGINT PRIMARY KEY AUTO_INCREMENT,
+                         coupon CHAR(30) NOT NULL,
+                         expiry_date DATETIME NOT NULL,
+                         amount BIGINT NOT NULL,
+                         discount_rate INT NOT NULL,
+                         created_date DATETIME NOT NULL DEFAULT current_timestamp,
+                         modified_date DATETIME NOT NULL DEFAULT current_timestamp
+);
+
+CREATE TABLE COUPON_HISTORY (
+                        id BIGINT PRIMARY KEY AUTO_INCREMENT,
+                        coupon_id BIGINT NOT NULL,
+                        member_id BIGINT,
+                        coupon_issuance DATETIME NOT NULL DEFAULT current_timestamp,
+                        coupon_used TINYINT(1) NOT NULL DEFAULT 0,
+                        modified_date DATETIME NOT NULL DEFAULT current_timestamp
+                            
+);
 
 ```
 

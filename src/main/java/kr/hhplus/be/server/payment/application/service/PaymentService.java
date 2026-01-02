@@ -99,11 +99,14 @@ public class PaymentService implements PaymentUseCase {
         payment.changeState(PaymentState.PAYMENT_COMPLETE);
         paymentRepository.changeState(payment);
 
-        // outbox 테이블에 업데이트
-        outboxRepository.paymentComplete(payment.getOrderId());
 
         // 데이터 전송
-        paymentDataTransportUseCase.send();
+        try {
+            paymentDataTransportUseCase.send();
+        } catch (Exception e) {
+            outboxRepository.paymentComplete(payment.getOrderId());
+        }
+
 
         return PaymentResponse.from(payment);
     }

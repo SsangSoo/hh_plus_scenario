@@ -30,10 +30,12 @@ public class RegisterPaymentInfoService implements RegisterPaymentInfoUseCase {
         // 결제 정보 저장
         Payment payment = paymentRepository.save(Payment.create(request.orderId(), request.totalAmount(), request.paymentMethod()));
 
-        // outbox 테이블에 입력
-        outboxRepository.save(Outbox.of(payment.getOrderId(), payment.getPaymentMethod(), LocalDate.now(), payment.getPaymentState()));
-
-        paymentDataTransportUseCase.send();
+        try {
+            paymentDataTransportUseCase.send();
+        } catch (Exception e) {
+            // outbox 테이블에 입력
+            outboxRepository.save(Outbox.of(payment.getOrderId(), payment.getPaymentMethod(), LocalDate.now(), payment.getPaymentState()));
+        }
 
         return PaymentResponse.from(payment);
     }

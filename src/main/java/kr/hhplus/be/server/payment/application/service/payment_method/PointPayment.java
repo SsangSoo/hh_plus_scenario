@@ -1,7 +1,7 @@
 package kr.hhplus.be.server.payment.application.service.payment_method;
 
 import kr.hhplus.be.server.order.presentation.dto.request.PaymentMethod;
-import kr.hhplus.be.server.payment.application.dto.request.PaymentServiceRequest;
+import kr.hhplus.be.server.payment.application.dto.request.PayServiceRequest;
 import kr.hhplus.be.server.point.domain.model.Point;
 import kr.hhplus.be.server.point.domain.repository.PointRepository;
 import kr.hhplus.be.server.pointhistory.domain.model.PointHistory;
@@ -15,17 +15,18 @@ import java.time.LocalDateTime;
 
 @Component
 @RequiredArgsConstructor
-public class PointPayment implements PaymentStrategy{
+public class PointPayment implements PaymentStrategy {
 
     private final PointRepository pointRepository;
     private final PointHistoryRepository pointHistoryRepository;
 
+    @Override
     @Transactional
-    public void pay(PaymentServiceRequest request) {
+    public void pay(PayServiceRequest request) {
         // 포인트 찾기
         Point point = pointRepository.findByMemberId(request.memberId());
         // 포인트 차감
-        point.use(request.totalAmount());
+        point.use(request.totalAmount() - request.discountApplyAmount());
         LocalDateTime modifiedDate = pointRepository.update(point.getId(), point.getPoint());
 
         // 포인트 차감 내역 생성

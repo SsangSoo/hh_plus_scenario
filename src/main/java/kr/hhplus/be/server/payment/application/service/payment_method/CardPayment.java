@@ -1,7 +1,8 @@
 package kr.hhplus.be.server.payment.application.service.payment_method;
 
 import kr.hhplus.be.server.order.presentation.dto.request.PaymentMethod;
-import kr.hhplus.be.server.payment.application.dto.request.PaymentServiceRequest;
+import kr.hhplus.be.server.payment.application.dto.request.PayServiceRequest;
+import kr.hhplus.be.server.payment.application.dto.request.RegisterPaymentInfoRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -9,7 +10,8 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class CardPayment implements PaymentStrategy {
 
-    public void pay(PaymentServiceRequest request) {
+    @Override
+    public void pay(PayServiceRequest request) {
 
     }
 

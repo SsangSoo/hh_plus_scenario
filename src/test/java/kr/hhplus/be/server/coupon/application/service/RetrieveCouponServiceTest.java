@@ -49,7 +49,7 @@ class RetrieveCouponServiceTest {
         assertThat(retrieved.getCouponId()).isEqualTo(coupon.getId());
         assertThat(retrieved.getCoupon()).isEqualTo(coupon.getCoupon());
         assertThat(retrieved.getAmount()).isEqualTo(coupon.getAmount());
-        assertThat(retrieved.getExpiryDate()).isEqualTo(coupon.getExpiryDate());
+        assertThat(retrieved.getExpiryDate()).isEqualTo(coupon.getExpiryDate().toString());
         assertThat(retrieved.getDiscountRate()).isEqualTo(coupon.getDiscountRate());
 
     }

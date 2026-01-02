@@ -9,12 +9,19 @@ public enum BusinessLogicMessage {
     NOT_FOUND_STOCK("재고를 찾을 수 없습니다."),
     NOT_FOUND_COUPON("쿠폰을 찾을 수 없습니다."),
 
+    NOT_FOUND_PAYMENT_INFO("결제 정보를 찾을 수 없습니다."),
+
     NOT_FOUND_MEMBER("회원을 찾을 수 없습니다."),
     NOT_FOUND_MEMBER_POINT("회원의 포인트를 찾을 수 없습니다."),
+    NOT_FOUND_OUTBOX("해당 outbox 를 찾을 수 없습니다."),
 
     NOT_POSSIBLE_ISSUE_COUPON_BY_INSUFFICIENT_NUMBER("발행 가능한 쿠폰 개수가 부족하여, 발행할 수 없습니다."),
 
+    PAYMENT_COMPLETE("결제 완료된 건입니다."),
+    PAYMENT_CANCEL("결제 취소된 건입니다."),
+
     ALREADY_HAVE_THIS_COUPON("현재 가지고 있는 쿠폰입니다."),
+    ALREADY_USED_THIS_COUPON("이미 사용된 쿠폰입니다."),
 
     CHARGE_POINT_NOT_POSITIVE("충전하려는 포인트는 0 이상이어야 합니다."),
     POINT_IS_NOT_ENOUGH("현재 가지고 있는 포인트가 부족합니다."),

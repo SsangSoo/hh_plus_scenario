@@ -26,7 +26,7 @@ public class Coupon {
 
 
     public Long calculateDiscountRate(Long totalAmount) {
-        return (long) (totalAmount - (totalAmount * (discountRate / 100d)));
+        return (long) (totalAmount * (discountRate / 100d));
     }
 
     public void issue() {

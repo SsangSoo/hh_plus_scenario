@@ -76,7 +76,7 @@ class IssueCouponServiceTest {
         assertThat(issueCouponResponse.getCouponHistoryId()).isEqualTo(couponHistory.getId());
         assertThat(issueCouponResponse.getCouponId()).isEqualTo(couponHistory.getCouponId());
         assertThat(issueCouponResponse.getMemberId()).isEqualTo(couponHistory.getMemberId());
-        assertThat(issueCouponResponse.getCouponIssuance()).isEqualTo(couponHistory.getCouponIssuance());
+        assertThat(issueCouponResponse.getCouponIssuance()).isEqualTo(couponHistory.getCouponIssuance().withNano(0).toString());
         assertThat(issueCouponResponse.getCouponUsed()).isEqualTo(couponHistory.getCouponUsed());
         assertThat(issueCouponResponse.getCouponUsed()).isFalse();
     }

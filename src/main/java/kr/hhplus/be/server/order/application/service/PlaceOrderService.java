@@ -10,9 +10,9 @@ import kr.hhplus.be.server.order.presentation.dto.response.OrderResponse;
 import kr.hhplus.be.server.orderproduct.application.dto.request.OrderProductServiceRequest;
 import kr.hhplus.be.server.orderproduct.application.dto.response.OrderProductResponse;
 import kr.hhplus.be.server.orderproduct.application.usecase.RegisterOrderProductUseCase;
-import kr.hhplus.be.server.payment.application.dto.request.PaymentServiceRequest;
+import kr.hhplus.be.server.payment.application.dto.request.RegisterPaymentInfoRequest;
 import kr.hhplus.be.server.payment.application.dto.response.PaymentResponse;
-import kr.hhplus.be.server.payment.application.usecase.PaymentUseCase;
+import kr.hhplus.be.server.payment.application.usecase.RegisterPaymentInfoUseCase;
 import kr.hhplus.be.server.product.domain.model.Product;
 import kr.hhplus.be.server.product.domain.repository.ProductRepository;
 import kr.hhplus.be.server.stock.application.usecase.DeductedStockUseCase;
@@ -33,9 +33,11 @@ public class PlaceOrderService implements PlaceOrderUseCase {
 
     private final OrderRepository orderRepository;
 
-    private final DeductedStockUseCase deductedStockUseCase;
     private final RegisterOrderProductUseCase registerOrderProductUseCase;
-    private final PaymentUseCase paymentUseCase;
+
+    private final DeductedStockUseCase deductedStockUseCase;
+
+    private final RegisterPaymentInfoUseCase registerPaymentInfoUseCase;
 
 
     @Transactional
@@ -69,7 +71,7 @@ public class PlaceOrderService implements PlaceOrderUseCase {
 
         Long totalAmount = calculatePoint(findProductList, responseList);
 
-        PaymentResponse paymentResponse = paymentUseCase.pay(new PaymentServiceRequest(Order.create(member.getId()).getId(), totalAmount, orderCommand.paymentMethod(), member.getId()));
+        PaymentResponse paymentResponse = registerPaymentInfoUseCase.registerPaymentInfo(new RegisterPaymentInfoRequest(order.getId(), totalAmount, orderCommand.paymentMethod(), member.getId()));
 
         return OrderResponse.from(order, paymentResponse);
     }

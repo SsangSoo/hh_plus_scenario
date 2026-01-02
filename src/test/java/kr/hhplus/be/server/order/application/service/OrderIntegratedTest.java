@@ -17,6 +17,7 @@ import kr.hhplus.be.server.product.presentation.dto.response.ProductResponse;
 import kr.hhplus.be.server.stock.presentation.dto.request.AddStockRequest;
 import kr.hhplus.be.server.stock.presentation.dto.response.StockResponse;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -40,7 +41,7 @@ class OrderIntegratedTest extends SpringBootTestSupport {
     }
 
     @Test
-    @DisplayName("주문 / 결제 Happy Case")
+    @DisplayName("주문과 결제는 로직이 분리되어 결제는 되지 않는다. 따라서 포인트 차감은 되지 않는다.")
     void orderAndPaymentTest() {
         // given : 주문 결제를 위한 환경 셋팅
         // 회원을 생성한다.
@@ -59,46 +60,47 @@ class OrderIntegratedTest extends SpringBootTestSupport {
 
         // when : 주문을 한다.
         placeOrderUseCase.order(orderRequest.toOrderCommand());
-            // 주문시 포인트 차감이 이뤄줘야 하고,
-            // 재고가 차감되어야 하며,
-            // 결제가 이루어져야 한다.
-            // 결제가 이루어지면, 결제 데이터를 전송하는 플랫폼으로 데이터를 보낸다(비동기)
 
         // then
         // 재고 확인 25
         stockResponse = retrieveStockUseCase.retrieveStock(productResponse.getId());
         assertThat(stockResponse).isNotNull();
         assertThat(stockResponse.getQuantity()).isEqualTo(25L);
-        
-        // 포인트 확인 11000
+
+        // 기존에는 포인트로 주문시 포인트 차감이 한 번에 이뤄졌지만, 주문 / 결제 로직이 분리된 상태로, 포인트는 차감되지 않는다.
+        // 포인트 확인 11000 -> 30000L
         pointResponse = retrievePointUseCase.retrieve(memberResponse.getId());
         assertThat(pointResponse).isNotNull();
-        assertThat(pointResponse.getPoint()).isEqualTo(11000L);
+        assertThat(pointResponse.getPoint()).isEqualTo(30000L);
 
     }
 
-    @Test
-    @DisplayName("주문 도중 포인트가 부족하면, 재고는 차감되지 않고, 그대로여야 한다.")
-    void ifPointNotEnoughThenStockShouldKeep() {
-        // given
-        Long addStock = 30L;
-        MemberResponse memberResponse = registerMemberUseCase.register(new RegisterMemberRequest("상남자", LocalDate.now(), "주소").toServiceRequest());
-        ProductResponse productResponse = registerProductUseCase.register(new RegisterProductRequest("아메리카노", 3800L).toServiceRequest());
-        addStockUseCase.addStock(new AddStockRequest(productResponse.getId(), addStock).toAddStock());
-
-        OrderRequest orderRequest = new OrderRequest(memberResponse.getId(), List.of(new OrderProductRequest(productResponse.getId(), 5L)), "POINT");
-
-        // when
-        assertThatThrownBy(() -> placeOrderUseCase.order(orderRequest.toOrderCommand()))
-                .isInstanceOf(BusinessLogicRuntimeException.class)
-                .hasMessage(BusinessLogicMessage.POINT_IS_NOT_ENOUGH.getMessage());
-
-        // then
-        StockResponse stockResponse = retrieveStockUseCase.retrieveStock(productResponse.getId());
-        assertThat(stockResponse.getProductId()).isEqualTo(productResponse.getId());
-        assertThat(stockResponse.getQuantity()).isEqualTo(addStock);
-
-    }
+    /**
+     * 해당 테스트는 주문 / 결제 로직이 분리되어 무시된다.
+     * 결제 포인트가 충분한지에 대한 검증은 결제 로직에서 다룬다.
+     * 이후에 지워질 예정
+     */
+//    @Test
+//    @DisplayName("주문 도중 포인트가 부족하면, 재고는 차감되지 않고, 그대로여야 한다.")
+//    void ifPointNotEnoughThenStockShouldKeep() {
+//        // given
+//        Long addStock = 30L;
+//        MemberResponse memberResponse = registerMemberUseCase.register(new RegisterMemberRequest("상남자", LocalDate.now(), "주소").toServiceRequest());
+//        ProductResponse productResponse = registerProductUseCase.register(new RegisterProductRequest("아메리카노", 3800L).toServiceRequest());
+//        addStockUseCase.addStock(new AddStockRequest(productResponse.getId(), addStock).toAddStock());
+//
+//        OrderRequest orderRequest = new OrderRequest(memberResponse.getId(), List.of(new OrderProductRequest(productResponse.getId(), 5L)), "POINT");
+//
+//        // when
+//        assertThatThrownBy(() -> placeOrderUseCase.order(orderRequest.toOrderCommand()))
+//                .isInstanceOf(BusinessLogicRuntimeException.class)
+//                .hasMessage(BusinessLogicMessage.POINT_IS_NOT_ENOUGH.getMessage());
+//
+//        // then
+//        StockResponse stockResponse = retrieveStockUseCase.retrieveStock(productResponse.getId());
+//        assertThat(stockResponse.getProductId()).isEqualTo(productResponse.getId());
+//        assertThat(stockResponse.getQuantity()).isEqualTo(addStock);
+//    }
 
     @Test
     @DisplayName("주문 도중 하나의 상품이라도 존재하지 않으면 주문은 실패한다.")

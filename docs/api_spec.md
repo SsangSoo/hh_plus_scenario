@@ -118,18 +118,19 @@
 `POST` `/api/order`
 
 ### Description
-상품을 주문하고 결제한다.
+상품을 주문한다.
 
 ### Header
 
 > none
 
 ### Parameter
-| parameter                     | required | type  | description |
-|-------------------------------|----------|-------|-------------|
-| memberId                      | Y        | Long|  주문하는 사용자의 Id|
-| orderProductRequest.productId | Y        | Long | 주문하려는 상품의 Id|
-| orderProductRequest.quantity  | Y       | Long | 주문하려는 상품의 수량|
+| parameter                     | required | type                                             | description   |
+|-------------------------------|----------|--------------------------------------------------|---------------|
+| memberId                      | Y        | Long                                             | 주문하는 사용자의 Id  |
+| orderProductRequest.productId | Y        | Long                                             | 주문하려는 상품의 Id  |
+| orderProductRequest.quantity  | Y       | Long                                             | 주문하려는 상품의 수량  |
+| paymentMethod  | Y       | PaymentMethod(CREDIT_CARD, BANK_TRANSFER, POINT) | 주문하려는 상품의 수량  |
 
 ### Response
 - Status : 201(CREATED)
@@ -141,7 +142,7 @@
     "orderDate":"2025-11-24T13:50:30",
     "paymentId":1,
     "totalAmount":12000,
-    "paymentState":"PAYMENT_COMPLETE"
+    "paymentState":"PENDING"
   }
 ]
 ```

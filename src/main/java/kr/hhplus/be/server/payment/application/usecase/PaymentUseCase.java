@@ -1,9 +1,10 @@
 package kr.hhplus.be.server.payment.application.usecase;
 
-import kr.hhplus.be.server.payment.application.dto.request.PaymentServiceRequest;
 import kr.hhplus.be.server.payment.application.dto.response.PaymentResponse;
+import kr.hhplus.be.server.payment.presentation.dto.PaymentRequest;
 
 public interface PaymentUseCase {
 
-    PaymentResponse pay(PaymentServiceRequest request);
+    PaymentResponse payment(PaymentRequest request);
+
 }

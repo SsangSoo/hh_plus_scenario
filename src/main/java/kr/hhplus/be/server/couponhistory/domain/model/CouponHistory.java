@@ -23,6 +23,11 @@ public class CouponHistory {
         this.couponUsed = couponUsed;
     }
 
+    public void use() {
+        this.couponUsed = true;
+    }
+
+
     public static CouponHistory of(Long id, Long couponId, Long memberId, LocalDateTime couponIssuance, Boolean couponUsed) {
         return new CouponHistory(id, couponId, memberId, couponIssuance, couponUsed);
     }

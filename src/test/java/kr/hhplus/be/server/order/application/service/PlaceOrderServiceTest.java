@@ -13,7 +13,7 @@ import kr.hhplus.be.server.order.presentation.dto.response.OrderResponse;
 import kr.hhplus.be.server.orderproduct.application.usecase.RegisterOrderProductUseCase;
 import kr.hhplus.be.server.orderproduct.domain.model.OrderProduct;
 import kr.hhplus.be.server.orderproduct.application.dto.response.OrderProductResponse;
-import kr.hhplus.be.server.payment.application.usecase.PaymentUseCase;
+import kr.hhplus.be.server.payment.application.usecase.RegisterPaymentInfoUseCase;
 import kr.hhplus.be.server.payment.domain.model.Payment;
 import kr.hhplus.be.server.payment.domain.model.PaymentState;
 import kr.hhplus.be.server.payment.application.dto.response.PaymentResponse;
@@ -57,7 +57,7 @@ class PlaceOrderServiceTest {
     OrderRepository orderRepository;
 
     @Mock
-    PaymentUseCase paymentUseCase;
+    RegisterPaymentInfoUseCase registerPaymentInfoUseCase;
 
     @Mock
     DeductedStockUseCase deductedStockUseCase;
@@ -71,7 +71,7 @@ class PlaceOrderServiceTest {
 
     @BeforeEach
     void setUp() {
-        placeOrderUseCase = new PlaceOrderService(memberRepository, productRepository, orderRepository, deductedStockUseCase, registerOrderProductUseCase, paymentUseCase);
+        placeOrderUseCase = new PlaceOrderService(memberRepository, productRepository, orderRepository, registerOrderProductUseCase, deductedStockUseCase, registerPaymentInfoUseCase);
     }
 
     @Test
@@ -181,7 +181,7 @@ class PlaceOrderServiceTest {
 
 
     @Test
-    @DisplayName("주문을 하면 결제가 이루어진다.")
+    @DisplayName("주문을 하면 결제정보가 입력된다.")
     void createPaymentWhenOrderIsPlaced() {
         // given
         // 주문 상품 및 주문 요청
@@ -227,7 +227,7 @@ class PlaceOrderServiceTest {
         Payment payment = Payment.create(order.getId(), product.getPrice() * orderProductRequest.quantity(), PaymentMethod.POINT);
         payment.assignId(1L);
         PaymentResponse paymentResponse = PaymentResponse.from(payment);
-        given(paymentUseCase.pay(any())).willReturn(paymentResponse);
+        given(registerPaymentInfoUseCase.registerPaymentInfo(any())).willReturn(paymentResponse);
 
         // when
         OrderResponse orderResponse = placeOrderUseCase.order(orderRequest.toOrderCommand());
@@ -238,7 +238,7 @@ class PlaceOrderServiceTest {
         assertThat(orderResponse.getPaymentId()).isEqualTo(payment.getId());
         assertThat(orderResponse.getMemberId()).isEqualTo(member.getId());
         assertThat(orderResponse.getTotalAmount()).isEqualTo(totalPoint);
-        assertThat(orderResponse.getPaymentState()).isEqualTo(PaymentState.PAYMENT_COMPLETE.name());
+        assertThat(orderResponse.getPaymentState()).isEqualTo(PaymentState.PENDING.name());
     }
 
 }

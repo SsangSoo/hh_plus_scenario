@@ -9,6 +9,7 @@ public class Payment {
     private Long id;
     private Long orderId;
     private Long totalAmount;
+    private PaymentMethod paymentMethod;
     private PaymentState paymentState;
 
     public static Payment of(Long id,  Long orderId, Long totalAmount, PaymentState paymentState) {
@@ -22,12 +23,8 @@ public class Payment {
     private Payment(Long orderId, Long totalAmount, PaymentMethod paymentMethod) {
         this.orderId = orderId;
         this.totalAmount = totalAmount;
-
-        switch (paymentMethod) {
-            case POINT -> this.paymentState = PaymentState.PAYMENT_COMPLETE;
-            case CREDIT_CARD -> this.paymentState = PaymentState.PENDING;
-            case BANK_TRANSFER ->  this.paymentState = PaymentState.PENDING;
-        }
+        this.paymentMethod = paymentMethod;
+        this.paymentState = PaymentState.PENDING;
     }
 
     private Payment(Long id, Long orderId, Long totalAmount, PaymentState paymentState) {
@@ -39,6 +36,10 @@ public class Payment {
 
     public void assignId(Long id) {
         this.id = id;
+    }
+
+    public void changeState(PaymentState paymentState) {
+        this.paymentState = paymentState;
     }
 }
 

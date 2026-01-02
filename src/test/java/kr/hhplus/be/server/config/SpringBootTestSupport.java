@@ -15,7 +15,7 @@ import kr.hhplus.be.server.payment.application.service.payment_method.BankTransf
 import kr.hhplus.be.server.payment.application.service.payment_method.CardPayment;
 import kr.hhplus.be.server.payment.application.service.payment_method.PointPayment;
 import kr.hhplus.be.server.payment.application.usecase.PaymentDataTransportUseCase;
-import kr.hhplus.be.server.payment.application.usecase.PaymentUseCase;
+import kr.hhplus.be.server.payment.application.usecase.RegisterPaymentInfoUseCase;
 import kr.hhplus.be.server.payment.domain.repository.PaymentRepository;
 import kr.hhplus.be.server.point.application.usecase.ChargePointUseCase;
 import kr.hhplus.be.server.point.application.usecase.RetrievePointUseCase;
@@ -102,7 +102,7 @@ public abstract class SpringBootTestSupport {
 
     // Payment
     @Autowired
-    protected PaymentUseCase paymentUseCase;
+    protected RegisterPaymentInfoUseCase registerPaymentInfoUseCase;
 
     @Autowired
     protected PaymentRepository paymentRepository;

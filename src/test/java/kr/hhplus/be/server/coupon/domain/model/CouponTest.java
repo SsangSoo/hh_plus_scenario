@@ -47,7 +47,7 @@ class CouponTest {
 
 
     @Test
-    @DisplayName("총 금액을 입력받으면, 쿠폰의 할인율을 계산하여 반환한다.")
+    @DisplayName("총 금액을 입력받으면, 할인된 금액을 반환한다.")
     void calculateDiscountRateTest() {
         Long totalAmount = 10000L;
 
@@ -55,7 +55,7 @@ class CouponTest {
 
         Long calculatedAmount = coupon.calculateDiscountRate(totalAmount);
 
-        assertThat(calculatedAmount).isEqualTo(9000L);
+        assertThat(calculatedAmount).isEqualTo(1000L);
     }
 
 

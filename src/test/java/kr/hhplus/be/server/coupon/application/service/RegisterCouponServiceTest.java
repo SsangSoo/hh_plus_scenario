@@ -57,7 +57,7 @@ class RegisterCouponServiceTest {
         Assertions.assertThat(couponResponse.getCouponId()).isEqualTo(coupon.getId());
         Assertions.assertThat(couponResponse.getAmount()).isEqualTo(coupon.getAmount());
         Assertions.assertThat(couponResponse.getCoupon()).isEqualTo(coupon.getCoupon());
-        Assertions.assertThat(couponResponse.getExpiryDate()).isEqualTo(coupon.getExpiryDate());
+        Assertions.assertThat(couponResponse.getExpiryDate()).isEqualTo(coupon.getExpiryDate().toString());
         Assertions.assertThat(couponResponse.getDiscountRate()).isEqualTo(coupon.getDiscountRate());
 
 

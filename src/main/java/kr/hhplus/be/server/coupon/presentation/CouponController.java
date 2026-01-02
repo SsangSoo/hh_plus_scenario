@@ -4,7 +4,6 @@ import kr.hhplus.be.server.coupon.application.usecase.IssueCouponUseCase;
 import kr.hhplus.be.server.coupon.application.usecase.RegisterCouponUseCase;
 import kr.hhplus.be.server.coupon.application.usecase.RetrieveCouponUseCase;
 import kr.hhplus.be.server.coupon.presentation.dto.request.IssueCouponRequest;
-import kr.hhplus.be.server.coupon.presentation.dto.request.CouponIsuueRequest;
 import kr.hhplus.be.server.coupon.presentation.dto.request.RegisterCouponRequest;
 import kr.hhplus.be.server.coupon.presentation.dto.response.IssueCouponResponse;
 import kr.hhplus.be.server.coupon.presentation.dto.response.CouponResponse;
@@ -29,8 +28,8 @@ public class CouponController {
         return new ResponseEntity<>(registered, HttpStatus.CREATED);
     }
 
-    @GetMapping("/{coupon-id}")
-    public ResponseEntity<CouponResponse> retrieve(@PathVariable("coupon-id") Long couponId) {
+    @GetMapping("/{couponId}")
+    public ResponseEntity<CouponResponse> retrieve(@PathVariable("couponId") Long couponId) {
         CouponResponse retrieved = retrieveCouponUseCase.retrieve(couponId);
 
         return ResponseEntity.ok(retrieved);
@@ -39,8 +38,11 @@ public class CouponController {
 
     @PostMapping("/issue")
     public ResponseEntity<IssueCouponResponse> issue(@RequestBody IssueCouponRequest issueCouponRequest) {
-        issueCouponUseCase.issue(issueCouponRequest.toServiceRequest());
+        IssueCouponResponse issueCouponResponse = issueCouponUseCase.issue(issueCouponRequest.toServiceRequest());
+
+        return ResponseEntity.ok(issueCouponResponse);
     }
+
 
 
 }

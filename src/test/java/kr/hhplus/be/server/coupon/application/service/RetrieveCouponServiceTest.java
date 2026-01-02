@@ -46,7 +46,7 @@ class RetrieveCouponServiceTest {
         CouponResponse retrieved = retrieveCouponUseCase.retrieve(1L);
 
         // then
-        assertThat(retrieved.getId()).isEqualTo(coupon.getId());
+        assertThat(retrieved.getCouponId()).isEqualTo(coupon.getId());
         assertThat(retrieved.getCoupon()).isEqualTo(coupon.getCoupon());
         assertThat(retrieved.getAmount()).isEqualTo(coupon.getAmount());
         assertThat(retrieved.getExpiryDate()).isEqualTo(coupon.getExpiryDate());

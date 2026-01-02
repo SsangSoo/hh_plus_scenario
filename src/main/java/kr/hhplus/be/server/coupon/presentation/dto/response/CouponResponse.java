@@ -8,16 +8,16 @@ import java.time.LocalDate;
 @Getter
 public class CouponResponse {
 
-    private Long id;
+    private Long couponId;
     private String coupon;
-    private LocalDate expiryDate;
+    private String expiryDate;
     private Integer amount;
     private Integer discountRate;
 
-    private CouponResponse(Long id, String coupon, LocalDate expiryDate, Integer amount, Integer discountRate) {
-        this.id = id;
+    private CouponResponse(Long couponId, String coupon, LocalDate expiryDate, Integer amount, Integer discountRate) {
+        this.couponId = couponId;
         this.coupon = coupon;
-        this.expiryDate = expiryDate;
+        this.expiryDate = expiryDate.toString();
         this.amount = amount;
         this.discountRate = discountRate;
     }

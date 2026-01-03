@@ -67,6 +67,7 @@ dependencies {
 	testImplementation("org.testcontainers:mysql")
 	testImplementation("org.springframework.restdocs:spring-restdocs-mockmvc")
 	testImplementation("com.epages:restdocs-api-spec-mockmvc:0.18.2")
+    testImplementation ("io.rest-assured:rest-assured")
 
 	testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 

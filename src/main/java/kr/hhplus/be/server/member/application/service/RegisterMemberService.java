@@ -8,9 +8,11 @@ import kr.hhplus.be.server.member.presentation.dto.response.MemberResponse;
 import kr.hhplus.be.server.point.domain.model.Point;
 import kr.hhplus.be.server.point.domain.repository.PointRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class RegisterMemberService implements RegisterMemberUseCase {
@@ -22,9 +24,11 @@ public class RegisterMemberService implements RegisterMemberUseCase {
     @Transactional
     public MemberResponse register(RegisterMemberCommand request) {
         // 멤버 생성
+        log.info("회원 생성");
         Member member = memberRepository.save(Member.create(request));
 
         // 멤버의 포인트 생성
+        log.info("회원 포인트 생성");
         pointRepository.save(Point.create(member.getId()));
 
         return MemberResponse.from(member);

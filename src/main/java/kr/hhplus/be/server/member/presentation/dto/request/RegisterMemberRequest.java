@@ -5,6 +5,7 @@ import jakarta.validation.constraints.NotNull;
 import kr.hhplus.be.server.member.application.dto.RegisterMemberCommand;
 
 import java.time.LocalDate;
+import java.util.Objects;
 
 public record RegisterMemberRequest(
 
@@ -18,6 +19,15 @@ public record RegisterMemberRequest(
 ) {
 
     public RegisterMemberCommand toServiceRequest() {
+        if(Objects.isNull(birthDate) && Objects.isNull(address)) {
+            return new RegisterMemberCommand(name, null, null);
+        }
+        if(Objects.isNull(birthDate)) {
+            return new RegisterMemberCommand(name, null, address);
+        }
+        if(Objects.isNull(address)) {
+            return new RegisterMemberCommand(name, birthDate.toString(), null);
+        }
         return new RegisterMemberCommand(name, birthDate.toString(), address);
     }
 

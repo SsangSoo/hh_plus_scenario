@@ -11,4 +11,8 @@ public interface CouponRepository {
     List<Coupon> saveList(List<Coupon> coupons);
 
     Coupon retrieve(Long couponId);
+
+    Coupon retrieveForUpdate(Long couponId);
+
+    Coupon modify(Coupon coupon);
 }

@@ -18,6 +18,7 @@ import kr.hhplus.be.server.payment.domain.model.Payment;
 import kr.hhplus.be.server.payment.domain.model.PaymentState;
 import kr.hhplus.be.server.payment.domain.repository.PaymentRepository;
 import kr.hhplus.be.server.payment.presentation.dto.PaymentRequest;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,6 +27,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 public class PaymentService implements PaymentUseCase {
 
@@ -71,6 +73,7 @@ public class PaymentService implements PaymentUseCase {
 
         // 결제 방식 확인
         PaymentStrategy paymentStrategy = paymentMethodStrategyMap.get(payment.getPaymentMethod());
+
         if (paymentStrategy == null) {
             throw new BusinessLogicRuntimeException(BusinessLogicMessage.UNSUPPORTED_PAYMENT_METHOD + " : " + payment.getPaymentMethod());
         }
@@ -96,9 +99,12 @@ public class PaymentService implements PaymentUseCase {
         paymentStrategy.pay(new PayServiceRequest(payment.getOrderId(), payment.getId(), discountApplyAmount, payment.getTotalAmount(), payment.getPaymentMethod(), request.memberId()));
 
         // 결제 상태 업데이트
+        if(discountApplyAmount > 0L) {
+            payment.discountAmount(discountApplyAmount);
+        }
+
         payment.changeState(PaymentState.PAYMENT_COMPLETE);
         paymentRepository.changeState(payment);
-
 
         // 데이터 전송
         try {
@@ -106,7 +112,6 @@ public class PaymentService implements PaymentUseCase {
         } catch (Exception e) {
             outboxRepository.paymentComplete(payment.getOrderId());
         }
-
 
         return PaymentResponse.from(payment);
     }

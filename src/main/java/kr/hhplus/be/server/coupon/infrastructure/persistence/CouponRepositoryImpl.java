@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 @RequiredArgsConstructor
@@ -37,6 +38,21 @@ public class CouponRepositoryImpl implements CouponRepository {
     public Coupon retrieve(Long couponId) {
         CouponJpaEntity couponJpaEntity = jpa.findById(couponId)
                 .orElseThrow(() -> new BusinessLogicRuntimeException(BusinessLogicMessage.NOT_FOUND_COUPON));
+        return couponJpaEntity.toDomain();
+    }
+
+    @Override
+    public Coupon retrieveForUpdate(Long couponId) {
+        CouponJpaEntity couponJpaEntity = jpa.findByIdForUpdate(couponId)
+                .orElseThrow(() -> new BusinessLogicRuntimeException(BusinessLogicMessage.NOT_FOUND_COUPON));
+        return couponJpaEntity.toDomain();
+    }
+
+    @Override
+    public Coupon modify(Coupon coupon) {
+        CouponJpaEntity couponJpaEntity = jpa.findById(coupon.getId())
+                .orElseThrow(() -> new BusinessLogicRuntimeException(BusinessLogicMessage.NOT_FOUND_COUPON));
+        couponJpaEntity.modify(coupon.getAmount());
         return couponJpaEntity.toDomain();
     }
 

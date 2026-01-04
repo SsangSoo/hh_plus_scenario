@@ -1,5 +1,10 @@
 package kr.hhplus.be.server.config;
 
+import kr.hhplus.be.server.coupon.application.usecase.IssueCouponUseCase;
+import kr.hhplus.be.server.coupon.application.usecase.RegisterCouponUseCase;
+import kr.hhplus.be.server.coupon.application.usecase.RetrieveCouponUseCase;
+import kr.hhplus.be.server.coupon.infrastructure.persistence.CouponJpaRepository;
+import kr.hhplus.be.server.couponhistory.infrastructure.persistence.CouponHistoryJpaRepository;
 import kr.hhplus.be.server.member.application.usecase.RegisterMemberUseCase;
 import kr.hhplus.be.server.member.application.usecase.RemoveMemberUseCase;
 import kr.hhplus.be.server.member.application.usecase.RetrieveMemberUseCase;
@@ -15,8 +20,10 @@ import kr.hhplus.be.server.payment.application.service.payment_method.BankTransf
 import kr.hhplus.be.server.payment.application.service.payment_method.CardPayment;
 import kr.hhplus.be.server.payment.application.service.payment_method.PointPayment;
 import kr.hhplus.be.server.payment.application.usecase.PaymentDataTransportUseCase;
+import kr.hhplus.be.server.payment.application.usecase.PaymentUseCase;
 import kr.hhplus.be.server.payment.application.usecase.RegisterPaymentInfoUseCase;
 import kr.hhplus.be.server.payment.domain.repository.PaymentRepository;
+import kr.hhplus.be.server.payment.infrastructure.persistence.PaymentJpaRepository;
 import kr.hhplus.be.server.point.application.usecase.ChargePointUseCase;
 import kr.hhplus.be.server.point.application.usecase.RetrievePointUseCase;
 import kr.hhplus.be.server.point.domain.repository.PointRepository;
@@ -105,10 +112,16 @@ public abstract class SpringBootTestSupport {
     protected RegisterPaymentInfoUseCase registerPaymentInfoUseCase;
 
     @Autowired
+    protected PaymentUseCase paymentUseCase;
+
+    @Autowired
     protected PaymentRepository paymentRepository;
 
     @Autowired
     protected PaymentDataTransportUseCase paymentDataTransportUseCase;
+
+    @Autowired
+    protected PaymentJpaRepository paymentJpaRepository;
 
     @Autowired
     protected BankTransferPayment bankTransferPayment;
@@ -153,7 +166,21 @@ public abstract class SpringBootTestSupport {
     protected ProductJpaRepository productJpaRepository;
 
 
+    // Coupon
+    @Autowired
+    protected IssueCouponUseCase issueCouponUseCase;
 
+    @Autowired
+    protected RegisterCouponUseCase registerCouponUseCase;
+
+    @Autowired
+    protected RetrieveCouponUseCase retrieveCouponUseCase;
+
+    @Autowired
+    protected CouponJpaRepository couponJpaRepository;
+
+    @Autowired
+    protected CouponHistoryJpaRepository couponHistoryJpaRepository;
 
 
 

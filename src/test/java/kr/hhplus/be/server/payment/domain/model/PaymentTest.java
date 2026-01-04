@@ -21,7 +21,7 @@ class PaymentTest {
     @Test
     @DisplayName("of 으로 테스트")
     void ofTest() {
-        Payment payment = Payment.of(1L, 1L,3000L, PaymentState.PAYMENT_COMPLETE);
+        Payment payment = Payment.of(1L, 1L,3000L, PaymentMethod.POINT ,PaymentState.PAYMENT_COMPLETE);
 
         assertThat(payment.getId()).isNotNull();
         assertThat(payment.getId()).isEqualTo(1L);
@@ -71,6 +71,18 @@ class PaymentTest {
 
 
         assertThat(payment.getPaymentState()).isEqualTo(PaymentState.PAYMENT_COMPLETE);
+    }
+
+    @Test
+    @DisplayName("할인 금액을 적용하면, 총 금액은 바껴야 한다.")
+    void applyDiscountAmountThenChangeTotalAmountTest() {
+        Payment payment = Payment.create(1L, 3000L, PaymentMethod.POINT);
+
+        assertThat(payment.getTotalAmount()).isEqualTo(3000L);
+
+        payment.discountAmount(1000L);
+
+        assertThat(payment.getTotalAmount()).isEqualTo(2000L);
     }
 
 }

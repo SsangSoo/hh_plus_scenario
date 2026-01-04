@@ -56,6 +56,7 @@ public class PaymentJpaEntity extends BaseEntity {
                 id,
                 orderId,
                 totalAmount,
+                paymentMethod,
                 paymentState
         );
     }

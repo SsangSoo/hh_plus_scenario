@@ -33,7 +33,7 @@ public class IssueCouponService implements IssueCouponUseCase {
         Member member = memberRepository.retrieve(serviceRequest.memberId());
 
         // 쿠폰 찾기
-        Coupon coupon = couponRepository.retrieve(serviceRequest.couponId());
+        Coupon coupon = couponRepository.retrieveForUpdate(serviceRequest.couponId());
 
         // 멤버한테 해당 쿠폰이 이미 있는지 확인
         Optional<CouponHistory> couponHistory = couponHistoryRepository.retrieveCouponHistory(member.getId(), coupon.getId());
@@ -44,6 +44,7 @@ public class IssueCouponService implements IssueCouponUseCase {
 
         // 쿠폰 발행(개수 검증 도메인에서 됨)
         coupon.issue();
+        couponRepository.modify(coupon);
 
         // 쿠폰 발행 선착순발행
         CouponHistory savedCouponHistory = couponHistoryRepository.register(CouponHistory.create(coupon.getId(), member.getId()));

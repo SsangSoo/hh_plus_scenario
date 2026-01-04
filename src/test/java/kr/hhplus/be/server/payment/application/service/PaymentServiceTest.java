@@ -7,6 +7,7 @@ import kr.hhplus.be.server.couponhistory.domain.model.CouponHistory;
 import kr.hhplus.be.server.couponhistory.domain.repository.CouponHistoryRepository;
 import kr.hhplus.be.server.order.presentation.dto.request.PaymentMethod;
 import kr.hhplus.be.server.outbox.domain.repository.OutboxRepository;
+import kr.hhplus.be.server.payment.application.dto.request.PaymentServiceRequest;
 import kr.hhplus.be.server.payment.application.dto.response.PaymentResponse;
 import kr.hhplus.be.server.payment.application.service.payment_method.PaymentStrategy;
 import kr.hhplus.be.server.payment.application.service.payment_method.PointPayment;
@@ -15,7 +16,6 @@ import kr.hhplus.be.server.payment.application.usecase.PaymentUseCase;
 import kr.hhplus.be.server.payment.domain.model.Payment;
 import kr.hhplus.be.server.payment.domain.model.PaymentState;
 import kr.hhplus.be.server.payment.domain.repository.PaymentRepository;
-import kr.hhplus.be.server.payment.presentation.dto.PaymentRequest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -89,7 +89,7 @@ class PaymentServiceTest {
         willDoNothing().given(pointPayment).pay(any());
 
         // when
-        PaymentResponse response = paymentService.payment(new PaymentRequest(1L, 1L, 1L, null));
+        PaymentResponse response = paymentService.payment(new PaymentServiceRequest(1L, 1L, 1L, null));
 
         // then
         assertThat(response.getId()).isEqualTo(payment.getId());
@@ -117,7 +117,7 @@ class PaymentServiceTest {
         given(paymentRepository.retrievePayment(any())).willReturn(payment);
 
         // when // then
-        assertThatThrownBy(() -> paymentService.payment(new PaymentRequest(1L, 1L, 1L, null)))
+        assertThatThrownBy(() -> paymentService.payment(new PaymentServiceRequest(1L, 1L, 1L, null)))
                 .isInstanceOf(BusinessLogicRuntimeException.class)
                 .hasMessage(BusinessLogicMessage.PAYMENT_COMPLETE.getMessage());
     }
@@ -132,7 +132,7 @@ class PaymentServiceTest {
         given(paymentRepository.retrievePayment(any())).willReturn(payment);
 
         // when // then
-        assertThatThrownBy(() -> paymentService.payment(new PaymentRequest(1L, 1L, 1L, null)))
+        assertThatThrownBy(() -> paymentService.payment(new PaymentServiceRequest(1L, 1L, 1L, null)))
                 .isInstanceOf(BusinessLogicRuntimeException.class)
                 .hasMessage(BusinessLogicMessage.PAYMENT_CANCEL.getMessage());
     }
@@ -149,7 +149,7 @@ class PaymentServiceTest {
         given(couponHistoryRepository.retrieveCouponHistory(anyLong(), anyLong())).willThrow(new BusinessLogicRuntimeException(BusinessLogicMessage.NOT_FOUND_COUPON));
 
         // when // then
-        assertThatThrownBy(() -> paymentService.payment(new PaymentRequest(1L, 1L, 1L, 1L)))
+        assertThatThrownBy(() -> paymentService.payment(new PaymentServiceRequest(1L, 1L, 1L, 1L)))
                 .isInstanceOf(BusinessLogicRuntimeException.class)
                 .hasMessage(BusinessLogicMessage.NOT_FOUND_COUPON.getMessage());
     }
@@ -168,7 +168,7 @@ class PaymentServiceTest {
         given(couponHistoryRepository.retrieveCouponHistory(anyLong(), anyLong())).willReturn(Optional.of(couponHistory));
 
         // when // then
-        assertThatThrownBy(() -> paymentService.payment(new PaymentRequest(1L, 1L, 1L, 1L)))
+        assertThatThrownBy(() -> paymentService.payment(new PaymentServiceRequest(1L, 1L, 1L, 1L)))
                 .isInstanceOf(BusinessLogicRuntimeException.class)
                 .hasMessage(BusinessLogicMessage.ALREADY_USED_THIS_COUPON.getMessage());
     }
@@ -182,13 +182,13 @@ class PaymentServiceTest {
         payment.assignId(1L);
         given(paymentRepository.retrievePayment(any())).willReturn(payment);
 
-        PaymentRequest paymentRequest = new PaymentRequest(1L, 1L, 1L, null);
+        PaymentServiceRequest PaymentServiceRequest = new PaymentServiceRequest(1L, 1L, 1L, null);
 
         willThrow(new BusinessLogicRuntimeException(BusinessLogicMessage.POINT_IS_NOT_ENOUGH.getMessage()))
                 .given(pointPayment).pay(any());
 
         // when // then
-        assertThatThrownBy(() -> paymentService.payment(paymentRequest))
+        assertThatThrownBy(() -> paymentService.payment(PaymentServiceRequest))
                 .hasMessage(BusinessLogicMessage.POINT_IS_NOT_ENOUGH.getMessage())
                 .isInstanceOf(BusinessLogicRuntimeException.class);
     }

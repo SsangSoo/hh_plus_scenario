@@ -11,6 +11,7 @@ import kr.hhplus.be.server.order.application.dto.OrderCommand;
 import kr.hhplus.be.server.order.presentation.dto.request.PaymentMethod;
 import kr.hhplus.be.server.order.presentation.dto.response.OrderResponse;
 import kr.hhplus.be.server.orderproduct.application.dto.request.OrderProductServiceRequest;
+import kr.hhplus.be.server.payment.application.dto.request.PaymentServiceRequest;
 import kr.hhplus.be.server.payment.application.dto.response.PaymentResponse;
 import kr.hhplus.be.server.payment.domain.model.PaymentState;
 import kr.hhplus.be.server.payment.presentation.dto.PaymentRequest;
@@ -93,7 +94,7 @@ class CouponIntegrationTest  extends SpringBootTestSupport {
         assertThat(orderResponse.getPaymentState()).isEqualTo(PaymentState.PENDING.name());
 
         // when
-        PaymentResponse paymentResponse = paymentUseCase.payment(new PaymentRequest(orderResponse.getOrderId(), registeredMember.getId(), orderResponse.getPaymentId(), registeredCoupon.getCouponId()));
+        PaymentResponse paymentResponse = paymentUseCase.payment(new PaymentServiceRequest(orderResponse.getOrderId(), registeredMember.getId(), orderResponse.getPaymentId(), registeredCoupon.getCouponId()));
 
         // then
         assertThat(paymentResponse.getTotalAmount()).isEqualTo(180000L);

@@ -3,7 +3,9 @@ package kr.hhplus.be.server.config;
 import kr.hhplus.be.server.coupon.application.usecase.IssueCouponUseCase;
 import kr.hhplus.be.server.coupon.application.usecase.RegisterCouponUseCase;
 import kr.hhplus.be.server.coupon.application.usecase.RetrieveCouponUseCase;
+import kr.hhplus.be.server.coupon.domain.repository.CouponRepository;
 import kr.hhplus.be.server.coupon.infrastructure.persistence.CouponJpaRepository;
+import kr.hhplus.be.server.couponhistory.domain.repository.CouponHistoryRepository;
 import kr.hhplus.be.server.couponhistory.infrastructure.persistence.CouponHistoryJpaRepository;
 import kr.hhplus.be.server.member.application.usecase.RegisterMemberUseCase;
 import kr.hhplus.be.server.member.application.usecase.RemoveMemberUseCase;
@@ -16,6 +18,9 @@ import kr.hhplus.be.server.order.infrastructure.persistence.OrderJpaRepository;
 import kr.hhplus.be.server.orderproduct.application.usecase.RegisterOrderProductUseCase;
 import kr.hhplus.be.server.orderproduct.domain.repository.OrderProductRepository;
 import kr.hhplus.be.server.orderproduct.infrastructure.persistence.OrderProductJpaRepository;
+import kr.hhplus.be.server.outbox.domain.model.Outbox;
+import kr.hhplus.be.server.outbox.domain.repository.OutboxRepository;
+import kr.hhplus.be.server.outbox.infrastructure.OutboxJpaRepository;
 import kr.hhplus.be.server.payment.application.service.payment_method.BankTransferPayment;
 import kr.hhplus.be.server.payment.application.service.payment_method.CardPayment;
 import kr.hhplus.be.server.payment.application.service.payment_method.PointPayment;
@@ -177,13 +182,24 @@ public abstract class SpringBootTestSupport {
     protected RetrieveCouponUseCase retrieveCouponUseCase;
 
     @Autowired
+    protected CouponRepository couponRepository;
+
+    @Autowired
     protected CouponJpaRepository couponJpaRepository;
+
+    @Autowired
+    protected CouponHistoryRepository couponHistoryRepository;
 
     @Autowired
     protected CouponHistoryJpaRepository couponHistoryJpaRepository;
 
 
+    // outbox
+    @Autowired
+    protected OutboxRepository outboxRepository;
 
+    @Autowired
+    protected OutboxJpaRepository outboxJpaRepository;
 
 
 

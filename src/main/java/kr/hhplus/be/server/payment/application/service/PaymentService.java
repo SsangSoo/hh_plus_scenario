@@ -7,9 +7,9 @@ import kr.hhplus.be.server.coupon.domain.repository.CouponRepository;
 import kr.hhplus.be.server.couponhistory.domain.model.CouponHistory;
 import kr.hhplus.be.server.couponhistory.domain.repository.CouponHistoryRepository;
 import kr.hhplus.be.server.order.presentation.dto.request.PaymentMethod;
-import kr.hhplus.be.server.outbox.domain.model.Outbox;
 import kr.hhplus.be.server.outbox.domain.repository.OutboxRepository;
 import kr.hhplus.be.server.payment.application.dto.request.PayServiceRequest;
+import kr.hhplus.be.server.payment.application.dto.request.PaymentServiceRequest;
 import kr.hhplus.be.server.payment.application.dto.response.PaymentResponse;
 import kr.hhplus.be.server.payment.application.service.payment_method.PaymentStrategy;
 import kr.hhplus.be.server.payment.application.usecase.PaymentUseCase;
@@ -17,7 +17,6 @@ import kr.hhplus.be.server.payment.application.usecase.PaymentDataTransportUseCa
 import kr.hhplus.be.server.payment.domain.model.Payment;
 import kr.hhplus.be.server.payment.domain.model.PaymentState;
 import kr.hhplus.be.server.payment.domain.repository.PaymentRepository;
-import kr.hhplus.be.server.payment.presentation.dto.PaymentRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -64,7 +63,7 @@ public class PaymentService implements PaymentUseCase {
 
     @Override
     @Transactional
-    public PaymentResponse payment(PaymentRequest request) {
+    public PaymentResponse payment(PaymentServiceRequest request) {
         // 결제 정보 조회
         Payment payment = paymentRepository.retrievePayment(request.paymentId());
 

@@ -19,14 +19,8 @@ public record RegisterMemberRequest(
 ) {
 
     public RegisterMemberCommand toServiceRequest() {
-        if(Objects.isNull(birthDate) && Objects.isNull(address)) {
-            return new RegisterMemberCommand(name, null, null);
-        }
         if(Objects.isNull(birthDate)) {
             return new RegisterMemberCommand(name, null, address);
-        }
-        if(Objects.isNull(address)) {
-            return new RegisterMemberCommand(name, birthDate.toString(), null);
         }
         return new RegisterMemberCommand(name, birthDate.toString(), address);
     }

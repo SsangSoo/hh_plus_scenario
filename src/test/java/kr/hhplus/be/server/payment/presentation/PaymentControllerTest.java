@@ -2,18 +2,16 @@ package kr.hhplus.be.server.payment.presentation;
 
 import kr.hhplus.be.server.config.RestDocsControllerSupport;
 import kr.hhplus.be.server.order.presentation.dto.request.PaymentMethod;
+import kr.hhplus.be.server.payment.application.dto.request.PaymentServiceRequest;
 import kr.hhplus.be.server.payment.application.dto.response.PaymentResponse;
 import kr.hhplus.be.server.payment.application.usecase.PaymentUseCase;
 import kr.hhplus.be.server.payment.domain.model.Payment;
 import kr.hhplus.be.server.payment.domain.model.PaymentState;
-import kr.hhplus.be.server.payment.presentation.dto.PaymentRequest;
-import kr.hhplus.be.server.point.presentation.dto.response.PointResponse;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import static com.epages.restdocs.apispec.MockMvcRestDocumentationWrapper.document;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 import static org.springframework.restdocs.payload.PayloadDocumentation.*;
@@ -45,9 +43,9 @@ class PaymentControllerTest  extends RestDocsControllerSupport {
         payment.assignId(paymentId);
         payment.changeState(PaymentState.PAYMENT_COMPLETE);
 
-        PaymentRequest paymentRequest = new PaymentRequest(orderId, memberId, paymentId, couponId);
+        PaymentServiceRequest paymentServiceRequest = new PaymentServiceRequest(orderId, memberId, paymentId, couponId);
 
-        given(paymentUseCase.payment(paymentRequest))
+        given(paymentUseCase.payment(paymentServiceRequest))
                 .willReturn(PaymentResponse.from(payment));
 
 
@@ -56,7 +54,7 @@ class PaymentControllerTest  extends RestDocsControllerSupport {
                         MockMvcRequestBuilders.post("/api/pay")
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .accept(MediaType.APPLICATION_JSON)
-                                .content(objectMapper.writeValueAsBytes(paymentRequest))
+                                .content(objectMapper.writeValueAsBytes(paymentServiceRequest))
                 )
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(payment.getId()))

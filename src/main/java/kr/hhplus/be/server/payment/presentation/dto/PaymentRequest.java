@@ -2,8 +2,10 @@ package kr.hhplus.be.server.payment.presentation.dto;
 
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
+import kr.hhplus.be.server.payment.application.dto.request.PaymentServiceRequest;
+import lombok.ToString;
 
-public record PaymentRequest(
+public record  PaymentRequest(
 
         @NotNull(message = "주문 Id는 필수입니다.")
         @Positive(message = "유효하지 않은 값입니다. 주문 Id를 확인해주세요.")
@@ -20,4 +22,9 @@ public record PaymentRequest(
         @Positive(message = "유효하지 않은 값입니다. 쿠폰 Id를 확인해주세요.")
         Long couponId
 ) {
+
+    public PaymentServiceRequest toServiceRequest() {
+        return new PaymentServiceRequest(orderId, memberId, paymentId, couponId);
+    }
+
 }

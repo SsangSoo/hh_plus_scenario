@@ -18,9 +18,12 @@ import kr.hhplus.be.server.payment.domain.model.Payment;
 import kr.hhplus.be.server.payment.domain.model.PaymentState;
 import kr.hhplus.be.server.payment.domain.repository.PaymentRepository;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Duration;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -38,6 +41,8 @@ public class PaymentService implements PaymentUseCase {
 
     private final OutboxRepository outboxRepository;
 
+    private final StringRedisTemplate stringRedisTemplate;
+
 
     public PaymentService(
             PaymentRepository paymentRepository,
@@ -45,7 +50,8 @@ public class PaymentService implements PaymentUseCase {
             List<PaymentStrategy> strategies,
             CouponRepository couponRepository,
             CouponHistoryRepository couponHistoryRepository,
-            OutboxRepository outboxRepository
+            OutboxRepository outboxRepository,
+            StringRedisTemplate stringRedisTemplate
     ) {
 
         this.paymentRepository = paymentRepository;
@@ -58,17 +64,23 @@ public class PaymentService implements PaymentUseCase {
         this.couponRepository = couponRepository;
         this.couponHistoryRepository = couponHistoryRepository;
         this.outboxRepository = outboxRepository;
+        this.stringRedisTemplate = stringRedisTemplate;
     }
 
 
     @Override
     @Transactional
-    public PaymentResponse payment(PaymentServiceRequest request) {
+    public PaymentResponse payment(PaymentServiceRequest request, String idempotencyKey) {
         // 결제 정보 조회
         Payment payment = paymentRepository.retrievePayment(request.paymentId());
 
         // 결제 상태 확인
         checkPaymentState(payment.getPaymentState());
+
+        // 결제 상태 확인이 끝나면, 처리해야 할 결제이므로, 레디스에 중복 요청 방지
+        if(verifyDuplicatePayment(idempotencyKey)) {
+            throw new BusinessLogicRuntimeException(BusinessLogicMessage.ALREADY_PROCESSING_THIS_PAYMENT);
+        }
 
         // 결제 방식 확인
         PaymentStrategy paymentStrategy = paymentMethodStrategyMap.get(payment.getPaymentMethod());
@@ -113,6 +125,15 @@ public class PaymentService implements PaymentUseCase {
         }
 
         return PaymentResponse.from(payment);
+    }
+
+    private Boolean verifyDuplicatePayment(String idempotencyKey) {
+        Boolean processing = stringRedisTemplate.opsForValue().setIfAbsent(
+                "idempotencyKey:" + idempotencyKey,
+                "PROCESSING",
+                Duration.ofMinutes(30)
+        );
+        return !processing;
     }
 
     private void checkPaymentState(PaymentState paymentState) {

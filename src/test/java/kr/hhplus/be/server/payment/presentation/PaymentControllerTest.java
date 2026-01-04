@@ -11,6 +11,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
+import java.util.UUID;
+
 import static com.epages.restdocs.apispec.MockMvcRestDocumentationWrapper.document;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
@@ -45,7 +47,7 @@ class PaymentControllerTest  extends RestDocsControllerSupport {
 
         PaymentServiceRequest paymentServiceRequest = new PaymentServiceRequest(orderId, memberId, paymentId, couponId);
 
-        given(paymentUseCase.payment(paymentServiceRequest))
+        given(paymentUseCase.payment(paymentServiceRequest, UUID.randomUUID().toString()))
                 .willReturn(PaymentResponse.from(payment));
 
 

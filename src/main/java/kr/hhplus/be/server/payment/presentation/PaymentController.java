@@ -6,10 +6,7 @@ import kr.hhplus.be.server.payment.presentation.dto.PaymentRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @Slf4j
 @RestController
@@ -20,9 +17,12 @@ public class PaymentController {
     private final PaymentUseCase paymentUseCase;
 
     @PostMapping
-    public ResponseEntity<PaymentResponse> pay(@RequestBody PaymentRequest request) {
+    public ResponseEntity<PaymentResponse> pay(
+            @RequestHeader("idempotency_key") String idempotencyKey,
+            @RequestBody PaymentRequest request) {
         log.info("결제 API 호출 payment request : {}", request);
-        PaymentResponse paymentResponse = paymentUseCase.payment(request.toServiceRequest());
+
+        PaymentResponse paymentResponse = paymentUseCase.payment(request.toServiceRequest(), idempotencyKey);
         return  ResponseEntity.ok(paymentResponse);
     }
 }

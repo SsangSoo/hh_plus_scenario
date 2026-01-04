@@ -22,9 +22,11 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.redis.core.StringRedisTemplate;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -52,6 +54,9 @@ class PaymentServiceTest {
     @Mock
     OutboxRepository outboxRepository;
 
+    @Mock
+    StringRedisTemplate stringRedisTemplate;
+
     PaymentUseCase paymentService;
 
 
@@ -72,7 +77,8 @@ class PaymentServiceTest {
                 strategies,
                 couponRepository,
                 couponHistoryRepository,
-                outboxRepository
+                outboxRepository,
+                stringRedisTemplate
         );
     }
 
@@ -89,7 +95,7 @@ class PaymentServiceTest {
         willDoNothing().given(pointPayment).pay(any());
 
         // when
-        PaymentResponse response = paymentService.payment(new PaymentServiceRequest(1L, 1L, 1L, null));
+        PaymentResponse response = paymentService.payment(new PaymentServiceRequest(1L, 1L, 1L, null), UUID.randomUUID().toString());
 
         // then
         assertThat(response.getId()).isEqualTo(payment.getId());
@@ -117,7 +123,7 @@ class PaymentServiceTest {
         given(paymentRepository.retrievePayment(any())).willReturn(payment);
 
         // when // then
-        assertThatThrownBy(() -> paymentService.payment(new PaymentServiceRequest(1L, 1L, 1L, null)))
+        assertThatThrownBy(() -> paymentService.payment(new PaymentServiceRequest(1L, 1L, 1L, null), UUID.randomUUID().toString()))
                 .isInstanceOf(BusinessLogicRuntimeException.class)
                 .hasMessage(BusinessLogicMessage.PAYMENT_COMPLETE.getMessage());
     }
@@ -132,7 +138,7 @@ class PaymentServiceTest {
         given(paymentRepository.retrievePayment(any())).willReturn(payment);
 
         // when // then
-        assertThatThrownBy(() -> paymentService.payment(new PaymentServiceRequest(1L, 1L, 1L, null)))
+        assertThatThrownBy(() -> paymentService.payment(new PaymentServiceRequest(1L, 1L, 1L, null), UUID.randomUUID().toString()))
                 .isInstanceOf(BusinessLogicRuntimeException.class)
                 .hasMessage(BusinessLogicMessage.PAYMENT_CANCEL.getMessage());
     }
@@ -149,7 +155,7 @@ class PaymentServiceTest {
         given(couponHistoryRepository.retrieveCouponHistory(anyLong(), anyLong())).willThrow(new BusinessLogicRuntimeException(BusinessLogicMessage.NOT_FOUND_COUPON));
 
         // when // then
-        assertThatThrownBy(() -> paymentService.payment(new PaymentServiceRequest(1L, 1L, 1L, 1L)))
+        assertThatThrownBy(() -> paymentService.payment(new PaymentServiceRequest(1L, 1L, 1L, 1L), UUID.randomUUID().toString()))
                 .isInstanceOf(BusinessLogicRuntimeException.class)
                 .hasMessage(BusinessLogicMessage.NOT_FOUND_COUPON.getMessage());
     }
@@ -168,7 +174,7 @@ class PaymentServiceTest {
         given(couponHistoryRepository.retrieveCouponHistory(anyLong(), anyLong())).willReturn(Optional.of(couponHistory));
 
         // when // then
-        assertThatThrownBy(() -> paymentService.payment(new PaymentServiceRequest(1L, 1L, 1L, 1L)))
+        assertThatThrownBy(() -> paymentService.payment(new PaymentServiceRequest(1L, 1L, 1L, 1L), UUID.randomUUID().toString()))
                 .isInstanceOf(BusinessLogicRuntimeException.class)
                 .hasMessage(BusinessLogicMessage.ALREADY_USED_THIS_COUPON.getMessage());
     }
@@ -188,7 +194,7 @@ class PaymentServiceTest {
                 .given(pointPayment).pay(any());
 
         // when // then
-        assertThatThrownBy(() -> paymentService.payment(PaymentServiceRequest))
+        assertThatThrownBy(() -> paymentService.payment(PaymentServiceRequest, UUID.randomUUID().toString()))
                 .hasMessage(BusinessLogicMessage.POINT_IS_NOT_ENOUGH.getMessage())
                 .isInstanceOf(BusinessLogicRuntimeException.class);
     }

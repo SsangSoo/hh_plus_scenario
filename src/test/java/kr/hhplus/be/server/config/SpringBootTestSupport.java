@@ -46,6 +46,7 @@ import kr.hhplus.be.server.stock.domain.repository.StockRepository;
 import kr.hhplus.be.server.stock.infrastructure.persistence.StockJpaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.redis.core.StringRedisTemplate;
 
 
 @SpringBootTest
@@ -202,6 +203,9 @@ public abstract class SpringBootTestSupport {
     protected OutboxJpaRepository outboxJpaRepository;
 
 
+    // Redis
+    @Autowired
+    protected StringRedisTemplate stringRedisTemplate;
 
 
 

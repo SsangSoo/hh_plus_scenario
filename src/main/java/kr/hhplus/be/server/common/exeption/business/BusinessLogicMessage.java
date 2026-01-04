@@ -20,6 +20,7 @@ public enum BusinessLogicMessage {
     PAYMENT_COMPLETE("결제 완료된 건입니다."),
     PAYMENT_CANCEL("결제 취소된 건입니다."),
 
+    ALREADY_PROCESSING_THIS_PAYMENT("이미 결제 처리중입니다."),
     ALREADY_HAVE_THIS_COUPON("현재 가지고 있는 쿠폰입니다."),
     ALREADY_USED_THIS_COUPON("이미 사용된 쿠폰입니다."),
 

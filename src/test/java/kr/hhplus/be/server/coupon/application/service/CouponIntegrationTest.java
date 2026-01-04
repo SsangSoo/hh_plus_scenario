@@ -28,6 +28,7 @@ import org.junit.jupiter.api.Test;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -94,7 +95,7 @@ class CouponIntegrationTest  extends SpringBootTestSupport {
         assertThat(orderResponse.getPaymentState()).isEqualTo(PaymentState.PENDING.name());
 
         // when
-        PaymentResponse paymentResponse = paymentUseCase.payment(new PaymentServiceRequest(orderResponse.getOrderId(), registeredMember.getId(), orderResponse.getPaymentId(), registeredCoupon.getCouponId()));
+        PaymentResponse paymentResponse = paymentUseCase.payment(new PaymentServiceRequest(orderResponse.getOrderId(), registeredMember.getId(), orderResponse.getPaymentId(), registeredCoupon.getCouponId()), UUID.randomUUID().toString());
 
         // then
         assertThat(paymentResponse.getTotalAmount()).isEqualTo(180000L);

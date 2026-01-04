@@ -59,7 +59,7 @@ class IssueCouponServiceTest {
 
         Coupon coupon = Coupon.create("abcdefghijkl", LocalDate.now().plusDays(10L), 10, 10);
         coupon.assignId(1L);
-        given(couponRepository.retrieve(any())).willReturn(coupon);
+        given(couponRepository.retrieveForUpdate(any())).willReturn(coupon);
 
         given(couponHistoryRepository.retrieveCouponHistory(anyLong(), anyLong())).willReturn(Optional.empty());
 
@@ -92,7 +92,7 @@ class IssueCouponServiceTest {
 
         Coupon coupon = Coupon.create("abcdefghijkl", LocalDate.now().plusDays(10L), 0, 10);
         coupon.assignId(1L);
-        given(couponRepository.retrieve(any())).willReturn(coupon);
+        given(couponRepository.retrieveForUpdate(any())).willReturn(coupon);
 
         given(couponHistoryRepository.retrieveCouponHistory(anyLong(), anyLong())).willReturn(Optional.empty());
 
@@ -114,7 +114,7 @@ class IssueCouponServiceTest {
 
         Coupon coupon = Coupon.create("abcdefghijkl", LocalDate.now().plusDays(10L), 10, 10);
         coupon.assignId(1L);
-        given(couponRepository.retrieve(any())).willReturn(coupon);
+        given(couponRepository.retrieveForUpdate(any())).willReturn(coupon);
 
         CouponHistory couponHistory = CouponHistory.create(coupon.getId(), member.getId());
         couponHistory.assignId(1L);

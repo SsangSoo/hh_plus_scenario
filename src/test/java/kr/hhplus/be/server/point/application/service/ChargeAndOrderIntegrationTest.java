@@ -12,6 +12,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 
+import java.util.UUID;
+
 import static io.restassured.RestAssured.*;
 import static org.hamcrest.Matchers.equalTo;
 
@@ -143,6 +145,7 @@ class ChargeAndOrderIntegrationTest extends SpringBootTestSupport  {
         // 결제
         given()
             .contentType(ContentType.JSON)
+            .header("idempotency_key", UUID.randomUUID().toString())
             .body("""
                        {
                           "orderId": %d,

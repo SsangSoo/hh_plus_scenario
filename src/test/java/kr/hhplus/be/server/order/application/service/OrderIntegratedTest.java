@@ -12,8 +12,10 @@ import kr.hhplus.be.server.order.presentation.dto.request.PaymentMethod;
 import kr.hhplus.be.server.order.presentation.dto.response.OrderResponse;
 import kr.hhplus.be.server.orderproduct.application.dto.request.OrderProductServiceRequest;
 import kr.hhplus.be.server.orderproduct.domain.model.OrderProduct;
+import kr.hhplus.be.server.outbox.domain.model.Outbox;
 import kr.hhplus.be.server.payment.application.dto.request.PaymentServiceRequest;
 import kr.hhplus.be.server.payment.application.dto.response.PaymentResponse;
+import kr.hhplus.be.server.payment.domain.model.PaymentState;
 import kr.hhplus.be.server.point.application.dto.request.ChargePoint;
 import kr.hhplus.be.server.point.presentation.dto.request.ChargePointRequest;
 import kr.hhplus.be.server.point.presentation.dto.response.PointResponse;
@@ -21,9 +23,11 @@ import kr.hhplus.be.server.product.presentation.dto.request.RegisterProductReque
 import kr.hhplus.be.server.product.presentation.dto.response.ProductResponse;
 import kr.hhplus.be.server.stock.presentation.dto.request.AddStockRequest;
 import kr.hhplus.be.server.stock.presentation.dto.response.StockResponse;
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.mockito.BDDMockito;
 import org.mockito.Mock;
 
 import java.time.LocalDate;
@@ -33,6 +37,7 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.*;
+import static org.mockito.BDDMockito.*;
 import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.times;
 
@@ -233,7 +238,45 @@ class OrderIntegratedTest extends SpringBootTestSupport {
 
         // then
              // 결제 정보 저장시 1번, 결제 완료시 1번
-        then(paymentDataTransportUseCase).should(times(2)).send();
+        then(paymentDataTransportUseCase).should(times(1)).send();
+
+    }
+
+    @Test
+    @DisplayName("주문 / 결제에 대한 외부 메세지 전송 실패시 outbox에 저장된다.")
+    void ifExternalMessageForOrderPaymentFailsItWillBeStoredOutboxTest() {
+        // given
+        // 회원생성
+        MemberResponse memberResponse = registerMemberUseCase.register(new RegisterMemberRequest("상남자", LocalDate.now(), "주소").toServiceRequest());
+
+        // 포인트 충전
+        chargePointUseCase.charge(new ChargePoint(memberResponse.getId(), 100000L));
+
+        // 상품 생성
+        ProductResponse productResponse = registerProductUseCase.register(new RegisterProductRequest("아메리카노", 3800L).toServiceRequest());
+
+        // 재고 충전
+        StockResponse stockResponse = addStockUseCase.addStock(new AddStockRequest(productResponse.getId(), 30L).toAddStock());
+
+        // 주문
+        OrderCommand orderCommand = new OrderCommand(memberResponse.getId(), List.of(new OrderProductServiceRequest(productResponse.getId(), 2L)), PaymentMethod.POINT);
+        OrderResponse orderResponse = placeOrderUseCase.order(orderCommand);
+
+
+        doThrow(IllegalStateException.class)
+                .when(paymentDataTransportUseCase).send();
+
+        // when
+        PaymentResponse paymentResponse = paymentUseCase.payment(new PaymentServiceRequest(orderResponse.getOrderId(), memberResponse.getId(), orderResponse.getPaymentId(), null), UUID.randomUUID().toString());
+
+        // then
+        assertThat(paymentResponse.getPaymentState()).isEqualTo(PaymentState.PAYMENT_COMPLETE.toString());
+
+        Outbox outbox = outboxRepository.retrieve(orderResponse.getOrderId());
+        assertThat(outbox).isNotNull();
+        assertThat(outbox.getOrderId()).isEqualTo(orderResponse.getOrderId());
+        assertThat(outbox.getPaymentMethod()).isEqualTo(PaymentMethod.POINT);
+        assertThat(outbox.getPaymentState()).isEqualTo(PaymentState.PAYMENT_COMPLETE);
 
     }
 

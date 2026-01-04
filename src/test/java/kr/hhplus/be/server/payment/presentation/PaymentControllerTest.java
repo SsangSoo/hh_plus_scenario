@@ -14,6 +14,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import java.util.UUID;
 
 import static com.epages.restdocs.apispec.MockMvcRestDocumentationWrapper.document;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 import static org.springframework.restdocs.payload.PayloadDocumentation.*;
@@ -47,7 +48,7 @@ class PaymentControllerTest  extends RestDocsControllerSupport {
 
         PaymentServiceRequest paymentServiceRequest = new PaymentServiceRequest(orderId, memberId, paymentId, couponId);
 
-        given(paymentUseCase.payment(paymentServiceRequest, UUID.randomUUID().toString()))
+        given(paymentUseCase.payment(any(), any()))
                 .willReturn(PaymentResponse.from(payment));
 
 
@@ -55,6 +56,7 @@ class PaymentControllerTest  extends RestDocsControllerSupport {
         mockMvc.perform(
                         MockMvcRequestBuilders.post("/api/pay")
                                 .contentType(MediaType.APPLICATION_JSON)
+                                .header("idempotency_key", UUID.randomUUID().toString())
                                 .accept(MediaType.APPLICATION_JSON)
                                 .content(objectMapper.writeValueAsBytes(paymentServiceRequest))
                 )
@@ -71,7 +73,7 @@ class PaymentControllerTest  extends RestDocsControllerSupport {
                                 fieldWithPath("couponId").description("쿠폰 Id")
                         ),
                         responseFields(
-                                fieldWithPath("id").description("포인트 Id"),
+                                fieldWithPath("id").description("결제 Id"),
                                 fieldWithPath("orderId").description("회원 Id"),
                                 fieldWithPath("totalAmount").description("결제 총 금액"),
                                 fieldWithPath("paymentState").description("결제 상태")

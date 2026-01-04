@@ -3,7 +3,6 @@ package kr.hhplus.be.server.payment.presentation.dto;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import kr.hhplus.be.server.payment.application.dto.request.PaymentServiceRequest;
-import lombok.ToString;
 
 public record  PaymentRequest(
 

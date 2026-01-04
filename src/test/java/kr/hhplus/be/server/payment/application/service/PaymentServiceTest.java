@@ -23,6 +23,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.redis.core.StringRedisTemplate;
+import org.springframework.data.redis.core.ValueOperations;
 
 import java.util.List;
 import java.util.Optional;
@@ -56,6 +57,9 @@ class PaymentServiceTest {
 
     @Mock
     StringRedisTemplate stringRedisTemplate;
+
+    @Mock
+    ValueOperations<String, String> valueOperations;
 
     PaymentUseCase paymentService;
 
@@ -94,6 +98,9 @@ class PaymentServiceTest {
 
         willDoNothing().given(pointPayment).pay(any());
 
+        given(stringRedisTemplate.opsForValue()).willReturn(valueOperations);
+        given(valueOperations.setIfAbsent(any(), any(), any())).willReturn(true);
+
         // when
         PaymentResponse response = paymentService.payment(new PaymentServiceRequest(1L, 1L, 1L, null), UUID.randomUUID().toString());
 
@@ -107,7 +114,6 @@ class PaymentServiceTest {
         // then
         then(pointPayment).should(times(1)).pay(any());
         then(paymentRepository).should(times(1)).changeState(any());
-        then(outboxRepository).should(times(1)).paymentComplete(any());
         then(paymentDataTransportClient).should(times(1)).send();
     }
 
@@ -154,6 +160,9 @@ class PaymentServiceTest {
 
         given(couponHistoryRepository.retrieveCouponHistory(anyLong(), anyLong())).willThrow(new BusinessLogicRuntimeException(BusinessLogicMessage.NOT_FOUND_COUPON));
 
+        given(stringRedisTemplate.opsForValue()).willReturn(valueOperations);
+        given(valueOperations.setIfAbsent(any(), any(), any())).willReturn(true);
+
         // when // then
         assertThatThrownBy(() -> paymentService.payment(new PaymentServiceRequest(1L, 1L, 1L, 1L), UUID.randomUUID().toString()))
                 .isInstanceOf(BusinessLogicRuntimeException.class)
@@ -172,6 +181,9 @@ class PaymentServiceTest {
         couponHistory.use();
 
         given(couponHistoryRepository.retrieveCouponHistory(anyLong(), anyLong())).willReturn(Optional.of(couponHistory));
+
+        given(stringRedisTemplate.opsForValue()).willReturn(valueOperations);
+        given(valueOperations.setIfAbsent(any(), any(), any())).willReturn(true);
 
         // when // then
         assertThatThrownBy(() -> paymentService.payment(new PaymentServiceRequest(1L, 1L, 1L, 1L), UUID.randomUUID().toString()))
@@ -193,12 +205,14 @@ class PaymentServiceTest {
         willThrow(new BusinessLogicRuntimeException(BusinessLogicMessage.POINT_IS_NOT_ENOUGH.getMessage()))
                 .given(pointPayment).pay(any());
 
+        given(stringRedisTemplate.opsForValue()).willReturn(valueOperations);
+        given(valueOperations.setIfAbsent(any(), any(), any())).willReturn(true);
+
         // when // then
         assertThatThrownBy(() -> paymentService.payment(PaymentServiceRequest, UUID.randomUUID().toString()))
                 .hasMessage(BusinessLogicMessage.POINT_IS_NOT_ENOUGH.getMessage())
                 .isInstanceOf(BusinessLogicRuntimeException.class);
     }
-
 
 
 }

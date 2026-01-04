@@ -7,6 +7,7 @@ import kr.hhplus.be.server.coupon.domain.repository.CouponRepository;
 import kr.hhplus.be.server.couponhistory.domain.model.CouponHistory;
 import kr.hhplus.be.server.couponhistory.domain.repository.CouponHistoryRepository;
 import kr.hhplus.be.server.order.presentation.dto.request.PaymentMethod;
+import kr.hhplus.be.server.outbox.domain.model.Outbox;
 import kr.hhplus.be.server.outbox.domain.repository.OutboxRepository;
 import kr.hhplus.be.server.payment.application.dto.request.PayServiceRequest;
 import kr.hhplus.be.server.payment.application.dto.request.PaymentServiceRequest;
@@ -121,7 +122,7 @@ public class PaymentService implements PaymentUseCase {
         try {
             paymentDataTransportUseCase.send();
         } catch (Exception e) {
-            outboxRepository.paymentComplete(payment.getOrderId());
+            outboxRepository.save(Outbox.of(payment.getId(), payment.getOrderId(), payment.getPaymentMethod(), payment.getTotalAmount(), payment.getPaymentState()));
         }
 
         return PaymentResponse.from(payment);

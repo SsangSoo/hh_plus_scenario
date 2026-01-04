@@ -9,20 +9,22 @@ import java.time.LocalDate;
 @Getter
 public class Outbox {
 
+    private Long paymentId;
     private Long orderId;
     private PaymentMethod paymentMethod;
-    private LocalDate orderDate;
+    private Long totalAmount;
     private PaymentState paymentState;
 
 
-    public static Outbox of(Long orderId, PaymentMethod paymentMethod, LocalDate orderDate, PaymentState paymentState) {
-        return new Outbox(orderId, paymentMethod, orderDate, paymentState);
+    public static Outbox of(Long paymentId, Long orderId, PaymentMethod paymentMethod, Long totalAmount, PaymentState paymentState) {
+        return new Outbox(paymentId, orderId, paymentMethod, totalAmount, paymentState);
     }
 
-    private Outbox(Long orderId, PaymentMethod paymentMethod, LocalDate orderDate, PaymentState paymentState) {
+    private Outbox(Long paymentId, Long orderId, PaymentMethod paymentMethod, Long totalAmount, PaymentState paymentState) {
+        this.paymentId = paymentId;
         this.orderId = orderId;
         this.paymentMethod = paymentMethod;
-        this.orderDate = orderDate;
+        this.totalAmount = totalAmount;
         this.paymentState = paymentState;
     }
 }

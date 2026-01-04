@@ -38,11 +38,7 @@ class RegisterPaymentInfoServiceTest {
     @BeforeEach
     void setUp() {
 
-        registerPaymentInfoService = new RegisterPaymentInfoService(
-                paymentRepository,
-                paymentDataTransportClient,
-                outboxRepository
-        );
+        registerPaymentInfoService = new RegisterPaymentInfoService(paymentRepository);
 
     }
 
@@ -68,8 +64,8 @@ class RegisterPaymentInfoServiceTest {
         Assertions.assertThat(paymentResponse.getTotalAmount()).isEqualTo(4500L);
         Assertions.assertThat(paymentResponse.getOrderId()).isEqualTo(paymentServiceRequest.orderId());
 
-        then(outboxRepository).should(times(1)).save(any());
-        then(paymentDataTransportClient).should(times(1)).send();
+        then(outboxRepository).should(never()).save(any());
+        then(paymentDataTransportClient).should(never()).send();
     }
 
 

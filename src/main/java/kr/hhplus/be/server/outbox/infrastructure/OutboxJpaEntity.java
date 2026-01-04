@@ -9,21 +9,23 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDate;
-
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class OutboxJpaEntity extends BaseEntity {
 
     @Id
+    @Column(name = "payment_id")
+    private Long paymentId;
+
+    @Column(name = "order_id")
     private Long orderId;
 
     @Column(name = "payment_method")
     private PaymentMethod paymentMethod;
 
-    @Column(name = "order_date")
-    private LocalDate orderDate;
+    @Column(name = "total_amount")
+    private Long totalAmount;
 
     @Column(name = "payment_state")
     private PaymentState paymentState;
@@ -39,9 +41,10 @@ public class OutboxJpaEntity extends BaseEntity {
 
     public Outbox toDomain() {
         return Outbox.of(
+                paymentId,
                 orderId,
                 paymentMethod,
-                orderDate,
+                totalAmount,
                 paymentState
         );
     }
@@ -49,17 +52,19 @@ public class OutboxJpaEntity extends BaseEntity {
 
     public static OutboxJpaEntity from(Outbox outbox) {
         return new OutboxJpaEntity(
+                outbox.getPaymentId(),
                 outbox.getOrderId(),
                 outbox.getPaymentMethod(),
-                outbox.getOrderDate(),
+                outbox.getTotalAmount(),
                 outbox.getPaymentState()
         );
     }
 
-    private OutboxJpaEntity(Long orderId, PaymentMethod paymentMethod, LocalDate orderDate, PaymentState paymentState) {
+    private OutboxJpaEntity(Long paymentId, Long orderId, PaymentMethod paymentMethod, Long totalAmount, PaymentState paymentState) {
+        this.paymentId = paymentId;
         this.orderId = orderId;
         this.paymentMethod = paymentMethod;
-        this.orderDate = orderDate;
+        this.totalAmount = totalAmount;
         this.paymentState = paymentState;
     }
 }

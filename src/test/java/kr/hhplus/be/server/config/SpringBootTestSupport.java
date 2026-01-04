@@ -18,7 +18,6 @@ import kr.hhplus.be.server.order.infrastructure.persistence.OrderJpaRepository;
 import kr.hhplus.be.server.orderproduct.application.usecase.RegisterOrderProductUseCase;
 import kr.hhplus.be.server.orderproduct.domain.repository.OrderProductRepository;
 import kr.hhplus.be.server.orderproduct.infrastructure.persistence.OrderProductJpaRepository;
-import kr.hhplus.be.server.outbox.domain.model.Outbox;
 import kr.hhplus.be.server.outbox.domain.repository.OutboxRepository;
 import kr.hhplus.be.server.outbox.infrastructure.OutboxJpaRepository;
 import kr.hhplus.be.server.payment.application.service.payment_method.BankTransferPayment;
@@ -47,6 +46,7 @@ import kr.hhplus.be.server.stock.infrastructure.persistence.StockJpaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.redis.core.StringRedisTemplate;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 
 @SpringBootTest
@@ -123,8 +123,8 @@ public abstract class SpringBootTestSupport {
     @Autowired
     protected PaymentRepository paymentRepository;
 
-    @Autowired
-    protected PaymentDataTransportUseCase paymentDataTransportUseCase;
+//    @Autowired
+//    protected PaymentDataTransportUseCase paymentDataTransportUseCase;
 
     @Autowired
     protected PaymentJpaRepository paymentJpaRepository;
@@ -138,6 +138,9 @@ public abstract class SpringBootTestSupport {
     @Autowired
     protected PointPayment pointPayment;
 
+    // MockBean
+    @MockitoBean
+    protected PaymentDataTransportUseCase paymentDataTransportUseCase;
 
     // Stock
     @Autowired

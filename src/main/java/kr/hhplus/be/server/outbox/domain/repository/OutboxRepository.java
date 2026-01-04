@@ -8,4 +8,7 @@ public interface OutboxRepository {
 
     Outbox paymentComplete(Long orderId);
 
+    Outbox retrieve(Long orderId);
+
+
 }

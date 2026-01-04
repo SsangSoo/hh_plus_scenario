@@ -27,4 +27,11 @@ public class OutboxRepositoryImpl implements OutboxRepository {
         return outboxJpaEntity.toDomain();
     }
 
+    @Override
+    public Outbox retrieve(Long orderId) {
+        OutboxJpaEntity outboxJpaEntity = jpa.findByOrderId(orderId).orElseThrow(() -> new BusinessLogicRuntimeException(BusinessLogicMessage.NOT_FOUND_OUTBOX));
+        return outboxJpaEntity.toDomain();
+    }
+
+
 }

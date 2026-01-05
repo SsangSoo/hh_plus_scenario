@@ -6,10 +6,11 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class PaymentDataTransportService implements PaymentDataTransportUseCase {
-    
+
     @Async
     @Override
     public void send() {
 
     }
+
 }

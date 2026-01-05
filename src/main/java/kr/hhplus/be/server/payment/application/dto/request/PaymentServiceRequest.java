@@ -1,11 +1,16 @@
 package kr.hhplus.be.server.payment.application.dto.request;
 
-import kr.hhplus.be.server.order.presentation.dto.request.PaymentMethod;
-
 public record PaymentServiceRequest(
+
         Long orderId,
-        Long totalAmount,
-        PaymentMethod paymentMethod,
-        Long memberId
+        Long memberId,
+        Long paymentId,
+        Long couponId
 ) {
+    public PaymentServiceRequest(Long orderId, Long memberId, Long paymentId, Long couponId) {
+        this.orderId = orderId;
+        this.memberId = memberId;
+        this.paymentId = paymentId;
+        this.couponId = couponId;
+    }
 }

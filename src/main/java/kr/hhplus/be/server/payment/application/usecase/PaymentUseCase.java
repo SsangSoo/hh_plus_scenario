@@ -5,5 +5,6 @@ import kr.hhplus.be.server.payment.application.dto.response.PaymentResponse;
 
 public interface PaymentUseCase {
 
-    PaymentResponse pay(PaymentServiceRequest request);
+    PaymentResponse payment(PaymentServiceRequest request, String idempotencyKey);
+
 }

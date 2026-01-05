@@ -68,7 +68,7 @@
 |chargePoint| Y | Long | 충전 표인트 |
 
 ### Response
-- Status : 200(OK)
+- Status : 201(CREATED)
 ```json
 [
   {
@@ -118,21 +118,22 @@
 `POST` `/api/order`
 
 ### Description
-상품을 주문하고 결제한다.
+상품을 주문한다.
 
 ### Header
 
 > none
 
 ### Parameter
-| parameter                     | required | type  | description |
-|-------------------------------|----------|-------|-------------|
-| memberId                      | Y        | Long|  주문하는 사용자의 Id|
-| orderProductRequest.productId | Y        | Long | 주문하려는 상품의 Id|
-| orderProductRequest.quantity  | Y       | Long | 주문하려는 상품의 수량|
+| parameter                     | required | type                                             | description   |
+|-------------------------------|----------|--------------------------------------------------|---------------|
+| memberId                      | Y        | Long                                             | 주문하는 사용자의 Id  |
+| orderProductRequest.productId | Y        | Long                                             | 주문하려는 상품의 Id  |
+| orderProductRequest.quantity  | Y       | Long                                             | 주문하려는 상품의 수량  |
+| paymentMethod  | Y       | PaymentMethod(CREDIT_CARD, BANK_TRANSFER, POINT) | 주문하려는 상품의 수량  |
 
 ### Response
-- Status : 200(OK)
+- Status : 201(CREATED)
 ```json
 [
   {
@@ -141,7 +142,101 @@
     "orderDate":"2025-11-24T13:50:30",
     "paymentId":1,
     "totalAmount":12000,
-    "paymentState":"PAYMENT_COMPLETE"
+    "paymentState":"PENDING"
   }
 ]
 ```
+
+
+---
+
+### Endpoint
+`POST` `/api/coupon`
+
+### Description
+쿠폰을 생성한다.
+
+### Header
+> none
+
+### Parameter
+| parameter                     | required | type      | description |
+|-------------------------------|----------|-----------|-------------|
+| coupon                      | Y        | String    | 쿠폰 번호       |
+| expiryDate | Y        | LocalDate | 쿠폰 유효기간     |
+| amount  | Y       | Integer   | 쿠폰 생성개수     |
+| discountRate  | Y       | Integer   | 쿠폰 할인율      |
+
+### Response
+- Status : 201(CREATED)
+```json
+[
+  {
+    "couponId":1,
+    "coupon":"1234567890aa",
+    "expiryDate":"2025-11-24",
+    "amount":10000,
+    "discountRate":10
+  }
+]
+```
+
+---
+
+### Endpoint
+`GET` `/api/coupon/{coupon-id}`
+
+### Description
+쿠폰을 조회한다.
+
+### Header
+> none
+
+### Parameter
+| parameter | required | type | description |
+|-----------|----------|------|-------------|
+| couponId  | Y        | Long | 쿠폰 Id       |
+
+### Response
+- Status : 200(OK)
+```json
+[
+  {
+    "couponId":1,
+    "coupon":"1234567890aa",
+    "expiryDate":"2025-11-24",
+    "amount":10000,
+    "discountRate":10
+  }
+]
+```
+
+---
+
+### Endpoint
+`POST` `/api/coupon/issue`
+
+### Description
+쿠폰을 발행한다.
+
+### Header
+> none
+
+### Parameter
+| parameter    | required | type | description |
+|--------------|----------|------|-------------|
+| couponId     | Y        | Long | 쿠폰 Id      |
+| memberId     | Y        | Long | 회원 Id      |
+
+### Response
+- Status : 200(OK)
+```json
+[
+  {
+    "couponHistoryId":1,
+    "couponId":"1",
+    "memberId":"1",
+    "couponIssuance":"2025-01-02'T'11:15:03",
+    "couponUsed":"false"
+  }
+]

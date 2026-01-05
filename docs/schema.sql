@@ -20,11 +20,11 @@ CREATE TABLE STOCK (
 CREATE TABLE MEMBER (
                         id BIGINT PRIMARY KEY AUTO_INCREMENT,
                         name CHAR(30) NOT NULL,
-                        birthDate CHAR(8) ,
+                        birth_date CHAR(8) ,
                         address CHAR(50) ,
                         created_date DATETIME NOT NULL DEFAULT current_timestamp,
                         modified_date DATETIME NOT NULL DEFAULT current_timestamp,
-                        deleted TINYINT NOT NULL DEFAULT 0
+                        removed TINYINT NOT NULL DEFAULT 0
 );
 
 CREATE TABLE POINT (
@@ -33,7 +33,7 @@ CREATE TABLE POINT (
                        point BIGINT NOT NULL DEFAULT 0,
                        created_date DATETIME NOT NULL DEFAULT current_timestamp,
                        modified_date DATETIME NOT NULL DEFAULT current_timestamp,
-                       deleted TINYINT NOT NULL DEFAULT 0
+                       removed TINYINT NOT NULL DEFAULT 0
 );
 
 CREATE TABLE POINT_HISTORY (

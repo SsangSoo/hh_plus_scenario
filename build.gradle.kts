@@ -54,6 +54,9 @@ dependencies {
     // Swagger
     implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.14")
 
+    // redis
+    implementation ("org.springframework.boot:spring-boot-starter-data-redis")
+
     compileOnly("org.projectlombok:lombok")
     annotationProcessor("org.projectlombok:lombok")
 
@@ -67,6 +70,7 @@ dependencies {
 	testImplementation("org.testcontainers:mysql")
 	testImplementation("org.springframework.restdocs:spring-restdocs-mockmvc")
 	testImplementation("com.epages:restdocs-api-spec-mockmvc:0.18.2")
+    testImplementation ("io.rest-assured:rest-assured")
 
 	testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 

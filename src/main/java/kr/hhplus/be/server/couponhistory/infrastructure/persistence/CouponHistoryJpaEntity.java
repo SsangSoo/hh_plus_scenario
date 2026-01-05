@@ -1,6 +1,7 @@
 package kr.hhplus.be.server.couponhistory.infrastructure.persistence;
 
 import jakarta.persistence.*;
+import kr.hhplus.be.server.couponhistory.domain.model.CouponHistory;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -11,7 +12,7 @@ import java.time.LocalDateTime;
 @Getter
 @Table(name = "COUPON_HISTORY")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class CouponHistory {
+public class CouponHistoryJpaEntity {
 
     @Column(name = "id")
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -32,11 +33,29 @@ public class CouponHistory {
     @Column(name = "modified_date", nullable = false)
     private LocalDateTime modifiedDate;
 
-    public CouponHistory(Long couponId, Long memberId, LocalDateTime couponIssuance, Boolean couponUsed) {
-        this.couponId = couponId;
-        this.memberId = memberId;
-        this.couponIssuance = couponIssuance;
-        this.couponUsed = couponUsed;
-        this.modifiedDate = this.couponIssuance;
+
+    public CouponHistory toDomain() {
+        return CouponHistory.of(
+                id,
+                couponId,
+                memberId,
+                couponIssuance,
+                couponUsed
+        );
     }
+
+
+    public static CouponHistoryJpaEntity from(CouponHistory couponHistory) {
+        CouponHistoryJpaEntity couponHistoryJpaEntity = new CouponHistoryJpaEntity();
+        
+        couponHistoryJpaEntity.couponId = couponHistory.getCouponId();
+        couponHistoryJpaEntity.memberId = couponHistory.getMemberId();
+        couponHistoryJpaEntity.couponIssuance = couponHistory.getCouponIssuance();
+        couponHistoryJpaEntity.couponUsed = couponHistory.getCouponUsed();
+        
+        couponHistoryJpaEntity.modifiedDate = LocalDateTime.now();
+        return couponHistoryJpaEntity;
+    }
+
+    
 }

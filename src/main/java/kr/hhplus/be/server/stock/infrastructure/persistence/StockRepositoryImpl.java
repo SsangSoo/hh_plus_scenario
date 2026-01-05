@@ -23,7 +23,7 @@ public class StockRepositoryImpl implements StockRepository {
     public Stock modify(Stock stock) {
         StockJpaEntity stockJpaEntity = jpa.findById(stock.getId())
                 .orElseThrow(() -> new BusinessLogicRuntimeException(BusinessLogicMessage.NOT_FOUND_STOCK));
-        stockJpaEntity.update(stock.getQuantity());
+        stockJpaEntity.modify(stock.getQuantity());
         return stockJpaEntity.toDomain();
     }
 

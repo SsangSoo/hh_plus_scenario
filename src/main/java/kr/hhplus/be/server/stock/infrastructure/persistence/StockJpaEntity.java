@@ -39,7 +39,7 @@ public class StockJpaEntity extends BaseEntity {
         return stockJpaEntity;
     }
 
-    public void update(Long quantity) {
+    public void modify(Long quantity) {
         this.quantity = quantity;
     }
 

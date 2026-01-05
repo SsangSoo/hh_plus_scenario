@@ -9,7 +9,6 @@ public class EnumValidator implements ConstraintValidator<ValidEnum, String> {
 
     private Class<? extends Enum<?>> enumClass;
 
-
     @Override
     public void initialize(ValidEnum annotation) {
         this.enumClass = annotation.enumClass();
@@ -23,7 +22,5 @@ public class EnumValidator implements ConstraintValidator<ValidEnum, String> {
 
         return Arrays.stream(enumClass.getEnumConstants())
                 .anyMatch(e -> e.name().equals(value));
-
-
     }
 }

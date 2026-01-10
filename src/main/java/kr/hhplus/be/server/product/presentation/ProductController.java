@@ -1,6 +1,7 @@
 package kr.hhplus.be.server.product.presentation;
 
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Positive;
 import kr.hhplus.be.server.product.application.usecase.RegisterProductUseCase;
 import kr.hhplus.be.server.product.application.usecase.RetrieveProductUseCase;
 import kr.hhplus.be.server.product.presentation.dto.request.RegisterProductRequest;
@@ -9,12 +10,14 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 @Slf4j
 @RestController
 @RequestMapping("/api/product")
 @RequiredArgsConstructor
+@Validated
 public class ProductController {
 
     private final RegisterProductUseCase registerProductUseCase;
@@ -27,7 +30,8 @@ public class ProductController {
     }
 
     @GetMapping("/{productId}")
-    public ResponseEntity<ProductResponse> retrieveProduct(@PathVariable Long productId) {
+    public ResponseEntity<ProductResponse> retrieveProduct(
+            @PathVariable @Positive(message = "유효하지 않은 상품 Id입니다.") Long productId) {
         ProductResponse response = retrieveProductUseCase.retrieveProduct(productId);
         return ResponseEntity.ok(response);
     }

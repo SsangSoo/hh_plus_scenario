@@ -13,6 +13,7 @@
 |-|---------------------|-|
 |WAS| Spring Boot(Docker) | 비즈니스 로직 처리|
 |Database| MySQL | 애플리케이션 데이터 영구 저장|
+|Cache| Redis | 결제 중복 방지 (Idempotency Key 관리)|
 
 
 

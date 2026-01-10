@@ -36,6 +36,7 @@
 | POINT   | POINT_HISTORY  | point_history.point_id   | 1:N | 포인트-포인트_내역 |
 | MEMBER  | POINT_HISTORY  | point_history.member_id  | 1:N | 회원-포인트이력   |
 | COUPON  | COUPON_HISTORY | coupon_history.coupon_id | 1:N | 쿠폰-쿠폰발행내역  |
+| PAYMENT | OUTBOX         | outbox.payment_id        | 1:1 | 결제-아웃박스    |
 
 
 ## 테이블 개요
@@ -52,6 +53,7 @@
 | POINT_HISTORY | 포인트 변동 기록 | POINT와 N:1 |
 | COUPON | 쿠폰 | - |
 | COUPON_HISTORY | 쿠폰 사용 기록 | MEMBER, COUPON과 N:1 |
+| OUTBOX | 이벤트 아웃박스 | PAYMENT와 1:1 |
 
 
 ## 관계도 설명
@@ -59,6 +61,7 @@
 ### 1:1 관계
 - **PRODUCT ↔ STOCK**: 한 상품은 정확히 하나의 재고 정보
 - **ORDERS ↔ PAYMENT**: 한 주문은 정확히 하나의 결제 정보
+- **PAYMENT ↔ OUTBOX**: 한 결제는 정확히 하나의 아웃박스 이벤트 (실패 시에만 생성)
 
 ### 1:N 관계
 - **MEMBER → ORDERS**: 한 회원이 여러 주문 가능
@@ -140,28 +143,41 @@ CREATE TABLE PAYMENT (
                         id BIGINT PRIMARY KEY AUTO_INCREMENT,
                         order_id BIGINT NOT NULL,
                         total_amount BIGINT NOT NULL,
+                        payment_method VARCHAR(30) NOT NULL,
                         payment_state CHAR(30) NOT NULL,
                         created_date DATETIME NOT NULL DEFAULT current_timestamp,
-                        modified_date DATETIME NOT NULL DEFAULT current_timestamp
+                        modified_date DATETIME NOT NULL DEFAULT current_timestamp,
+                        removed TINYINT NOT NULL DEFAULT 0
 );
+
 CREATE TABLE COUPON (
-                         id BIGINT PRIMARY KEY AUTO_INCREMENT,
-                         coupon CHAR(30) NOT NULL,
-                         expiry_date DATETIME NOT NULL,
-                         amount BIGINT NOT NULL,
-                         discount_rate INT NOT NULL,
-                         created_date DATETIME NOT NULL DEFAULT current_timestamp,
-                         modified_date DATETIME NOT NULL DEFAULT current_timestamp
+                        id BIGINT PRIMARY KEY AUTO_INCREMENT,
+                        coupon VARCHAR(255) NOT NULL,
+                        expiry_date DATE NOT NULL,
+                        amount INT NOT NULL,
+                        discount_rate INT NOT NULL,
+                        created_date DATETIME NOT NULL DEFAULT current_timestamp,
+                        modified_date DATETIME NOT NULL DEFAULT current_timestamp
 );
 
 CREATE TABLE COUPON_HISTORY (
                         id BIGINT PRIMARY KEY AUTO_INCREMENT,
                         coupon_id BIGINT NOT NULL,
-                        member_id BIGINT,
+                        member_id BIGINT NOT NULL,
                         coupon_issuance DATETIME NOT NULL DEFAULT current_timestamp,
                         coupon_used TINYINT(1) NOT NULL DEFAULT 0,
                         modified_date DATETIME NOT NULL DEFAULT current_timestamp
-                            
+);
+
+CREATE TABLE OUTBOX (
+                        payment_id BIGINT PRIMARY KEY,
+                        order_id BIGINT NOT NULL,
+                        payment_method VARCHAR(30) NOT NULL,
+                        total_amount BIGINT NOT NULL,
+                        payment_state VARCHAR(30) NOT NULL,
+                        created_date DATETIME NOT NULL DEFAULT current_timestamp,
+                        modified_date DATETIME NOT NULL DEFAULT current_timestamp,
+                        removed TINYINT NOT NULL DEFAULT 0
 );
 
 ```

@@ -1,34 +1,15 @@
 package kr.hhplus.be.server.payment.application.service;
 
-import kr.hhplus.be.server.common.exeption.business.BusinessLogicMessage;
-import kr.hhplus.be.server.common.exeption.business.BusinessLogicRuntimeException;
-import kr.hhplus.be.server.coupon.domain.model.Coupon;
-import kr.hhplus.be.server.coupon.domain.repository.CouponRepository;
-import kr.hhplus.be.server.couponhistory.domain.model.CouponHistory;
-import kr.hhplus.be.server.couponhistory.domain.repository.CouponHistoryRepository;
-import kr.hhplus.be.server.order.presentation.dto.request.PaymentMethod;
 import kr.hhplus.be.server.outbox.domain.model.Outbox;
 import kr.hhplus.be.server.outbox.domain.repository.OutboxRepository;
-import kr.hhplus.be.server.payment.application.dto.request.PayServiceRequest;
 import kr.hhplus.be.server.payment.application.dto.request.PaymentServiceRequest;
 import kr.hhplus.be.server.payment.application.dto.response.PaymentResponse;
-import kr.hhplus.be.server.payment.application.service.payment_method.PaymentStrategy;
 import kr.hhplus.be.server.payment.application.usecase.PaymentUseCase;
 import kr.hhplus.be.server.payment.application.usecase.PaymentDataTransportUseCase;
 import kr.hhplus.be.server.payment.domain.model.Payment;
-import kr.hhplus.be.server.payment.domain.model.PaymentState;
 import kr.hhplus.be.server.payment.domain.repository.PaymentRepository;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import java.time.Duration;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -36,114 +17,41 @@ public class PaymentService implements PaymentUseCase {
 
     private final PaymentRepository paymentRepository;
     private final PaymentDataTransportUseCase paymentDataTransportUseCase;
-    private final Map<PaymentMethod, PaymentStrategy> paymentMethodStrategyMap;
-    private final CouponRepository couponRepository;
-    private final CouponHistoryRepository couponHistoryRepository;
-
     private final OutboxRepository outboxRepository;
-
-    private final StringRedisTemplate stringRedisTemplate;
+    private final PaymentTransactionService paymentTransactionService;
 
 
     public PaymentService(
             PaymentRepository paymentRepository,
             PaymentDataTransportUseCase paymentDataTransportUseCase,
-            List<PaymentStrategy> strategies,
-            CouponRepository couponRepository,
-            CouponHistoryRepository couponHistoryRepository,
             OutboxRepository outboxRepository,
-            StringRedisTemplate stringRedisTemplate
+            PaymentTransactionService paymentTransactionService
     ) {
-
         this.paymentRepository = paymentRepository;
         this.paymentDataTransportUseCase = paymentDataTransportUseCase;
-        this.paymentMethodStrategyMap = strategies.stream()
-                .collect(Collectors.toMap(
-                        PaymentStrategy::supportedMethod,
-                        strategy -> strategy
-                ));
-        this.couponRepository = couponRepository;
-        this.couponHistoryRepository = couponHistoryRepository;
         this.outboxRepository = outboxRepository;
-        this.stringRedisTemplate = stringRedisTemplate;
+        this.paymentTransactionService = paymentTransactionService;
     }
 
 
     @Override
-    @Transactional
     public PaymentResponse payment(PaymentServiceRequest request, String idempotencyKey) {
-        // 결제 정보 조회
+        // 1. 트랜잭션 내 처리 (DB 작업)
+        PaymentResponse response = paymentTransactionService.executePayment(request, idempotencyKey);
+
+        // 2. 트랜잭션 외 처리 (외부 API 호출)
         Payment payment = paymentRepository.retrievePayment(request.paymentId());
-
-        // 결제 상태 확인
-        checkPaymentState(payment.getPaymentState());
-
-        // 결제 상태 확인이 끝나면, 처리해야 할 결제이므로, 레디스에 중복 요청 방지
-        if(verifyDuplicatePayment(idempotencyKey)) {
-            throw new BusinessLogicRuntimeException(BusinessLogicMessage.ALREADY_PROCESSING_THIS_PAYMENT);
-        }
-
-        // 결제 방식 확인
-        PaymentStrategy paymentStrategy = paymentMethodStrategyMap.get(payment.getPaymentMethod());
-
-        if (paymentStrategy == null) {
-            throw new BusinessLogicRuntimeException(BusinessLogicMessage.UNSUPPORTED_PAYMENT_METHOD + " : " + payment.getPaymentMethod());
-        }
-
-        // 쿠폰 확인
-        Long discountApplyAmount = 0L;
-        if (Objects.nonNull(request.couponId())) {
-            // 쿠폰 발행되었는지 확인
-            CouponHistory couponHistory = couponHistoryRepository.retrieveCouponHistory(request.memberId(), request.couponId())
-                    .orElseThrow(() -> new BusinessLogicRuntimeException(BusinessLogicMessage.NOT_FOUND_COUPON));
-
-            // 쿠폰 사용되었는지 확인
-            if(couponHistory.getCouponUsed()) {
-                throw new BusinessLogicRuntimeException(BusinessLogicMessage.ALREADY_USED_THIS_COUPON);
-            }
-
-            // 쿠폰으로 할인 금액 확인
-            Coupon coupon = couponRepository.retrieve(couponHistory.getCouponId());
-            discountApplyAmount = coupon.calculateDiscountRate(payment.getTotalAmount()); // 할인 금액 계산
-        }
-
-        // 결제 방식에 따른 결제
-        paymentStrategy.pay(new PayServiceRequest(payment.getOrderId(), payment.getId(), discountApplyAmount, payment.getTotalAmount(), payment.getPaymentMethod(), request.memberId()));
-
-        // 결제 상태 업데이트
-        if(discountApplyAmount > 0L) {
-            payment.discountAmount(discountApplyAmount);
-        }
-
-        payment.changeState(PaymentState.PAYMENT_COMPLETE);
-        paymentRepository.changeState(payment);
-
-        // 데이터 전송
         try {
             paymentDataTransportUseCase.send();
+            log.info("외부 API 호출 성공 - paymentId: {}", payment.getId());
         } catch (Exception e) {
+            log.error("외부 API 호출 실패 - paymentId: {}, 에러: {}", payment.getId(), e.getMessage());
+            // 실패 시에만 Outbox 저장
             outboxRepository.save(Outbox.of(payment.getId(), payment.getOrderId(), payment.getPaymentMethod(), payment.getTotalAmount(), payment.getPaymentState()));
+            log.info("Outbox에 저장 완료 - paymentId: {}", payment.getId());
         }
 
-        return PaymentResponse.from(payment);
-    }
-
-    private Boolean verifyDuplicatePayment(String idempotencyKey) {
-        Boolean processing = stringRedisTemplate.opsForValue().setIfAbsent(
-                "idempotencyKey:" + idempotencyKey,
-                "PROCESSING",
-                Duration.ofMinutes(30)
-        );
-        return !processing;
-    }
-
-    private void checkPaymentState(PaymentState paymentState) {
-        if (paymentState.equals(PaymentState.PAYMENT_COMPLETE)) {
-            throw new BusinessLogicRuntimeException(BusinessLogicMessage.PAYMENT_COMPLETE.getMessage());
-        }
-        if(paymentState.equals(PaymentState.PAYMENT_CANCEL)) {
-            throw new BusinessLogicRuntimeException(BusinessLogicMessage.PAYMENT_CANCEL.getMessage());
-        }
+        return response;
     }
 
 }

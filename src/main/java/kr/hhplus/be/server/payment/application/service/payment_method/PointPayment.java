@@ -23,8 +23,8 @@ public class PointPayment implements PaymentStrategy {
     @Override
     @Transactional
     public void pay(PayServiceRequest request) {
-        // 포인트 찾기
-        Point point = pointRepository.findByMemberId(request.memberId());
+        // 포인트 찾기 (Pessimistic Lock 적용)
+        Point point = pointRepository.findByMemberIdForUpdate(request.memberId());
         // 포인트 차감
         point.use(request.totalAmount() - request.discountApplyAmount());
         LocalDateTime modifiedDate = pointRepository.update(point.getId(), point.getPoint());

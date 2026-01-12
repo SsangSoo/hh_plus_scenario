@@ -7,6 +7,31 @@ servers:
 - url: http://localhost:8080
 tags: []
 paths:
+  /api/coupon:
+    post:
+      tags:
+      - api
+      operationId: 쿠폰 생성
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/api-coupon104780717"
+            examples:
+              쿠폰 생성:
+                value: "{\"coupon\":\"abcde12345acv\",\"expiryDate\":\"2026-01-22\"\
+                  ,\"amount\":10,\"discountRate\":10}"
+      responses:
+        "201":
+          description: "201"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/api-coupon-2008763646"
+              examples:
+                쿠폰 생성:
+                  value: "{\"couponId\":1,\"coupon\":\"abcde12345acv\",\"expiryDate\"\
+                    :\"2026-01-22\",\"amount\":10,\"discountRate\":10}"
   /api/order:
     post:
       tags:
@@ -16,11 +41,11 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/api-order959951670"
+              $ref: "#/components/schemas/api-order1002702709"
             examples:
               상품 주문 및 결제:
-                value: "{\"memberId\":1,\"orderProductRequest\":{\"productId\":1,\"\
-                  quantity\":3}}"
+                value: "{\"memberId\":1,\"orderProductsRequest\":[{\"productId\":1,\"\
+                  quantity\":3}],\"paymentMethod\":\"POINT\"}"
       responses:
         "200":
           description: "200"
@@ -30,9 +55,34 @@ paths:
                 $ref: "#/components/schemas/api-order-1169713443"
               examples:
                 상품 주문 및 결제:
-                  value: "{\"orderId\":1,\"memberId\":1,\"orderDate\":\"2025-11-24T13:50:30\"\
-                    ,\"paymentId\":1,\"totalAmount\":12000,\"paymentState\":\"PAYMENT_COMPLETE\"\
+                  value: "{\"orderId\":1,\"memberId\":1,\"orderDate\":\"2026-01-12T12:50:43\"\
+                    ,\"paymentId\":1,\"totalAmount\":12000,\"paymentState\":\"PENDING\"\
                     }"
+  /api/pay:
+    post:
+      tags:
+      - api
+      operationId: 결제
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/api-pay-567522845"
+            examples:
+              결제:
+                value: "{\"orderId\":1,\"memberId\":1,\"paymentId\":1,\"couponId\"\
+                  :1}"
+      responses:
+        "200":
+          description: "200"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/api-pay-1417101315"
+              examples:
+                결제:
+                  value: "{\"id\":1,\"orderId\":1,\"totalAmount\":10000,\"paymentState\"\
+                    :\"PAYMENT_COMPLETE\"}"
   /api/product:
     post:
       tags:
@@ -52,12 +102,81 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/api-product923223259"
+                $ref: "#/components/schemas/api-product743519747"
               examples:
                 상품 생성:
                   value: "{\"id\":1,\"productName\":\"클린 아키텍처\",\"price\":0,\"quantity\"\
-                    :0,\"createDate\":\"2025-11-24T13:50:31\",\"modifiedDate\":\"\
-                    2025-11-24T13:50:31\"}"
+                    :0}"
+  /api/stock:
+    post:
+      tags:
+      - api
+      operationId: 재고 추가
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/api-stock236428995"
+            examples:
+              재고 추가:
+                value: "{\"productId\":1,\"addStock\":100}"
+      responses:
+        "200":
+          description: "200"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/api-stock-1526904031"
+              examples:
+                재고 추가:
+                  value: "{\"productId\":1,\"quantity\":100}"
+  /api/coupon/issue:
+    post:
+      tags:
+      - api
+      operationId: 쿠폰 발생
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/api-coupon-issue-1096101431"
+            examples:
+              쿠폰 발생:
+                value: "{\"couponId\":1,\"memberId\":1}"
+      responses:
+        "200":
+          description: "200"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/api-coupon-issue154548276"
+              examples:
+                쿠폰 발생:
+                  value: "{\"couponHistoryId\":1,\"couponId\":1,\"memberId\":1,\"\
+                    couponIssuance\":\"2026-01-12T12:50:40\",\"couponUsed\":false}"
+  /api/coupon/{couponId}:
+    get:
+      tags:
+      - api
+      operationId: 쿠폰 조회
+      parameters:
+      - name: couponId
+        in: path
+        description: 조회할 쿠폰 Id
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: "200"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/api-coupon-2008763646"
+              examples:
+                쿠폰 조회:
+                  value: "{\"couponId\":1,\"coupon\":\"abcde12345acv\",\"expiryDate\"\
+                    :\"2026-01-22\",\"amount\":10,\"discountRate\":10}"
   /api/point/charge:
     post:
       tags:
@@ -81,31 +200,7 @@ paths:
               examples:
                 포인트 충전:
                   value: "{\"id\":1,\"memberId\":1,\"point\":3000}"
-  /api/product/{productId}:
-    get:
-      tags:
-      - api
-      operationId: 상품 조회
-      parameters:
-      - name: productId
-        in: path
-        description: 조회할 상품 Id
-        required: true
-        schema:
-          type: string
-      responses:
-        "200":
-          description: "200"
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/api-product923223259"
-              examples:
-                상품 조회:
-                  value: "{\"id\":1,\"productName\":\"클린 아키텍처\",\"price\":1000,\"\
-                    quantity\":0,\"createDate\":\"2025-11-24T13:50:31\",\"modifiedDate\"\
-                    :\"2025-11-24T13:50:31\"}"
-  /api/point/{memberId}/retrieve:
+  /api/point/{memberId}:
     get:
       tags:
       - api
@@ -127,23 +222,98 @@ paths:
               examples:
                 포인트 조회:
                   value: "{\"id\":1,\"memberId\":1,\"point\":3000}"
+  /api/product/{productId}:
+    get:
+      tags:
+      - api
+      operationId: 상품 조회
+      parameters:
+      - name: productId
+        in: path
+        description: 조회할 상품 Id
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: "200"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/api-product743519747"
+              examples:
+                상품 조회:
+                  value: "{\"id\":1,\"productName\":\"클린 아키텍처\",\"price\":1000,\"\
+                    quantity\":0}"
+  /api/stock/{productId}:
+    get:
+      tags:
+      - api
+      operationId: 재고 조회
+      parameters:
+      - name: productId
+        in: path
+        description: 조회할 상품 Id
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: "200"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/api-stock-1526904031"
+              examples:
+                재고 조회:
+                  value: "{\"productId\":1,\"quantity\":50}"
 components:
   schemas:
-    api-order959951670:
+    api-coupon-issue154548276:
       type: object
       properties:
-        orderProductRequest:
-          type: object
-          properties:
-            quantity:
-              type: number
-              description: 주문 상품 수량
-            productId:
-              type: number
-              description: 상품 Id
+        couponIssuance:
+          type: string
+          description: 쿠폰 발행 일자 및 시간
+        couponUsed:
+          type: boolean
+          description: 쿠폰 사용 여부
+        couponHistoryId:
+          type: number
+          description: 쿠폰 발행 내역 Id
+        couponId:
+          type: number
+          description: 쿠폰 Id
         memberId:
           type: number
           description: 회원 Id
+    api-coupon-issue-1096101431:
+      type: object
+      properties:
+        couponId:
+          type: number
+          description: 쿠폰 Id
+        memberId:
+          type: number
+          description: 회원 Id
+    api-coupon-2008763646:
+      type: object
+      properties:
+        expiryDate:
+          type: string
+          description: 쿠폰 유효기간
+        discountRate:
+          type: number
+          description: 해당 쿠폰 할인율
+        amount:
+          type: number
+          description: 쿠폰 수량
+        coupon:
+          type: string
+          description: 쿠폰 번호
+        couponId:
+          type: number
+          description: 쿠폰 Id
     api-point-charge40556258:
       type: object
       properties:
@@ -153,6 +323,107 @@ components:
         memberId:
           type: number
           description: 회원 Id
+    api-point-charge1292573121:
+      type: object
+      properties:
+        id:
+          type: number
+          description: 포인트 Id
+        point:
+          type: number
+          description: 충전 후 point
+        memberId:
+          type: number
+          description: 회원 Id
+    api-pay-567522845:
+      type: object
+      properties:
+        orderId:
+          type: number
+          description: 주문 Id
+        paymentId:
+          type: number
+          description: 결제 Id
+        couponId:
+          type: number
+          description: 쿠폰 Id
+        memberId:
+          type: number
+          description: 회원 Id
+    api-order1002702709:
+      type: object
+      properties:
+        orderProductsRequest:
+          type: array
+          items:
+            type: object
+            properties:
+              quantity:
+                type: number
+                description: 주문 상품 수량
+              productId:
+                type: number
+                description: 회원 Id
+        paymentMethod:
+          type: string
+          description: 결제 방식
+        memberId:
+          type: number
+          description: 회원 Id
+    api-product743519747:
+      type: object
+      properties:
+        quantity:
+          type: number
+          description: 재고
+        price:
+          type: number
+          description: 상품 가격
+        id:
+          type: number
+          description: 상품 ID
+        productName:
+          type: string
+          description: 상품 이름
+    api-coupon104780717:
+      type: object
+      properties:
+        expiryDate:
+          type: string
+          description: 쿠폰 유효기간
+        discountRate:
+          type: number
+          description: 해당 쿠폰 할인율
+        amount:
+          type: number
+          description: 쿠폰 수량
+        coupon:
+          type: string
+          description: 쿠폰 번호
+    api-stock236428995:
+      type: object
+      properties:
+        productId:
+          type: number
+          description: 상품 Id
+        addStock:
+          type: number
+          description: 추가할 재고 수량
+    api-pay-1417101315:
+      type: object
+      properties:
+        totalAmount:
+          type: number
+          description: 결제 총 금액
+        orderId:
+          type: number
+          description: 회원 Id
+        id:
+          type: number
+          description: 결제 Id
+        paymentState:
+          type: string
+          description: 결제 상태
     api-product-1533132377:
       type: object
       properties:
@@ -183,36 +454,12 @@ components:
         memberId:
           type: number
           description: 회원 Id
-    api-point-charge1292573121:
-      type: object
-      properties:
-        id:
-          type: number
-          description: 포인트 Id
-        point:
-          type: number
-          description: 충전 후 point
-        memberId:
-          type: number
-          description: 회원 Id
-    api-product923223259:
+    api-stock-1526904031:
       type: object
       properties:
         quantity:
           type: number
-          description: 재고
-        price:
+          description: 재고 수량
+        productId:
           type: number
-          description: 상품 가격
-        modifiedDate:
-          type: string
-          description: 수정일
-        id:
-          type: number
-          description: 상품 ID
-        productName:
-          type: string
-          description: 상품 이름
-        createDate:
-          type: string
-          description: 생성일
+          description: 상품 Id

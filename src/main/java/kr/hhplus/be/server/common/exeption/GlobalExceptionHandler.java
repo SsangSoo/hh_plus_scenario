@@ -2,6 +2,7 @@ package kr.hhplus.be.server.common.exeption;
 
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
+import kr.hhplus.be.server.common.exeption.business.BusinessLogicRuntimeException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindException;
@@ -61,6 +62,21 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
     }
 
+
+    /**
+     * 비즈니스 로직 예외 처리
+     * 400 (BAD_REQUEST) 반환
+     */
+    @ExceptionHandler(BusinessLogicRuntimeException.class)
+    public ResponseEntity<ErrorResponse> handleBusinessLogicException(BusinessLogicRuntimeException ex) {
+
+        ErrorResponse errorResponse = ErrorResponse.of(
+                "400",
+                ex.getMessage()
+        );
+
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
+    }
 
     /**
      * 기타 예상 못한 예외

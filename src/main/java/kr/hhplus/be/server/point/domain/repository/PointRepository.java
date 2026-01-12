@@ -8,6 +8,9 @@ public interface PointRepository {
 
     Point findByMemberId(Long memberId);
 
+    // 동시성 제어를 위한 Pessimistic Lock 적용
+    Point findByMemberIdForUpdate(Long memberId);
+
     Point save(Point point);
 
     LocalDateTime update(Long id, Long point);

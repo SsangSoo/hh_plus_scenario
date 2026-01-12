@@ -37,3 +37,7 @@ out/
 .vscode/
 
 data
+
+# Claude Code
+CLAUDE.md
+.claude/

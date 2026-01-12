@@ -38,6 +38,14 @@ public class PointRepositoryImpl implements PointRepository {
         return pointJpaEntity.toDomain();
     }
 
+    // 동시성 제어를 위한 Pessimistic Lock 적용
+    @Override
+    public Point findByMemberIdForUpdate(Long memberId) {
+        PointJpaEntity pointJpaEntity = jpa.findByMemberIdForUpdate(memberId)
+                .orElseThrow(() -> new BusinessLogicRuntimeException(BusinessLogicMessage.NOT_FOUND_MEMBER_POINT));
+        return pointJpaEntity.toDomain();
+    }
+
     @Override
     public void remove(Long id) {
         PointJpaEntity pointJpaEntity = jpa.findByIdAndRemovedFalse(id)

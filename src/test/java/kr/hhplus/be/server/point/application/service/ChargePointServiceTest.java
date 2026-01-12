@@ -60,7 +60,7 @@ class ChargePointServiceTest {
         point.assignId(pointId);
 
         given(memberRepository.retrieve(memberId)).willReturn(member);
-        given(pointRepository.findByMemberId(memberId)).willReturn(point);
+        given(pointRepository.findByMemberIdForUpdate(memberId)).willReturn(point);
 
         // when : 포인트 충전
         PointResponse pointResponse = chargePointUseCase.charge(new ChargePoint(memberId, chargePoint));

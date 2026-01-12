@@ -8,30 +8,19 @@ import kr.hhplus.be.server.payment.application.usecase.PaymentUseCase;
 import kr.hhplus.be.server.payment.application.usecase.PaymentDataTransportUseCase;
 import kr.hhplus.be.server.payment.domain.model.Payment;
 import kr.hhplus.be.server.payment.domain.repository.PaymentRepository;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 @Slf4j
 @Service
+@RequiredArgsConstructor
 public class PaymentService implements PaymentUseCase {
 
     private final PaymentRepository paymentRepository;
     private final PaymentDataTransportUseCase paymentDataTransportUseCase;
     private final OutboxRepository outboxRepository;
     private final PaymentTransactionService paymentTransactionService;
-
-
-    public PaymentService(
-            PaymentRepository paymentRepository,
-            PaymentDataTransportUseCase paymentDataTransportUseCase,
-            OutboxRepository outboxRepository,
-            PaymentTransactionService paymentTransactionService
-    ) {
-        this.paymentRepository = paymentRepository;
-        this.paymentDataTransportUseCase = paymentDataTransportUseCase;
-        this.outboxRepository = outboxRepository;
-        this.paymentTransactionService = paymentTransactionService;
-    }
 
 
     @Override

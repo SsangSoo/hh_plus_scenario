@@ -17,7 +17,8 @@ public interface StockJpaRepository extends JpaRepository<StockJpaEntity, Long> 
     @Query("select s from StockJpaEntity s where s.productId = :productId and s.removed = false and s.quantity >= :quantity")
     Optional<StockJpaEntity> findByProductIdForDeduct(Long productId, Long quantity);
 
-    @Lock(LockModeType.PESSIMISTIC_WRITE)
+    // 분산락으로 동시성 제어 (X-Lock 비활성화)
+//    @Lock(LockModeType.PESSIMISTIC_WRITE)
     @Query("select s from StockJpaEntity s where s.productId = :productId and s.removed = false")
     Optional<StockJpaEntity> findByProductIdForUpdate(Long productId);
 

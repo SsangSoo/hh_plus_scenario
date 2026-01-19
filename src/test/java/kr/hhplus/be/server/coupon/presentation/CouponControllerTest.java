@@ -152,7 +152,7 @@ class CouponControllerTest extends RestDocsControllerSupport {
                 .andExpect(jsonPath("$.couponId").value(couponHistory.getCouponId()))
                 .andExpect(jsonPath("$.memberId").value(couponHistory.getMemberId()))
                 .andExpect(jsonPath("$.couponIssuance").value(couponHistory.getCouponIssuance().withNano(0).toString()))
-                .andExpect(jsonPath("$.couponUsed").value(couponHistory.getCouponUsed()))
+                .andExpect(jsonPath("$.couponUsed").value(couponHistory.isCouponUsed()))
                 .andDo(document("쿠폰 발생",
                         requestFields(
                                 fieldWithPath("couponId").description("쿠폰 Id"),

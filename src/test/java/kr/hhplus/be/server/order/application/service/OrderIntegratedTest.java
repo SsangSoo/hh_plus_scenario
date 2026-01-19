@@ -8,7 +8,6 @@ import kr.hhplus.be.server.member.presentation.dto.response.MemberResponse;
 import kr.hhplus.be.server.order.application.dto.OrderCommand;
 import kr.hhplus.be.server.order.presentation.dto.request.OrderProductRequest;
 import kr.hhplus.be.server.order.presentation.dto.request.OrderRequest;
-import kr.hhplus.be.server.order.presentation.dto.request.PaymentMethod;
 import kr.hhplus.be.server.order.presentation.dto.response.OrderResponse;
 import kr.hhplus.be.server.orderproduct.application.dto.request.OrderProductServiceRequest;
 import kr.hhplus.be.server.orderproduct.domain.model.OrderProduct;
@@ -23,12 +22,9 @@ import kr.hhplus.be.server.product.presentation.dto.request.RegisterProductReque
 import kr.hhplus.be.server.product.presentation.dto.response.ProductResponse;
 import kr.hhplus.be.server.stock.presentation.dto.request.AddStockRequest;
 import kr.hhplus.be.server.stock.presentation.dto.response.StockResponse;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.mockito.BDDMockito;
-import org.mockito.Mock;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -69,7 +65,7 @@ class OrderIntegratedTest extends SpringBootTestSupport {
         // 상품의 재고를 채운다.
         StockResponse stockResponse = addStockUseCase.addStock(new AddStockRequest(productResponse.getId(), 30L).toAddStock());
 
-        OrderRequest orderRequest = new OrderRequest(memberResponse.getId(), List.of(new OrderProductRequest(productResponse.getId(), 5L)), "POINT");
+        OrderRequest orderRequest = new OrderRequest(memberResponse.getId(), List.of(new OrderProductRequest(productResponse.getId(), 5L)));
 
         // when : 주문을 한다.
         placeOrderUseCase.order(orderRequest.toOrderCommand());
@@ -111,8 +107,8 @@ class OrderIntegratedTest extends SpringBootTestSupport {
                         new OrderProductRequest(secondProductResponse.getId(), 5L),
                         new OrderProductRequest(thirdProductResponse.getId(), 5L),
                         new OrderProductRequest(notExistProductId, 5L)
-                ),
-                "POINT");
+                )
+        );
 
         // when
         assertThatThrownBy(() -> placeOrderUseCase.order(orderRequest.toOrderCommand()))
@@ -146,8 +142,8 @@ class OrderIntegratedTest extends SpringBootTestSupport {
                         new OrderProductRequest(firstProductResponse.getId(), 5L),
                         new OrderProductRequest(secondProductResponse.getId(), 5L),
                         new OrderProductRequest(thirdProductResponse.getId(), 5L)
-                ),
-                "POINT");
+                )
+        );
 
         // when
         assertThatThrownBy(() -> placeOrderUseCase.order(orderRequest.toOrderCommand()))
@@ -194,8 +190,8 @@ class OrderIntegratedTest extends SpringBootTestSupport {
                         new OrderProductRequest(firstProductResponse.getId(), 5L),
                         new OrderProductRequest(secondProductResponse.getId(), 5L),
                         new OrderProductRequest(thirdProductResponse.getId(), 5L)
-                ),
-                "POINT");
+                )
+        );
 
         // when
         OrderResponse orderResponse = placeOrderUseCase.order(orderRequest.toOrderCommand());
@@ -230,16 +226,15 @@ class OrderIntegratedTest extends SpringBootTestSupport {
         StockResponse stockResponse = addStockUseCase.addStock(new AddStockRequest(productResponse.getId(), 30L).toAddStock());
 
         // 주문
-        OrderCommand orderCommand = new OrderCommand(memberResponse.getId(), List.of(new OrderProductServiceRequest(productResponse.getId(), 2L)), PaymentMethod.POINT);
+        OrderCommand orderCommand = new OrderCommand(memberResponse.getId(), List.of(new OrderProductServiceRequest(productResponse.getId(), 2L)));
         OrderResponse orderResponse = placeOrderUseCase.order(orderCommand);
 
         // when
-        PaymentResponse paymentResponse = paymentUseCase.payment(new PaymentServiceRequest(orderResponse.getOrderId(), memberResponse.getId(), orderResponse.getPaymentId(), null), UUID.randomUUID().toString());
+        PaymentResponse paymentResponse = paymentFacade.payment(new PaymentServiceRequest(orderResponse.getOrderId(), memberResponse.getId(), orderResponse.getPaymentId(), null), UUID.randomUUID().toString());
 
         // then
              // 결제 정보 저장시 1번, 결제 완료시 1번
         then(paymentDataTransportUseCase).should(times(1)).send();
-
     }
 
     @Test
@@ -259,7 +254,7 @@ class OrderIntegratedTest extends SpringBootTestSupport {
         StockResponse stockResponse = addStockUseCase.addStock(new AddStockRequest(productResponse.getId(), 30L).toAddStock());
 
         // 주문
-        OrderCommand orderCommand = new OrderCommand(memberResponse.getId(), List.of(new OrderProductServiceRequest(productResponse.getId(), 2L)), PaymentMethod.POINT);
+        OrderCommand orderCommand = new OrderCommand(memberResponse.getId(), List.of(new OrderProductServiceRequest(productResponse.getId(), 2L)));
         OrderResponse orderResponse = placeOrderUseCase.order(orderCommand);
 
 
@@ -267,7 +262,7 @@ class OrderIntegratedTest extends SpringBootTestSupport {
                 .when(paymentDataTransportUseCase).send();
 
         // when
-        PaymentResponse paymentResponse = paymentUseCase.payment(new PaymentServiceRequest(orderResponse.getOrderId(), memberResponse.getId(), orderResponse.getPaymentId(), null), UUID.randomUUID().toString());
+        PaymentResponse paymentResponse = paymentFacade.payment(new PaymentServiceRequest(orderResponse.getOrderId(), memberResponse.getId(), orderResponse.getPaymentId(), null), UUID.randomUUID().toString());
 
         // then
         assertThat(paymentResponse.getPaymentState()).isEqualTo(PaymentState.PAYMENT_COMPLETE.toString());
@@ -275,7 +270,6 @@ class OrderIntegratedTest extends SpringBootTestSupport {
         Outbox outbox = outboxRepository.retrieve(orderResponse.getOrderId());
         assertThat(outbox).isNotNull();
         assertThat(outbox.getOrderId()).isEqualTo(orderResponse.getOrderId());
-        assertThat(outbox.getPaymentMethod()).isEqualTo(PaymentMethod.POINT);
         assertThat(outbox.getPaymentState()).isEqualTo(PaymentState.PAYMENT_COMPLETE);
 
     }

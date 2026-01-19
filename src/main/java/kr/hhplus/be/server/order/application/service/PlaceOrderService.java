@@ -12,7 +12,7 @@ import kr.hhplus.be.server.orderproduct.application.dto.response.OrderProductRes
 import kr.hhplus.be.server.orderproduct.application.usecase.RegisterOrderProductUseCase;
 import kr.hhplus.be.server.payment.application.dto.request.RegisterPaymentInfoRequest;
 import kr.hhplus.be.server.payment.application.dto.response.PaymentResponse;
-import kr.hhplus.be.server.payment.application.usecase.RegisterPaymentInfoUseCase;
+import kr.hhplus.be.server.payment.application.usecase.RegisterPaymentUseCase;
 import kr.hhplus.be.server.product.domain.model.Product;
 import kr.hhplus.be.server.product.domain.repository.ProductRepository;
 import kr.hhplus.be.server.stock.application.usecase.DeductedStockUseCase;
@@ -37,7 +37,7 @@ public class PlaceOrderService implements PlaceOrderUseCase {
 
     private final DeductedStockUseCase deductedStockUseCase;
 
-    private final RegisterPaymentInfoUseCase registerPaymentInfoUseCase;
+    private final RegisterPaymentUseCase registerPaymentUseCase;
 
 
     @Transactional
@@ -71,7 +71,7 @@ public class PlaceOrderService implements PlaceOrderUseCase {
 
         Long totalAmount = calculatePoint(findProductList, responseList);
 
-        PaymentResponse paymentResponse = registerPaymentInfoUseCase.registerPaymentInfo(new RegisterPaymentInfoRequest(order.getId(), totalAmount, orderCommand.paymentMethod(), member.getId()));
+        PaymentResponse paymentResponse = registerPaymentUseCase.registerPaymentInfo(new RegisterPaymentInfoRequest(order.getId(), totalAmount, member.getId()));
 
         return OrderResponse.from(order, paymentResponse);
     }

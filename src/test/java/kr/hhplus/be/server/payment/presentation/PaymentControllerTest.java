@@ -1,10 +1,9 @@
 package kr.hhplus.be.server.payment.presentation;
 
 import kr.hhplus.be.server.config.RestDocsControllerSupport;
-import kr.hhplus.be.server.order.presentation.dto.request.PaymentMethod;
 import kr.hhplus.be.server.payment.application.dto.request.PaymentServiceRequest;
 import kr.hhplus.be.server.payment.application.dto.response.PaymentResponse;
-import kr.hhplus.be.server.payment.application.usecase.PaymentUseCase;
+import kr.hhplus.be.server.payment.application.facade.PaymentFacade;
 import kr.hhplus.be.server.payment.domain.model.Payment;
 import kr.hhplus.be.server.payment.domain.model.PaymentState;
 import org.junit.jupiter.api.Test;
@@ -24,12 +23,12 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 class PaymentControllerTest  extends RestDocsControllerSupport {
 
-    private final PaymentUseCase paymentUseCase = mock(PaymentUseCase.class);
+    private final PaymentFacade paymentFacade = mock(PaymentFacade.class);
 
 
     @Override
     protected Object initContoller() {
-        return new PaymentController(paymentUseCase);
+        return new PaymentController(paymentFacade);
     }
 
     @Test
@@ -42,13 +41,13 @@ class PaymentControllerTest  extends RestDocsControllerSupport {
         Long totalAmount = 10000L;
 
         // 결제 생성
-        Payment payment = Payment.create(orderId, totalAmount, PaymentMethod.POINT);
+        Payment payment = Payment.create(orderId, totalAmount);
         payment.assignId(paymentId);
         payment.changeState(PaymentState.PAYMENT_COMPLETE);
 
         PaymentServiceRequest paymentServiceRequest = new PaymentServiceRequest(orderId, memberId, paymentId, couponId);
 
-        given(paymentUseCase.payment(any(), any()))
+        given(paymentFacade.payment(any(), any()))
                 .willReturn(PaymentResponse.from(payment));
 
 

@@ -1,9 +1,6 @@
 package kr.hhplus.be.server.payment.application.service;
 
-import kr.hhplus.be.server.order.presentation.dto.request.PaymentMethod;
-import kr.hhplus.be.server.outbox.domain.repository.OutboxRepository;
-import kr.hhplus.be.server.payment.application.usecase.PaymentDataTransportUseCase;
-import kr.hhplus.be.server.payment.application.usecase.RegisterPaymentInfoUseCase;
+import kr.hhplus.be.server.payment.application.usecase.RegisterPaymentUseCase;
 import kr.hhplus.be.server.payment.domain.model.Payment;
 import kr.hhplus.be.server.payment.domain.repository.PaymentRepository;
 import kr.hhplus.be.server.payment.domain.model.PaymentState;
@@ -26,20 +23,11 @@ class RegisterPaymentInfoServiceTest {
     @Mock
     PaymentRepository paymentRepository;
 
-    @Mock
-    PaymentDataTransportUseCase paymentDataTransportClient;
-
-    @Mock
-    OutboxRepository outboxRepository;
-
-    RegisterPaymentInfoUseCase registerPaymentInfoService;
-
+    RegisterPaymentUseCase registerPaymentService;
 
     @BeforeEach
     void setUp() {
-
-        registerPaymentInfoService = new RegisterPaymentInfoService(paymentRepository);
-
+        registerPaymentService = new RegisterPaymentService(paymentRepository);
     }
 
     @Test
@@ -47,15 +35,15 @@ class RegisterPaymentInfoServiceTest {
     void paymentPointTest() {
         // given
         long memberId = 3L;
-        RegisterPaymentInfoRequest paymentServiceRequest = new RegisterPaymentInfoRequest(1L, 4500L, PaymentMethod.POINT, memberId);
+        RegisterPaymentInfoRequest paymentServiceRequest = new RegisterPaymentInfoRequest(1L, 4500L, memberId);
 
-        Payment payment = Payment.create(1L, 4500L, PaymentMethod.POINT);
+        Payment payment = Payment.create(1L, 4500L);
         payment.assignId(1L);
 
         given(paymentRepository.save(any())).willReturn(payment);
 
         // when
-        PaymentResponse paymentResponse = registerPaymentInfoService.registerPaymentInfo(paymentServiceRequest);
+        PaymentResponse paymentResponse = registerPaymentService.registerPaymentInfo(paymentServiceRequest);
 
         // then
         Assertions.assertThat(paymentResponse).isNotNull();
@@ -63,9 +51,6 @@ class RegisterPaymentInfoServiceTest {
         Assertions.assertThat(paymentResponse.getId()).isEqualTo(1L);
         Assertions.assertThat(paymentResponse.getTotalAmount()).isEqualTo(4500L);
         Assertions.assertThat(paymentResponse.getOrderId()).isEqualTo(paymentServiceRequest.orderId());
-
-        then(outboxRepository).should(never()).save(any());
-        then(paymentDataTransportClient).should(never()).send();
     }
 
 

@@ -28,7 +28,7 @@ public class CouponHistoryJpaEntity {
     private LocalDateTime couponIssuance;
 
     @Column(name = "coupon_used", nullable = false)
-    private Boolean couponUsed;
+    private boolean couponUsed;
 
     @Column(name = "modified_date", nullable = false)
     private LocalDateTime modifiedDate;
@@ -51,7 +51,7 @@ public class CouponHistoryJpaEntity {
         couponHistoryJpaEntity.couponId = couponHistory.getCouponId();
         couponHistoryJpaEntity.memberId = couponHistory.getMemberId();
         couponHistoryJpaEntity.couponIssuance = couponHistory.getCouponIssuance();
-        couponHistoryJpaEntity.couponUsed = couponHistory.getCouponUsed();
+        couponHistoryJpaEntity.couponUsed = couponHistory.isCouponUsed();
         
         couponHistoryJpaEntity.modifiedDate = LocalDateTime.now();
         return couponHistoryJpaEntity;

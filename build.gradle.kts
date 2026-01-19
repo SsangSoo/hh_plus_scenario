@@ -55,7 +55,10 @@ dependencies {
     implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.14")
 
     // redis
-    implementation ("org.springframework.boot:spring-boot-starter-data-redis")
+    implementation("org.springframework.boot:spring-boot-starter-data-redis")
+
+    // redisson
+    implementation("org.redisson:redisson-spring-boot-starter:3.52.0")
 
     compileOnly("org.projectlombok:lombok")
     annotationProcessor("org.projectlombok:lombok")

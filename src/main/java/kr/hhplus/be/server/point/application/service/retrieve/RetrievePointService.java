@@ -1,4 +1,4 @@
-package kr.hhplus.be.server.point.application.service;
+package kr.hhplus.be.server.point.application.service.retrieve;
 
 import kr.hhplus.be.server.member.domain.repository.MemberRepository;
 import kr.hhplus.be.server.point.application.usecase.RetrievePointUseCase;

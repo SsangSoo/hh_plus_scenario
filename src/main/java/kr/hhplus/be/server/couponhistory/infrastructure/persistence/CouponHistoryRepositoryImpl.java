@@ -24,4 +24,15 @@ public class CouponHistoryRepositoryImpl implements CouponHistoryRepository {
         Optional<CouponHistoryJpaEntity> findCouponHistory = jpa.findByMemberIdAndCouponId(memberId, couponId);
         return findCouponHistory.map(CouponHistoryJpaEntity::toDomain);
     }
+
+    @Override
+    public Optional<CouponHistory> retrieveUsableCouponHistory(Long memberId, Long couponId) {
+        return jpa.findByMemberIdAndCouponIdAndCouponUsedIsFalse(memberId, couponId)
+                .map(CouponHistoryJpaEntity::toDomain);
+    }
+
+    @Override
+    public void modifyByUsing(CouponHistory couponHistory) {
+        jpa.updateCouponUsed(couponHistory.getMemberId(), couponHistory.getCouponId());
+    }
 }

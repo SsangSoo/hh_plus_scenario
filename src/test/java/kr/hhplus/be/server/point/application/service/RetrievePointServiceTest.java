@@ -3,6 +3,7 @@ package kr.hhplus.be.server.point.application.service;
 import kr.hhplus.be.server.member.application.dto.RegisterMemberCommand;
 import kr.hhplus.be.server.member.domain.model.Member;
 import kr.hhplus.be.server.member.domain.repository.MemberRepository;
+import kr.hhplus.be.server.point.application.service.retrieve.RetrievePointService;
 import kr.hhplus.be.server.point.application.usecase.RetrievePointUseCase;
 import kr.hhplus.be.server.point.domain.model.Point;
 import kr.hhplus.be.server.point.domain.repository.PointRepository;

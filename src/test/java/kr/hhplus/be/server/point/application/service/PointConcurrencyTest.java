@@ -4,14 +4,13 @@ import kr.hhplus.be.server.common.exeption.business.BusinessLogicRuntimeExceptio
 import kr.hhplus.be.server.config.SpringBootTestSupport;
 import kr.hhplus.be.server.member.application.dto.RegisterMemberCommand;
 import kr.hhplus.be.server.member.presentation.dto.response.MemberResponse;
+import kr.hhplus.be.server.order.application.service.PlaceOrderService;
 import kr.hhplus.be.server.point.application.dto.request.ChargePoint;
 import kr.hhplus.be.server.point.application.dto.request.UsePoint;
 import kr.hhplus.be.server.point.domain.model.Point;
-import kr.hhplus.be.server.point.application.usecase.UsePointUseCase;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import java.time.LocalDate;
 import java.util.concurrent.CountDownLatch;
@@ -23,11 +22,12 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 class PointConcurrencyTest extends SpringBootTestSupport {
 
-    @Autowired
-    private UsePointUseCase usePointUseCase;
+    private PlaceOrderService placeOrderService;
 
     @AfterEach
     void tearDown() {
+        productJpaRepository.deleteAllInBatch();
+        stockJpaRepository.deleteAllInBatch();
         pointHistoryJpaRepository.deleteAllInBatch();
         pointJpaRepository.deleteAllInBatch();
         memberJpaRepository.deleteAllInBatch();
@@ -73,6 +73,7 @@ class PointConcurrencyTest extends SpringBootTestSupport {
                 new RegisterMemberCommand("테스트회원", LocalDate.of(1990, 1, 1).toString(), "테스트주소")
         );
         chargePointUseCase.charge(new ChargePoint(member.getId(), 100000L));
+
 
         int threadCount = 100;
         Long useAmount = 500L;

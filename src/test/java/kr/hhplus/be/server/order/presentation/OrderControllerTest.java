@@ -5,7 +5,6 @@ import kr.hhplus.be.server.order.application.service.PlaceOrderService;
 import kr.hhplus.be.server.order.domain.model.Order;
 import kr.hhplus.be.server.order.presentation.dto.request.OrderProductRequest;
 import kr.hhplus.be.server.order.presentation.dto.request.OrderRequest;
-import kr.hhplus.be.server.order.presentation.dto.request.PaymentMethod;
 import kr.hhplus.be.server.order.presentation.dto.response.OrderResponse;
 import kr.hhplus.be.server.payment.domain.model.Payment;
 import kr.hhplus.be.server.payment.application.dto.response.PaymentResponse;
@@ -41,16 +40,15 @@ class OrderControllerTest extends RestDocsControllerSupport {
         Long memberId = 1L;
         Long productId = 1L;
         Long quantity = 3L;
-        String paymentMethod = "POINT";
 
-        OrderRequest request = new OrderRequest(memberId, List.of(new OrderProductRequest(productId, quantity)), paymentMethod);
+        OrderRequest request = new OrderRequest(memberId, List.of(new OrderProductRequest(productId, quantity)));
 
         Long orderId = 1L;
         Order order = Order.create(memberId);
         order.assignId(orderId);
 
         Long paymentId = 1L;
-        Payment payment = Payment.create(orderId, 4000L * quantity, PaymentMethod.valueOf(paymentMethod));
+        Payment payment = Payment.create(orderId, 4000L * quantity);
         payment.assignId(paymentId);
 
         OrderResponse response = OrderResponse.from(order, PaymentResponse.from(payment));
@@ -76,8 +74,7 @@ class OrderControllerTest extends RestDocsControllerSupport {
                         requestFields(
                                 fieldWithPath("memberId").description("회원 Id"),
                                 fieldWithPath("orderProductsRequest[].productId").description("회원 Id"),
-                                fieldWithPath("orderProductsRequest[].quantity").description("주문 상품 수량"),
-                                fieldWithPath("paymentMethod").description("결제 방식")
+                                fieldWithPath("orderProductsRequest[].quantity").description("주문 상품 수량")
                         ),
                         responseFields(
                                 fieldWithPath("orderId").description("주문 Id"),

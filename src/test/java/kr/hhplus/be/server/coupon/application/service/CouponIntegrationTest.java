@@ -8,13 +8,11 @@ import kr.hhplus.be.server.coupon.presentation.dto.response.IssueCouponResponse;
 import kr.hhplus.be.server.member.application.dto.RegisterMemberCommand;
 import kr.hhplus.be.server.member.presentation.dto.response.MemberResponse;
 import kr.hhplus.be.server.order.application.dto.OrderCommand;
-import kr.hhplus.be.server.order.presentation.dto.request.PaymentMethod;
 import kr.hhplus.be.server.order.presentation.dto.response.OrderResponse;
 import kr.hhplus.be.server.orderproduct.application.dto.request.OrderProductServiceRequest;
 import kr.hhplus.be.server.payment.application.dto.request.PaymentServiceRequest;
 import kr.hhplus.be.server.payment.application.dto.response.PaymentResponse;
 import kr.hhplus.be.server.payment.domain.model.PaymentState;
-import kr.hhplus.be.server.payment.presentation.dto.PaymentRequest;
 import kr.hhplus.be.server.point.application.dto.request.ChargePoint;
 import kr.hhplus.be.server.point.presentation.dto.response.PointResponse;
 import kr.hhplus.be.server.product.application.dto.request.RegisterProductServiceRequest;
@@ -77,7 +75,7 @@ class CouponIntegrationTest  extends SpringBootTestSupport {
         CouponResponse registeredCoupon = registerCouponUseCase.register(new RegisterCouponServiceRequest("123456789012345", LocalDate.now().plusDays(1L), 2, 10));
         IssueCouponResponse issueCouponResponse = issueCouponUseCase.issue(new IssueCouponServiceRequest(registeredCoupon.getCouponId(), registeredMember.getId()));
 
-        assertThat(issueCouponResponse.getCouponUsed()).isFalse();
+        assertThat(issueCouponResponse.isCouponUsed()).isFalse();
 
         ProductResponse registeredProduct = registerProductUseCase.register(new RegisterProductServiceRequest("상품", 10000L));
 
@@ -89,13 +87,13 @@ class CouponIntegrationTest  extends SpringBootTestSupport {
         assertThat(pointResponse.getPoint()).isEqualTo(300000L);
 
 
-        OrderResponse orderResponse = placeOrderUseCase.order(new OrderCommand(registeredMember.getId(), List.of(new OrderProductServiceRequest(registeredProduct.getId(), 20L)), PaymentMethod.POINT));
+        OrderResponse orderResponse = placeOrderUseCase.order(new OrderCommand(registeredMember.getId(), List.of(new OrderProductServiceRequest(registeredProduct.getId(), 20L))));
         assertThat(orderResponse.getMemberId()).isEqualTo(registeredMember.getId());
         assertThat(orderResponse.getTotalAmount()).isEqualTo(200000L);
         assertThat(orderResponse.getPaymentState()).isEqualTo(PaymentState.PENDING.name());
 
         // when
-        PaymentResponse paymentResponse = paymentUseCase.payment(new PaymentServiceRequest(orderResponse.getOrderId(), registeredMember.getId(), orderResponse.getPaymentId(), registeredCoupon.getCouponId()), UUID.randomUUID().toString());
+        PaymentResponse paymentResponse = paymentFacade.payment(new PaymentServiceRequest(orderResponse.getOrderId(), registeredMember.getId(), orderResponse.getPaymentId(), registeredCoupon.getCouponId()), UUID.randomUUID().toString());
 
         // then
         assertThat(paymentResponse.getTotalAmount()).isEqualTo(180000L);
@@ -116,16 +114,16 @@ class CouponIntegrationTest  extends SpringBootTestSupport {
     @DisplayName("쿠폰 발행은 선착순이다.")
     void couponIssuedFirstComeFirstServedTest() throws InterruptedException  {
         // given
-        int couponAmount = 1;
+        int couponAmount = 1000;
         CouponResponse couponResponse = registerCouponUseCase.register(new RegisterCouponServiceRequest("10% 를 할인해주는 쿠폰", LocalDate.now().plusDays(1L), couponAmount, 10));
         Long couponId = couponResponse.getCouponId();
 
         List<MemberResponse> list = new ArrayList<>();
-        for(int i = 1; i <= 100; i ++) {
+        for(int i = 0; i < 1000; i ++) {
             list.add(registerMemberUseCase.register(new RegisterMemberCommand("이름" + i, "19900101", "베이커가 " + i + "번지")));
         }
 
-        int threadCount = 100;
+        int threadCount = 1000;
         ExecutorService executorService = Executors.newFixedThreadPool(threadCount);
         CountDownLatch latch = new CountDownLatch(threadCount);
 
@@ -134,7 +132,7 @@ class CouponIntegrationTest  extends SpringBootTestSupport {
 
         // when
         for (int i = 0; i < threadCount; i++) {
-            long memberId = i;
+            long memberId = list.get(i).getId();
             executorService.submit(() -> {
                 try {
                     issueCouponUseCase.issue(new IssueCouponServiceRequest(couponId, memberId));
@@ -151,7 +149,10 @@ class CouponIntegrationTest  extends SpringBootTestSupport {
         executorService.shutdown();
 
         // then
-        assertThat(successCount.get()).isEqualTo(couponAmount);
-        assertThat(failCount.get()).isEqualTo(threadCount - couponAmount);
+        assertThat(successCount.get()).isEqualTo(1000);
+        assertThat(failCount.get()).isEqualTo(0);
+
+        CouponResponse retrieveCouponResponse = retrieveCouponUseCase.retrieve(couponId);
+        assertThat(retrieveCouponResponse.getAmount()).isEqualTo(0);
     }
 }

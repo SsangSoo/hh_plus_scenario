@@ -4,8 +4,10 @@ import kr.hhplus.be.server.order.presentation.dto.request.PaymentMethod;
 import kr.hhplus.be.server.outbox.domain.repository.OutboxRepository;
 import kr.hhplus.be.server.payment.application.dto.request.PaymentServiceRequest;
 import kr.hhplus.be.server.payment.application.dto.response.PaymentResponse;
+import kr.hhplus.be.server.payment.application.facade.PaymentFacade;
 import kr.hhplus.be.server.payment.application.usecase.PaymentDataTransportUseCase;
 import kr.hhplus.be.server.payment.application.usecase.PaymentUseCase;
+import kr.hhplus.be.server.payment.application.usecase.RetrievePaymentUseCase;
 import kr.hhplus.be.server.payment.domain.model.Payment;
 import kr.hhplus.be.server.payment.domain.model.PaymentState;
 import kr.hhplus.be.server.payment.domain.repository.PaymentRepository;
@@ -27,7 +29,10 @@ import static org.mockito.Mockito.never;
 class PaymentServiceTest {
 
     @Mock
-    PaymentRepository paymentRepository;
+    PaymentUseCase paymentUseCase;
+
+    @Mock
+    RetrievePaymentUseCase retrievePaymentUseCase;
 
     @Mock
     PaymentDataTransportUseCase paymentDataTransportClient;
@@ -35,19 +40,17 @@ class PaymentServiceTest {
     @Mock
     OutboxRepository outboxRepository;
 
-    @Mock
-    PaymentTransactionService paymentTransactionService;
 
-    PaymentUseCase paymentService;
+    PaymentFacade paymentFacade;
 
 
     @BeforeEach
     void setUp() {
-        paymentService = new PaymentService(
-                paymentRepository,
+        paymentFacade = new PaymentFacade(
+                paymentUseCase,
+                retrievePaymentUseCase,
                 paymentDataTransportClient,
-                outboxRepository,
-                paymentTransactionService
+                outboxRepository
         );
     }
 
@@ -57,18 +60,18 @@ class PaymentServiceTest {
     @DisplayName("결제 로직 테스트")
     void paymentTest() {
         // given
-        Payment payment = Payment.create(1L, 30000L, PaymentMethod.POINT);
+        Payment payment = Payment.create(1L, 30000L);
         payment.assignId(1L);
         payment.changeState(PaymentState.PAYMENT_COMPLETE);
 
         PaymentResponse expectedResponse = PaymentResponse.from(payment);
 
-        given(paymentTransactionService.executePayment(any(), any())).willReturn(expectedResponse);
-        given(paymentRepository.retrievePayment(any())).willReturn(payment);
+        given(paymentUseCase.payment(any(), any())).willReturn(expectedResponse);
+        given(retrievePaymentUseCase.retrievePayment(any())).willReturn(payment);
         willDoNothing().given(paymentDataTransportClient).send();
 
         // when
-        PaymentResponse response = paymentService.payment(new PaymentServiceRequest(1L, 1L, 1L, null), UUID.randomUUID().toString());
+        PaymentResponse response = paymentFacade.payment(new PaymentServiceRequest(1L, 1L, 1L, null), UUID.randomUUID().toString());
 
         // then
         assertThat(response.getId()).isEqualTo(payment.getId());
@@ -77,8 +80,8 @@ class PaymentServiceTest {
         assertThat(response.getPaymentState()).isEqualTo(PaymentState.PAYMENT_COMPLETE.toString());
 
         // then
-        then(paymentTransactionService).should(times(1)).executePayment(any(), any());
-        then(paymentRepository).should(times(1)).retrievePayment(any());
+        then(paymentUseCase).should(times(1)).payment(any(), any());
+        then(retrievePaymentUseCase).should(times(1)).retrievePayment(any());
         then(paymentDataTransportClient).should(times(1)).send();
         then(outboxRepository).should(never()).save(any());
     }
@@ -89,26 +92,26 @@ class PaymentServiceTest {
     @DisplayName("외부 API 호출 실패 시 Outbox에 저장한다")
     void whenExternalApiFailsThenSaveToOutbox() {
         // given
-        Payment payment = Payment.create(1L, 30000L, PaymentMethod.POINT);
+        Payment payment = Payment.create(1L, 30000L);
         payment.assignId(1L);
         payment.changeState(PaymentState.PAYMENT_COMPLETE);
 
         PaymentResponse expectedResponse = PaymentResponse.from(payment);
 
-        given(paymentTransactionService.executePayment(any(), any())).willReturn(expectedResponse);
-        given(paymentRepository.retrievePayment(any())).willReturn(payment);
+        given(paymentUseCase.payment(any(), any())).willReturn(expectedResponse);
+        given(retrievePaymentUseCase.retrievePayment(any())).willReturn(payment);
         willThrow(new RuntimeException("외부 API 호출 실패")).given(paymentDataTransportClient).send();
 
         // when
-        PaymentResponse response = paymentService.payment(new PaymentServiceRequest(1L, 1L, 1L, null), UUID.randomUUID().toString());
+        PaymentResponse response = paymentFacade.payment(new PaymentServiceRequest(1L, 1L, 1L, null), UUID.randomUUID().toString());
 
         // then
         assertThat(response.getId()).isEqualTo(payment.getId());
         assertThat(response.getOrderId()).isEqualTo(payment.getOrderId());
 
         // then
-        then(paymentTransactionService).should(times(1)).executePayment(any(), any());
-        then(paymentRepository).should(times(1)).retrievePayment(any());
+        then(paymentUseCase).should(times(1)).payment(any(), any());
+        then(retrievePaymentUseCase).should(times(1)).retrievePayment(any());
         then(paymentDataTransportClient).should(times(1)).send();
         then(outboxRepository).should(times(1)).save(any());
     }

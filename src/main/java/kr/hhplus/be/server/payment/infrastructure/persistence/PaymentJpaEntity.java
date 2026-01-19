@@ -40,8 +40,6 @@ public class PaymentJpaEntity extends BaseEntity {
         paymentJpaEntity.orderId = payment.getOrderId();
         paymentJpaEntity.totalAmount = payment.getTotalAmount();
 
-        paymentJpaEntity.paymentMethod = payment.getPaymentMethod();
-
         paymentJpaEntity.paymentState = payment.getPaymentState();
 
         paymentJpaEntity.createdDate = LocalDateTime.now();
@@ -56,7 +54,6 @@ public class PaymentJpaEntity extends BaseEntity {
                 id,
                 orderId,
                 totalAmount,
-                paymentMethod,
                 paymentState
         );
     }

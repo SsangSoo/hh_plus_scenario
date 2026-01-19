@@ -15,6 +15,8 @@ public enum BusinessLogicMessage {
     NOT_FOUND_MEMBER_POINT("회원의 포인트를 찾을 수 없습니다."),
     NOT_FOUND_OUTBOX("해당 outbox 를 찾을 수 없습니다."),
 
+    NOT_FOUND_USABLE_COUPON("사용 가능한 쿠폰을 찾을 수 없습니다."),
+
     NOT_POSSIBLE_ISSUE_COUPON_BY_INSUFFICIENT_NUMBER("발행 가능한 쿠폰 개수가 부족하여, 발행할 수 없습니다."),
 
     PAYMENT_COMPLETE("결제 완료된 건입니다."),
@@ -28,8 +30,7 @@ public enum BusinessLogicMessage {
     POINT_IS_NOT_ENOUGH("현재 가지고 있는 포인트가 부족합니다."),
 
     STOCK_IS_NOT_ENOUGH("현재 재고보다 차감하려는 재고가 많습니다."),
-    UNSUPPORTED_PAYMENT_METHOD("지원하지 않는 결제 방식입니다."),
-    ;
+    UNSUPPORTED_PAYMENT_METHOD("지원하지 않는 결제 방식입니다.");
 
 
 

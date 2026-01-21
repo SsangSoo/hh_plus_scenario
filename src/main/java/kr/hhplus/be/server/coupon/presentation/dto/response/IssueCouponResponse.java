@@ -12,7 +12,7 @@ public class IssueCouponResponse {
     private Long couponId;
     private Long memberId;
     private String couponIssuance;
-    private Boolean couponUsed;
+    private boolean couponUsed;
 
     public static IssueCouponResponse from(CouponHistory couponHistory) {
         return new IssueCouponResponse(
@@ -20,11 +20,11 @@ public class IssueCouponResponse {
                 couponHistory.getCouponId(),
                 couponHistory.getMemberId(),
                 couponHistory.getCouponIssuance(),
-                couponHistory.getCouponUsed()
+                couponHistory.isCouponUsed()
         );
     }
 
-    private IssueCouponResponse(Long couponHistoryId, Long couponId, Long memberId, LocalDateTime couponIssuance, Boolean couponUsed) {
+    private IssueCouponResponse(Long couponHistoryId, Long couponId, Long memberId, LocalDateTime couponIssuance, boolean couponUsed) {
         this.couponHistoryId = couponHistoryId;
         this.couponId = couponId;
         this.memberId = memberId;

@@ -48,7 +48,6 @@ class StockServiceTest extends SpringBootTestSupport {
     }
 
 
-
     @Test
     @DisplayName("재고 차감시 재고를 차감할 수 없는 상태라면, 차감하지 않는다.")
     void deductedStock() throws InterruptedException {

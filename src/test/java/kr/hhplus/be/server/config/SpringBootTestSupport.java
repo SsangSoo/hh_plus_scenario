@@ -1,10 +1,13 @@
 package kr.hhplus.be.server.config;
 
+import kr.hhplus.be.server.coupon.application.service.issuecoupon.IssueCouponTransactionService;
 import kr.hhplus.be.server.coupon.application.usecase.IssueCouponUseCase;
 import kr.hhplus.be.server.coupon.application.usecase.RegisterCouponUseCase;
 import kr.hhplus.be.server.coupon.application.usecase.RetrieveCouponUseCase;
 import kr.hhplus.be.server.coupon.domain.repository.CouponRepository;
 import kr.hhplus.be.server.coupon.infrastructure.persistence.CouponJpaRepository;
+import kr.hhplus.be.server.couponhistory.application.usecase.RegisterCouponHistoryUseCase;
+import kr.hhplus.be.server.couponhistory.application.usecase.RetrieveCouponHistoryUseCase;
 import kr.hhplus.be.server.couponhistory.domain.repository.CouponHistoryRepository;
 import kr.hhplus.be.server.couponhistory.infrastructure.persistence.CouponHistoryJpaRepository;
 import kr.hhplus.be.server.member.application.usecase.RegisterMemberUseCase;
@@ -20,29 +23,34 @@ import kr.hhplus.be.server.orderproduct.domain.repository.OrderProductRepository
 import kr.hhplus.be.server.orderproduct.infrastructure.persistence.OrderProductJpaRepository;
 import kr.hhplus.be.server.outbox.domain.repository.OutboxRepository;
 import kr.hhplus.be.server.outbox.infrastructure.OutboxJpaRepository;
-import kr.hhplus.be.server.payment.application.service.payment_method.BankTransferPayment;
-import kr.hhplus.be.server.payment.application.service.payment_method.CardPayment;
-import kr.hhplus.be.server.payment.application.service.payment_method.PointPayment;
+import kr.hhplus.be.server.payment.application.facade.PaymentFacade;
 import kr.hhplus.be.server.payment.application.usecase.PaymentDataTransportUseCase;
 import kr.hhplus.be.server.payment.application.usecase.PaymentUseCase;
-import kr.hhplus.be.server.payment.application.usecase.RegisterPaymentInfoUseCase;
+import kr.hhplus.be.server.payment.application.usecase.RegisterPaymentUseCase;
+import kr.hhplus.be.server.payment.application.usecase.RetrievePaymentUseCase;
 import kr.hhplus.be.server.payment.domain.repository.PaymentRepository;
 import kr.hhplus.be.server.payment.infrastructure.persistence.PaymentJpaRepository;
+import kr.hhplus.be.server.point.application.service.charge.ChargePointTransactionService;
 import kr.hhplus.be.server.point.application.usecase.ChargePointUseCase;
 import kr.hhplus.be.server.point.application.usecase.RetrievePointUseCase;
+import kr.hhplus.be.server.point.application.usecase.UsePointUseCase;
 import kr.hhplus.be.server.point.domain.repository.PointRepository;
 import kr.hhplus.be.server.point.infrastructure.persistence.PointJpaRepository;
 import kr.hhplus.be.server.pointhistory.domain.repository.PointHistoryRepository;
 import kr.hhplus.be.server.pointhistory.infrastructure.persistence.PointHistoryJpaRepository;
 import kr.hhplus.be.server.product.application.usecase.RegisterProductUseCase;
 import kr.hhplus.be.server.product.application.usecase.RemoveProductUseCase;
+import kr.hhplus.be.server.product.application.usecase.RetrieveProductUseCase;
 import kr.hhplus.be.server.product.domain.repository.ProductRepository;
 import kr.hhplus.be.server.product.infrastructure.persistence.ProductJpaRepository;
+import kr.hhplus.be.server.stock.application.service.AddStockTransactionService;
+import kr.hhplus.be.server.stock.application.service.DeductedStockTransactionService;
 import kr.hhplus.be.server.stock.application.usecase.AddStockUseCase;
 import kr.hhplus.be.server.stock.application.usecase.DeductedStockUseCase;
 import kr.hhplus.be.server.stock.application.usecase.RetrieveStockUseCase;
 import kr.hhplus.be.server.stock.domain.repository.StockRepository;
 import kr.hhplus.be.server.stock.infrastructure.persistence.StockJpaRepository;
+import org.redisson.api.RedissonClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.redis.core.StringRedisTemplate;
@@ -74,6 +82,9 @@ public abstract class SpringBootTestSupport {
     protected ChargePointUseCase chargePointUseCase;
 
     @Autowired
+    protected ChargePointTransactionService chargePointTransactionService;
+
+    @Autowired
     protected RetrievePointUseCase retrievePointUseCase;
 
     @Autowired
@@ -81,6 +92,10 @@ public abstract class SpringBootTestSupport {
 
     @Autowired
     protected PointJpaRepository pointJpaRepository;
+
+    @Autowired
+    protected UsePointUseCase usePointUseCase;
+
 
 
     // PointHistory
@@ -114,8 +129,15 @@ public abstract class SpringBootTestSupport {
 
 
     // Payment
+
     @Autowired
-    protected RegisterPaymentInfoUseCase registerPaymentInfoUseCase;
+    protected PaymentFacade paymentFacade;
+
+    @Autowired
+    protected RegisterPaymentUseCase registerPaymentUseCase;
+
+    @Autowired
+    protected RetrievePaymentUseCase retrievePaymentUseCase;
 
     @Autowired
     protected PaymentUseCase paymentUseCase;
@@ -129,25 +151,25 @@ public abstract class SpringBootTestSupport {
     @Autowired
     protected PaymentJpaRepository paymentJpaRepository;
 
-    @Autowired
-    protected BankTransferPayment bankTransferPayment;
-
-    @Autowired
-    protected CardPayment cardPayment;
-
-    @Autowired
-    protected PointPayment pointPayment;
 
     // MockBean
     @MockitoBean
     protected PaymentDataTransportUseCase paymentDataTransportUseCase;
+
+
 
     // Stock
     @Autowired
     protected AddStockUseCase addStockUseCase;
 
     @Autowired
+    protected AddStockTransactionService addStockTransactionService;
+
+    @Autowired
     protected DeductedStockUseCase deductedStockUseCase;
+
+    @Autowired
+    protected DeductedStockTransactionService deductedStockTransactionService;
 
     @Autowired
     protected RetrieveStockUseCase retrieveStockUseCase;
@@ -169,6 +191,9 @@ public abstract class SpringBootTestSupport {
     protected RemoveProductUseCase removeProductUseCase;
 
     @Autowired
+    protected RetrieveProductUseCase retrieveProductUseCase;
+
+    @Autowired
     protected ProductRepository productRepository;
 
     @Autowired
@@ -178,6 +203,9 @@ public abstract class SpringBootTestSupport {
     // Coupon
     @Autowired
     protected IssueCouponUseCase issueCouponUseCase;
+
+    @Autowired
+    protected IssueCouponTransactionService issueCouponTransactionService;
 
     @Autowired
     protected RegisterCouponUseCase registerCouponUseCase;
@@ -192,10 +220,18 @@ public abstract class SpringBootTestSupport {
     protected CouponJpaRepository couponJpaRepository;
 
     @Autowired
+    protected RegisterCouponHistoryUseCase registerCouponHistoryUseCase;
+
+    @Autowired
+    protected RetrieveCouponHistoryUseCase retrieveCouponHistoryUseCase;
+
+    @Autowired
     protected CouponHistoryRepository couponHistoryRepository;
 
     @Autowired
     protected CouponHistoryJpaRepository couponHistoryJpaRepository;
+
+
 
 
     // outbox
@@ -204,6 +240,9 @@ public abstract class SpringBootTestSupport {
 
     @Autowired
     protected OutboxJpaRepository outboxJpaRepository;
+
+    @Autowired
+    protected RedissonClient redissonClient;
 
 
     // Redis

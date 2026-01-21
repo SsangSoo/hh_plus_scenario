@@ -11,11 +11,11 @@ public class CouponHistory {
     private Long couponId;
     private Long memberId;
     private LocalDateTime couponIssuance;
-    private Boolean couponUsed;
+    private boolean couponUsed;
 
     private CouponHistory() {}
 
-    private CouponHistory(Long id, Long couponId, Long memberId, LocalDateTime couponIssuance, Boolean couponUsed) {
+    private CouponHistory(Long id, Long couponId, Long memberId, LocalDateTime couponIssuance, boolean couponUsed) {
         this.id = id;
         this.couponId = couponId;
         this.memberId = memberId;
@@ -28,7 +28,7 @@ public class CouponHistory {
     }
 
 
-    public static CouponHistory of(Long id, Long couponId, Long memberId, LocalDateTime couponIssuance, Boolean couponUsed) {
+    public static CouponHistory of(Long id, Long couponId, Long memberId, LocalDateTime couponIssuance, boolean couponUsed) {
         return new CouponHistory(id, couponId, memberId, couponIssuance, couponUsed);
     }
 

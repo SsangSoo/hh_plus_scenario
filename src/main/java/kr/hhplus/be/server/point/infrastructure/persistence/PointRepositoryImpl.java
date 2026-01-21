@@ -23,7 +23,7 @@ public class PointRepositoryImpl implements PointRepository {
     }
 
     @Override
-    public LocalDateTime update(Long id, Long point) {
+    public LocalDateTime modify(Long id, Long point) {
         PointJpaEntity pointJpaEntity = jpa.findByIdAndRemovedFalse(id)
                 .orElseThrow(() -> new BusinessLogicRuntimeException(BusinessLogicMessage.NOT_FOUND_MEMBER_POINT));
         pointJpaEntity.update(point);

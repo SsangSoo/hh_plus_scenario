@@ -1,37 +1,33 @@
 package kr.hhplus.be.server.payment.domain.model;
 
-import kr.hhplus.be.server.order.presentation.dto.request.PaymentMethod;
 import lombok.Getter;
 
 @Getter
 public class Payment {
 
-    private Long id;
-    private Long orderId;
-    private Long totalAmount;
-    private PaymentMethod paymentMethod;
-    private PaymentState paymentState;
+    private Long id;                    // 결제 Id
+    private Long orderId;               // 주문 Id
+    private Long totalAmount;           // 총 금액
+    private PaymentState paymentState;  // 결제 상태
 
-    public static Payment of(Long id,  Long orderId, Long totalAmount, PaymentMethod paymentMethod, PaymentState paymentState) {
-        return new Payment(id, orderId, totalAmount, paymentMethod, paymentState);
+    public static Payment of(Long id,  Long orderId, Long totalAmount, PaymentState paymentState) {
+        return new Payment(id, orderId, totalAmount, paymentState);
     }
 
-    public static Payment create(Long orderId, Long totalAmount, PaymentMethod paymentMethod) {
-        return new Payment(orderId, totalAmount, paymentMethod);
+    public static Payment create(Long orderId, Long totalAmount) {
+        return new Payment(orderId, totalAmount);
     }
 
-    private Payment(Long orderId, Long totalAmount, PaymentMethod paymentMethod) {
+    private Payment(Long orderId, Long totalAmount) {
         this.orderId = orderId;
         this.totalAmount = totalAmount;
-        this.paymentMethod = paymentMethod;
         this.paymentState = PaymentState.PENDING;
     }
 
-    private Payment(Long id, Long orderId, Long totalAmount, PaymentMethod paymentMethod, PaymentState paymentState) {
+    private Payment(Long id, Long orderId, Long totalAmount, PaymentState paymentState) {
         this.id = id;
         this.orderId = orderId;
         this.totalAmount = totalAmount;
-        this.paymentMethod = paymentMethod;
         this.paymentState = paymentState;
     }
 

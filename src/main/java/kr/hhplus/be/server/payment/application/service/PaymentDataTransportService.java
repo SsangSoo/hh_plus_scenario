@@ -2,9 +2,9 @@ package kr.hhplus.be.server.payment.application.service;
 
 import kr.hhplus.be.server.payment.application.usecase.PaymentDataTransportUseCase;
 import org.springframework.scheduling.annotation.Async;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
-@Component
+@Service
 public class PaymentDataTransportService implements PaymentDataTransportUseCase {
 
     @Async

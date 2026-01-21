@@ -65,7 +65,6 @@ CREATE TABLE PAYMENT (
                         id BIGINT PRIMARY KEY AUTO_INCREMENT,
                         order_id BIGINT NOT NULL,
                         total_amount BIGINT NOT NULL,
-                        payment_method VARCHAR(30) NOT NULL,
                         payment_state CHAR(30) NOT NULL,
                         created_date DATETIME NOT NULL DEFAULT current_timestamp,
                         modified_date DATETIME NOT NULL DEFAULT current_timestamp,
@@ -94,7 +93,6 @@ CREATE TABLE COUPON_HISTORY (
 CREATE TABLE OUTBOX (
                         payment_id BIGINT PRIMARY KEY,
                         order_id BIGINT NOT NULL,
-                        payment_method VARCHAR(30) NOT NULL,
                         total_amount BIGINT NOT NULL,
                         payment_state VARCHAR(30) NOT NULL,
                         created_date DATETIME NOT NULL DEFAULT current_timestamp,

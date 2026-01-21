@@ -13,7 +13,7 @@ public interface PointRepository {
 
     Point save(Point point);
 
-    LocalDateTime update(Long id, Long point);
+    LocalDateTime modify(Long id, Long point);
 
     void remove(Long memberId);
 }

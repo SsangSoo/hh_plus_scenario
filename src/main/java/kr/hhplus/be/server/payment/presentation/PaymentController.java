@@ -1,6 +1,7 @@
 package kr.hhplus.be.server.payment.presentation;
 
 import kr.hhplus.be.server.payment.application.dto.response.PaymentResponse;
+import kr.hhplus.be.server.payment.application.facade.PaymentFacade;
 import kr.hhplus.be.server.payment.application.usecase.PaymentUseCase;
 import kr.hhplus.be.server.payment.presentation.dto.PaymentRequest;
 import lombok.RequiredArgsConstructor;
@@ -14,7 +15,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/pay")
 public class PaymentController {
 
-    private final PaymentUseCase paymentUseCase;
+    private final PaymentFacade paymentFacade;
 
     @PostMapping
     public ResponseEntity<PaymentResponse> pay(
@@ -22,7 +23,7 @@ public class PaymentController {
             @RequestBody PaymentRequest request) {
         log.info("결제 API 호출 payment request : {}", request);
 
-        PaymentResponse paymentResponse = paymentUseCase.payment(request.toServiceRequest(), idempotencyKey);
+        PaymentResponse paymentResponse = paymentFacade.payment(request.toServiceRequest(), idempotencyKey);
         return  ResponseEntity.ok(paymentResponse);
     }
 }

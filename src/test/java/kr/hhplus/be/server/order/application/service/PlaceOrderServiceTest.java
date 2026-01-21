@@ -8,12 +8,11 @@ import kr.hhplus.be.server.order.domain.model.Order;
 import kr.hhplus.be.server.order.domain.repository.OrderRepository;
 import kr.hhplus.be.server.order.presentation.dto.request.OrderProductRequest;
 import kr.hhplus.be.server.order.presentation.dto.request.OrderRequest;
-import kr.hhplus.be.server.order.presentation.dto.request.PaymentMethod;
 import kr.hhplus.be.server.order.presentation.dto.response.OrderResponse;
 import kr.hhplus.be.server.orderproduct.application.usecase.RegisterOrderProductUseCase;
 import kr.hhplus.be.server.orderproduct.domain.model.OrderProduct;
 import kr.hhplus.be.server.orderproduct.application.dto.response.OrderProductResponse;
-import kr.hhplus.be.server.payment.application.usecase.RegisterPaymentInfoUseCase;
+import kr.hhplus.be.server.payment.application.usecase.RegisterPaymentUseCase;
 import kr.hhplus.be.server.payment.domain.model.Payment;
 import kr.hhplus.be.server.payment.domain.model.PaymentState;
 import kr.hhplus.be.server.payment.application.dto.response.PaymentResponse;
@@ -57,7 +56,7 @@ class PlaceOrderServiceTest {
     OrderRepository orderRepository;
 
     @Mock
-    RegisterPaymentInfoUseCase registerPaymentInfoUseCase;
+    RegisterPaymentUseCase registerPaymentUseCase;
 
     @Mock
     DeductedStockUseCase deductedStockUseCase;
@@ -71,7 +70,7 @@ class PlaceOrderServiceTest {
 
     @BeforeEach
     void setUp() {
-        placeOrderUseCase = new PlaceOrderService(memberRepository, productRepository, orderRepository, registerOrderProductUseCase, deductedStockUseCase, registerPaymentInfoUseCase);
+        placeOrderUseCase = new PlaceOrderService(memberRepository, productRepository, orderRepository, registerOrderProductUseCase, deductedStockUseCase, registerPaymentUseCase);
     }
 
     @Test
@@ -79,7 +78,7 @@ class PlaceOrderServiceTest {
     void failToOrderWhenMemberNotFound() {
         // given
         OrderProductRequest orderProductRequest = new OrderProductRequest(1L, 2L);
-        OrderRequest request = new OrderRequest(3L, List.of(orderProductRequest), "POINT");
+        OrderRequest request = new OrderRequest(3L, List.of(orderProductRequest));
 
         given(memberRepository.retrieve(3L)).willThrow(new BusinessLogicRuntimeException(BusinessLogicMessage.NOT_FOUND_MEMBER));
 
@@ -95,7 +94,7 @@ class PlaceOrderServiceTest {
     void failToOrderWhenProductNotFound() {
         // given
         OrderProductRequest orderProductRequest = new OrderProductRequest(1L, 2L);
-        OrderRequest orderRequest = new OrderRequest(3L, List.of(orderProductRequest), "POINT");
+        OrderRequest orderRequest = new OrderRequest(3L, List.of(orderProductRequest));
 
         RegisterMemberCommand registerMemberCommand = new RegisterMemberCommand("name", LocalDate.of(1990, 1, 1).format(DateTimeFormatter.ofPattern("yyyyMMdd")), "주소");
         Member member = Member.create(registerMemberCommand);
@@ -120,7 +119,7 @@ class PlaceOrderServiceTest {
     void failToOrderWhenStockOfProductNotFound() {
         // given
         OrderProductRequest orderProductRequest = new OrderProductRequest(1L, 2L);
-        OrderRequest orderRequest = new OrderRequest(3L, List.of(orderProductRequest), "POINT");
+        OrderRequest orderRequest = new OrderRequest(3L, List.of(orderProductRequest));
 
         RegisterMemberCommand memberServiceRequest = new RegisterMemberCommand("name", LocalDate.of(1990, 1, 1).format(DateTimeFormatter.ofPattern("yyyyMMdd")), "주소");
         Member member = Member.create(memberServiceRequest);
@@ -151,7 +150,7 @@ class PlaceOrderServiceTest {
     void failToOrderWhenStockOfProductNotEnough() {
         // given
         OrderProductRequest orderProductRequest = new OrderProductRequest(1L, 2L);
-        OrderRequest orderRequest = new OrderRequest(3L, List.of(orderProductRequest), "POINT");
+        OrderRequest orderRequest = new OrderRequest(3L, List.of(orderProductRequest));
 
         RegisterMemberCommand memberServiceRequest = new RegisterMemberCommand("name", LocalDate.of(1990, 1, 1).format(DateTimeFormatter.ofPattern("yyyyMMdd")), "주소");
         Member member = Member.create(memberServiceRequest);
@@ -186,7 +185,7 @@ class PlaceOrderServiceTest {
         // given
         // 주문 상품 및 주문 요청
         OrderProductRequest orderProductRequest = new OrderProductRequest(1L, 2L);
-        OrderRequest orderRequest = new OrderRequest(3L, List.of(orderProductRequest), "POINT");
+        OrderRequest orderRequest = new OrderRequest(3L, List.of(orderProductRequest));
 
         // 회원
         RegisterMemberCommand memberServiceRequest = new RegisterMemberCommand("name", LocalDate.of(1990, 1, 1).format(DateTimeFormatter.ofPattern("yyyyMMdd")), "주소");
@@ -224,10 +223,10 @@ class PlaceOrderServiceTest {
         assertThat(totalPoint).isEqualTo(7000L);
 
         // 결제
-        Payment payment = Payment.create(order.getId(), product.getPrice() * orderProductRequest.quantity(), PaymentMethod.POINT);
+        Payment payment = Payment.create(order.getId(), product.getPrice() * orderProductRequest.quantity());
         payment.assignId(1L);
         PaymentResponse paymentResponse = PaymentResponse.from(payment);
-        given(registerPaymentInfoUseCase.registerPaymentInfo(any())).willReturn(paymentResponse);
+        given(registerPaymentUseCase.registerPaymentInfo(any())).willReturn(paymentResponse);
 
         // when
         OrderResponse orderResponse = placeOrderUseCase.order(orderRequest.toOrderCommand());

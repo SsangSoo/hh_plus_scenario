@@ -11,7 +11,8 @@ import java.util.Optional;
 @Repository
 public interface CouponJpaRepository extends JpaRepository<CouponJpaEntity, Long> {
 
-    @Lock(LockModeType.PESSIMISTIC_WRITE)
+    // 분산락으로 동시성 제어 (X-Lock 비활성화)
+//    @Lock(LockModeType.PESSIMISTIC_WRITE)
     @Query("select c from CouponJpaEntity c where c.id = :id")
     Optional<CouponJpaEntity> findByIdForUpdate(Long id);
 

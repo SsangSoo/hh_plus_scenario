@@ -1,11 +1,9 @@
 package kr.hhplus.be.server.order.presentation.dto.request;
 
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import kr.hhplus.be.server.order.application.dto.OrderCommand;
-import kr.hhplus.be.server.common.validation.ValidEnum;
 
 import java.util.List;
 
@@ -16,13 +14,7 @@ public record OrderRequest(
         Long memberId,
 
         @Valid
-        List<OrderProductRequest> orderProductsRequest,
-
-        @NotBlank(message = "결제 방식은 필수입니다.")
-        @ValidEnum(
-                enumClass = PaymentMethod.class,
-                message = "올바르지 않은 결제방식입니다. 결제 방식을 확인해주세요")
-        String paymentMethod
+        List<OrderProductRequest> orderProductsRequest
 ) {
 
     public OrderCommand toOrderCommand() {
@@ -30,8 +22,7 @@ public record OrderRequest(
                 memberId,
                 orderProductsRequest.stream()
                         .map(OrderProductRequest::toOrderProductCommand)
-                        .toList(),
-                PaymentMethod.valueOf(paymentMethod)
+                        .toList()
         );
     }
 

@@ -32,8 +32,8 @@ public class IssueCouponService implements IssueCouponUseCase {
         RLock lock = redissonClient.getLock("couponIssue:" + serviceRequest.couponId());
 
         try {
-            // 분산락 획득: 대기시간 20초, 자동 해제 1초
-            boolean available = lock.tryLock(30, 2, TimeUnit.SECONDS);
+            // 분산락 획득: 대기시간 300초 (선착순 시나리오 대응), watchdog 자동 연장 (-1)
+            boolean available = lock.tryLock(300, -1, TimeUnit.SECONDS);
 
             if(!available) {
                 log.warn("쿠폰 발급 Lock 획득 실패 - couponId: {}, memberId: {}",
@@ -49,7 +49,10 @@ public class IssueCouponService implements IssueCouponUseCase {
         } catch (BusinessLogicRuntimeException e) {
             throw e;
         } finally {
-            lock.unlock();
+            // Lock 해제 (안전하게 처리)
+            if (lock.isHeldByCurrentThread()) {
+                lock.unlock();
+            }
         }
     }
 }

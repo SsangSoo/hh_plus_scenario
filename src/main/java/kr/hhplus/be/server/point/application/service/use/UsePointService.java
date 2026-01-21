@@ -36,8 +36,8 @@ public class UsePointService implements UsePointUseCase {
         RLock lock = redissonClient.getLock("point:lock:" + member.getId());
 
         try {
-            // 분산락 획득: 대기시간 2초, 자동 해제 3초
-            boolean available = lock.tryLock(2, 3, TimeUnit.SECONDS);
+            // 분산락 획득: 대기시간 10초, watchdog 자동 연장 (-1)
+            boolean available = lock.tryLock(10, -1, TimeUnit.SECONDS);
 
             if (!available) {
                 log.warn("포인트 사용 Lock 획득 실패 - memberId: {}", member.getId());

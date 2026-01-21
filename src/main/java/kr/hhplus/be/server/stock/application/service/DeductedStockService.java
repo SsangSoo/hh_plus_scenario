@@ -41,7 +41,8 @@ public class DeductedStockService implements DeductedStockUseCase {
             // 2. 순서대로 분산락 획득
             for (Long productId : sortedProductIds) {
                 RLock lock = redissonClient.getLock("stock:lock:" + productId);
-                boolean available = lock.tryLock(2, 3, TimeUnit.SECONDS);
+                // 분산락 획득: 대기시간 10초, watchdog 자동 연장 (-1)
+                boolean available = lock.tryLock(10, -1, TimeUnit.SECONDS);
 
                 if (!available) {
                     log.warn("재고 Lock 획득 실패 - productId: {}", productId);

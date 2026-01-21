@@ -23,17 +23,21 @@ public class AddStockService implements AddStockUseCase {
     public StockResponse addStock(AddStock request) {
         RLock lock = redissonClient.getLock("stock:lock:" + request.productId());
         try {
-            boolean avaliable = lock.tryLock(3, 1, TimeUnit.SECONDS);
-            if (!avaliable) {
+            // 분산락 획득: 대기시간 10초, watchdog 자동 연장 (-1)
+            boolean available = lock.tryLock(10, -1, TimeUnit.SECONDS);
+            if (!available) {
                 log.warn("재고 Lock 획득 실패 - productId: {}", request.productId());
                 throw new IllegalStateException("재고 Lock 획득 실패: productId = " + request.productId());
             }
             return addStockTransactionService.addStock(request);
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
-            throw new RuntimeException("재고 차감 중 인터럽트 발생", e);
+            throw new RuntimeException("재고 추가 중 인터럽트 발생", e);
         } finally {
-            lock.unlock();
+            // Lock 해제 (안전하게 처리)
+            if (lock.isHeldByCurrentThread()) {
+                lock.unlock();
+            }
         }
     }
 }

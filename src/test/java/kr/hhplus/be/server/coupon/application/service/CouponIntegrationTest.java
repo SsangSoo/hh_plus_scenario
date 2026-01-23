@@ -6,6 +6,8 @@ import kr.hhplus.be.server.coupon.application.dto.request.RegisterCouponServiceR
 import kr.hhplus.be.server.coupon.presentation.dto.response.CouponResponse;
 import kr.hhplus.be.server.coupon.presentation.dto.response.IssueCouponResponse;
 import kr.hhplus.be.server.member.application.dto.RegisterMemberCommand;
+import kr.hhplus.be.server.member.domain.model.Member;
+import kr.hhplus.be.server.member.infrastructure.persistence.MemberJpaEntity;
 import kr.hhplus.be.server.member.presentation.dto.response.MemberResponse;
 import kr.hhplus.be.server.order.application.dto.OrderCommand;
 import kr.hhplus.be.server.order.presentation.dto.response.OrderResponse;
@@ -118,10 +120,16 @@ class CouponIntegrationTest  extends SpringBootTestSupport {
         CouponResponse couponResponse = registerCouponUseCase.register(new RegisterCouponServiceRequest("10% 를 할인해주는 쿠폰", LocalDate.now().plusDays(1L), couponAmount, 10));
         Long couponId = couponResponse.getCouponId();
 
-        List<MemberResponse> list = new ArrayList<>();
+        List<MemberJpaEntity> memberJpaList = new ArrayList<>();
         for(int i = 0; i < 1000; i ++) {
-            list.add(registerMemberUseCase.register(new RegisterMemberCommand("이름" + i, "19900101", "베이커가 " + i + "번지")));
+            memberJpaList.add(MemberJpaEntity.from(Member.create(new RegisterMemberCommand("이름" + i, "19900101", "베이커가 " + i + "번지"))));
         }
+
+        List<MemberResponse> memberResponseList = memberJpaRepository.saveAll(memberJpaList)
+                .stream()
+                .map(MemberJpaEntity::toDomain)
+                .map(MemberResponse::from)
+                .toList();
 
         int threadCount = 1000;
         ExecutorService executorService = Executors.newFixedThreadPool(threadCount);
@@ -132,7 +140,7 @@ class CouponIntegrationTest  extends SpringBootTestSupport {
 
         // when
         for (int i = 0; i < threadCount; i++) {
-            long memberId = list.get(i).getId();
+            long memberId = memberResponseList.get(i).getId();
             executorService.submit(() -> {
                 try {
                     issueCouponUseCase.issue(new IssueCouponServiceRequest(couponId, memberId));

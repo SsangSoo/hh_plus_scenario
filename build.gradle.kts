@@ -56,6 +56,7 @@ dependencies {
 
     // redis
     implementation("org.springframework.boot:spring-boot-starter-data-redis")
+    implementation("org.apache.commons:commons-pool2")
 
     // redisson
     implementation("org.redisson:redisson-spring-boot-starter:3.52.0")

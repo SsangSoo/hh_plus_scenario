@@ -32,8 +32,8 @@ public class IssueCouponService implements IssueCouponUseCase {
         RLock lock = redissonClient.getLock("couponIssue:" + serviceRequest.couponId());
 
         try {
-            // 분산락 획득: 대기시간 300초 (선착순 시나리오 대응), watchdog 자동 연장 (-1)
-            boolean available = lock.tryLock(300, -1, TimeUnit.SECONDS);
+            // 분산락 획득: 대기시간 10초 (선착순 시나리오 대응), watchdog 자동 연장 (-1)
+            boolean available = lock.tryLock(25, -1, TimeUnit.SECONDS);
 
             if(!available) {
                 log.warn("쿠폰 발급 Lock 획득 실패 - couponId: {}, memberId: {}",

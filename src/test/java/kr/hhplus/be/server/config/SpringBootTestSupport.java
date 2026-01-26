@@ -1,5 +1,6 @@
 package kr.hhplus.be.server.config;
 
+import kr.hhplus.be.server.common.redis.RedisUtil;
 import kr.hhplus.be.server.coupon.application.service.issuecoupon.IssueCouponTransactionService;
 import kr.hhplus.be.server.coupon.application.usecase.IssueCouponUseCase;
 import kr.hhplus.be.server.coupon.application.usecase.RegisterCouponUseCase;
@@ -249,6 +250,7 @@ public abstract class SpringBootTestSupport {
     @Autowired
     protected StringRedisTemplate stringRedisTemplate;
 
-
+    @Autowired
+    protected RedisUtil redisUtil;
 
 }

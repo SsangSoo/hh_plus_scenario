@@ -1,5 +1,6 @@
 package kr.hhplus.be.server.coupon.application.service;
 
+import kr.hhplus.be.server.common.redis.RedisUtil;
 import kr.hhplus.be.server.coupon.application.usecase.RetrieveCouponUseCase;
 import kr.hhplus.be.server.coupon.domain.model.Coupon;
 import kr.hhplus.be.server.coupon.domain.repository.CouponRepository;
@@ -16,6 +17,7 @@ import java.time.LocalDate;
 
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
 
 @Slf4j
@@ -25,11 +27,14 @@ class RetrieveCouponServiceTest {
     @Mock
     CouponRepository couponRepository;
 
+    @Mock
+    RedisUtil redisUtil;
+
     RetrieveCouponUseCase retrieveCouponUseCase;
 
     @BeforeEach
     void setUp() {
-        retrieveCouponUseCase = new RetrieveCouponService(couponRepository);
+        retrieveCouponUseCase = new RetrieveCouponService(couponRepository, redisUtil);
     }
 
 
@@ -41,6 +46,7 @@ class RetrieveCouponServiceTest {
         coupon.assignId(1L);
 
         given(couponRepository.retrieve(anyLong())).willReturn(coupon);
+        given(redisUtil.get(anyString())).willReturn("1");
 
         // when
         CouponResponse retrieved = retrieveCouponUseCase.retrieve(1L);

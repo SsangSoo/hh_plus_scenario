@@ -25,9 +25,8 @@ public class RegisterCouponService implements RegisterCouponUseCase {
     public CouponResponse register(RegisterCouponServiceRequest reqeust) {
         Coupon coupon = couponRepository.save(Coupon.create(reqeust.coupon(), reqeust.expiryDate(), reqeust.amount(), reqeust.discountRate()));
 
-
         redisUtil.set(
-                "coupon:" + coupon.getId() + ":" + coupon.getCoupon(), // 쿠폰 키
+                "coupon:" + coupon.getId(), // 쿠폰 키
                 String.valueOf(coupon.getAmount()),                                         // 쿠폰 수량
                 Duration.between(LocalDateTime.now(), coupon.getExpiryDate().plusDays(1L).atStartOfDay())
         );

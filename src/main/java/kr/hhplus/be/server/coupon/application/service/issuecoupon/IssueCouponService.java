@@ -1,9 +1,16 @@
 package kr.hhplus.be.server.coupon.application.service.issuecoupon;
 
+import kr.hhplus.be.server.common.exeption.business.BusinessLogicMessage;
 import kr.hhplus.be.server.common.exeption.business.BusinessLogicRuntimeException;
+import kr.hhplus.be.server.common.redis.RedisUtil;
 import kr.hhplus.be.server.coupon.application.dto.request.IssueCouponServiceRequest;
 import kr.hhplus.be.server.coupon.application.usecase.IssueCouponUseCase;
+import kr.hhplus.be.server.coupon.domain.model.Coupon;
+import kr.hhplus.be.server.coupon.domain.repository.CouponRepository;
+import kr.hhplus.be.server.coupon.presentation.dto.response.CouponResponse;
 import kr.hhplus.be.server.coupon.presentation.dto.response.IssueCouponResponse;
+import kr.hhplus.be.server.couponhistory.domain.model.CouponHistory;
+import kr.hhplus.be.server.couponhistory.domain.repository.CouponHistoryRepository;
 import kr.hhplus.be.server.member.domain.model.Member;
 import kr.hhplus.be.server.member.domain.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
@@ -11,7 +18,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.redisson.api.RLock;
 import org.redisson.api.RedissonClient;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.concurrent.TimeUnit;
 
 @Slf4j
@@ -19,40 +29,44 @@ import java.util.concurrent.TimeUnit;
 @RequiredArgsConstructor
 public class IssueCouponService implements IssueCouponUseCase {
 
-    private final RedissonClient redissonClient;
     private final MemberRepository memberRepository;
-    private final IssueCouponTransactionService  issueCouponTransactionService;
 
+    private final CouponRepository couponRepository;
+    private final CouponHistoryRepository couponHistoryRepository;
+
+    private final RedisUtil redisUtil;
+
+    @Override
+    @Transactional
     public IssueCouponResponse issue(IssueCouponServiceRequest serviceRequest) {
 
         // 멤버 확인
         Member member = memberRepository.retrieve(serviceRequest.memberId());
+        Coupon coupon = couponRepository.retrieve(serviceRequest.couponId());
 
-        // 분산락 생성 (쿠폰ID 기반)
-        RLock lock = redissonClient.getLock("couponIssue:" + serviceRequest.couponId());
+        // 쿠폰 발행(Redis로)
+            // 쿠폰 발행 내역 생성(Redis에서 동시에 처리)
+        Boolean isCouponIssue = redisUtil.setIfAbsent("coupon:" + serviceRequest.couponId() + ":member:" + serviceRequest.memberId(), "1", Duration.between(LocalDateTime.now(), coupon.getExpiryDate().plusDays(1L).atStartOfDay()));
 
-        try {
-            // 분산락 획득: 대기시간 10초 (선착순 시나리오 대응), watchdog 자동 연장 (-1)
-            boolean available = lock.tryLock(25, -1, TimeUnit.SECONDS);
-
-            if(!available) {
-                log.warn("쿠폰 발급 Lock 획득 실패 - couponId: {}, memberId: {}",
-                         serviceRequest.couponId(), member.getId());
-                throw new IllegalStateException("쿠폰 발급 Lock 획득 실패, couponId = " + serviceRequest.couponId() + ", memberId = " + member.getId());
-            }
-
-            return issueCouponTransactionService.issueCouponLockInternal(member.getId(), serviceRequest.couponId());
-
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            throw new RuntimeException("쿠폰 발급 중 인터럽트 발생", e);
-        } catch (BusinessLogicRuntimeException e) {
-            throw e;
-        } finally {
-            // Lock 해제 (안전하게 처리)
-            if (lock.isHeldByCurrentThread()) {
-                lock.unlock();
-            }
+        // 멤버한테 해당 쿠폰이 이미 있으면 예외
+        if (Boolean.FALSE.equals(isCouponIssue)) {
+            throw new BusinessLogicRuntimeException(BusinessLogicMessage.ALREADY_HAVE_THIS_COUPON);
         }
+
+        // 쿠폰 개수 차감
+        redisUtil.decrement("coupon:" + serviceRequest.couponId());
+
+        // 0개 이하라면, 취소
+        String amount = redisUtil.get("coupon:" + serviceRequest.couponId());
+        if (Integer.parseInt(amount) < 0) {
+            redisUtil.increment("coupon:" + serviceRequest.couponId());
+            throw new BusinessLogicRuntimeException(BusinessLogicMessage.NOT_POSSIBLE_ISSUE_COUPON_BY_INSUFFICIENT_NUMBER);
+        }
+
+        CouponHistory couponHistory = couponHistoryRepository.register(CouponHistory.create(coupon.getId(), member.getId()));
+
+        return IssueCouponResponse.from(couponHistory);
     }
+
+
 }

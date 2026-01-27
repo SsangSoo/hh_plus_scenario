@@ -47,6 +47,10 @@ class CouponIntegrationTest  extends SpringBootTestSupport {
         pointHistoryJpaRepository.deleteAllInBatch();
         couponJpaRepository.deleteAllInBatch();
         couponHistoryJpaRepository.deleteAllInBatch();
+        stringRedisTemplate.getConnectionFactory()
+                .getConnection()
+                .flushAll();
+
     }
 
     @Test
@@ -61,7 +65,7 @@ class CouponIntegrationTest  extends SpringBootTestSupport {
         assertThat(retrievedCoupon.getAmount()).isEqualTo(2);
 
         // when
-        IssueCouponResponse issueCouponResponse = issueCouponUseCase.issue(new IssueCouponServiceRequest(registeredCoupon.getCouponId(), registeredMember.getId()));
+        issueCouponUseCase.issue(new IssueCouponServiceRequest(registeredCoupon.getCouponId(), registeredMember.getId()));
 
         // then
         retrievedCoupon = retrieveCouponUseCase.retrieve(registeredCoupon.getCouponId());
@@ -156,6 +160,7 @@ class CouponIntegrationTest  extends SpringBootTestSupport {
         latch.await();
         executorService.shutdown();
 
+
         // then
         assertThat(successCount.get()).isEqualTo(1000);
         assertThat(failCount.get()).isEqualTo(0);
@@ -163,4 +168,6 @@ class CouponIntegrationTest  extends SpringBootTestSupport {
         CouponResponse retrieveCouponResponse = retrieveCouponUseCase.retrieve(couponId);
         assertThat(retrieveCouponResponse.getAmount()).isEqualTo(0);
     }
+
+
 }

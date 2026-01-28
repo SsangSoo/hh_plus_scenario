@@ -1,4 +1,4 @@
-package kr.hhplus.be.server.coupon.application.service.issuecoupon;
+package kr.hhplus.be.server.coupon.application.service;
 
 import kr.hhplus.be.server.common.exeption.business.BusinessLogicMessage;
 import kr.hhplus.be.server.common.exeption.business.BusinessLogicRuntimeException;
@@ -7,7 +7,6 @@ import kr.hhplus.be.server.coupon.application.dto.request.IssueCouponServiceRequ
 import kr.hhplus.be.server.coupon.application.usecase.IssueCouponUseCase;
 import kr.hhplus.be.server.coupon.domain.model.Coupon;
 import kr.hhplus.be.server.coupon.domain.repository.CouponRepository;
-import kr.hhplus.be.server.coupon.presentation.dto.response.CouponResponse;
 import kr.hhplus.be.server.coupon.presentation.dto.response.IssueCouponResponse;
 import kr.hhplus.be.server.couponhistory.domain.model.CouponHistory;
 import kr.hhplus.be.server.couponhistory.domain.repository.CouponHistoryRepository;
@@ -15,14 +14,11 @@ import kr.hhplus.be.server.member.domain.model.Member;
 import kr.hhplus.be.server.member.domain.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.redisson.api.RLock;
-import org.redisson.api.RedissonClient;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
-import java.util.concurrent.TimeUnit;
 
 @Slf4j
 @Service

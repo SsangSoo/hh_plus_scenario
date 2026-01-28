@@ -41,6 +41,7 @@ import kr.hhplus.be.server.pointhistory.domain.repository.PointHistoryRepository
 import kr.hhplus.be.server.pointhistory.infrastructure.persistence.PointHistoryJpaRepository;
 import kr.hhplus.be.server.product.application.usecase.RegisterProductUseCase;
 import kr.hhplus.be.server.product.application.usecase.RemoveProductUseCase;
+import kr.hhplus.be.server.product.application.usecase.RetrievePopularProductUseCase;
 import kr.hhplus.be.server.product.application.usecase.RetrieveProductUseCase;
 import kr.hhplus.be.server.product.domain.repository.ProductRepository;
 import kr.hhplus.be.server.product.infrastructure.persistence.ProductJpaRepository;
@@ -193,6 +194,9 @@ public abstract class SpringBootTestSupport {
 
     @Autowired
     protected RetrieveProductUseCase retrieveProductUseCase;
+
+    @Autowired
+    protected RetrievePopularProductUseCase retrievePopularProductUseCase;
 
     @Autowired
     protected ProductRepository productRepository;

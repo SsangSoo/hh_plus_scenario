@@ -66,22 +66,7 @@ public class PaymentService implements PaymentUseCase {
         Long totalAmount = payment.getTotalAmount();
 
         // 쿠폰 확인
-        log.info("쿠폰 확인");
-        if (Objects.nonNull(request.couponId())) {
-            // 발행된 쿠폰 + 사용 가능한 쿠폰 얻어오기
-            CouponHistory couponHistory = couponHistoryRepository.retrieveUsableCouponHistory(request.memberId(), request.couponId())
-                    .orElseThrow(() -> new BusinessLogicRuntimeException(BusinessLogicMessage.NOT_FOUND_USABLE_COUPON));
-
-            // 쿠폰으로 할인 금액 확인
-            Coupon coupon = couponRepository.retrieve(couponHistory.getCouponId());
-            Long discountApplyAmount = coupon.calculateDiscountRate(payment.getTotalAmount()); // 할인 금액 계산
-            payment.discountAmount(discountApplyAmount); // 쿠폰 사용시 총 결제 금액에 할인 금액 반영
-            totalAmount -= discountApplyAmount;
-
-            // 쿠폰 사용 반영
-            couponHistory.use();
-            useCouponHistoryUseCase.couponUse(couponHistory);
-        }
+        totalAmount = useCoupon(request, payment, totalAmount);
 
         log.info("포인트 결제 시작");
         try {
@@ -93,6 +78,10 @@ public class PaymentService implements PaymentUseCase {
             useCouponHistoryUseCase.couponUseRollback(couponHistory);
             throw e;
         }
+
+        // Ranking 구현(Async)
+
+
 
         // 결제 상태 업데이트
         payment.changeState(PaymentState.PAYMENT_COMPLETE);
@@ -108,5 +97,27 @@ public class PaymentService implements PaymentUseCase {
                 Duration.ofMinutes(30)
         );
         return !processing;
+    }
+
+    private Long useCoupon(PaymentServiceRequest request, Payment payment, Long totalAmount) {
+        log.info("쿠폰 확인");
+
+        if (Objects.nonNull(request.couponId())) {
+            log.info("쿠폰 결제");
+            // 발행된 쿠폰 + 사용 가능한 쿠폰 얻어오기
+            CouponHistory couponHistory = couponHistoryRepository.retrieveUsableCouponHistory(request.memberId(), request.couponId())
+                    .orElseThrow(() -> new BusinessLogicRuntimeException(BusinessLogicMessage.NOT_FOUND_USABLE_COUPON));
+
+            // 쿠폰으로 할인 금액 확인
+            Coupon coupon = couponRepository.retrieve(couponHistory.getCouponId());
+            Long discountApplyAmount = coupon.calculateDiscountRate(payment.getTotalAmount()); // 할인 금액 계산
+            payment.discountAmount(discountApplyAmount); // 쿠폰 사용시 총 결제 금액에 할인 금액 반영
+            totalAmount -= discountApplyAmount;
+
+            // 쿠폰 사용 반영
+            couponHistory.use();
+            useCouponHistoryUseCase.couponUse(couponHistory);
+        }
+        return totalAmount;
     }
 }

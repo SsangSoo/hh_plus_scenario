@@ -1,6 +1,7 @@
 package kr.hhplus.be.server.product.presentation;
 
 import kr.hhplus.be.server.product.application.service.RegisterProductService;
+import kr.hhplus.be.server.product.application.service.RetrievePopularProductService;
 import kr.hhplus.be.server.product.application.service.RetrieveProductService;
 import kr.hhplus.be.server.product.domain.model.Product;
 import kr.hhplus.be.server.config.RestDocsControllerSupport;
@@ -23,10 +24,12 @@ class ProductControllerTest extends RestDocsControllerSupport {
 
     private final RegisterProductService registerProductService = mock(RegisterProductService.class);
     private final RetrieveProductService retrieveProductService = mock(RetrieveProductService.class);
+    private final RetrievePopularProductService retrievePopularProductService = mock(RetrievePopularProductService.class);
+
 
     @Override
     protected Object initContoller() {
-        return new ProductController(registerProductService, retrieveProductService);
+        return new ProductController(registerProductService, retrieveProductService,  retrievePopularProductService);
     }
 
 

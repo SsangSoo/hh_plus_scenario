@@ -1,4 +1,4 @@
-package kr.hhplus.be.server.product.application.usecase;
+package kr.hhplus.be.server.product.application.usecase.popular;
 
 import kr.hhplus.be.server.product.presentation.dto.response.ProductResponse;
 

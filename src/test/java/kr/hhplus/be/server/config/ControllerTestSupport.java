@@ -10,6 +10,7 @@ import kr.hhplus.be.server.point.application.usecase.RetrievePointUseCase;
 import kr.hhplus.be.server.point.presentation.PointController;
 import kr.hhplus.be.server.product.application.usecase.RegisterProductUseCase;
 import kr.hhplus.be.server.product.application.usecase.RetrieveProductUseCase;
+import kr.hhplus.be.server.product.application.usecase.popular.RetrievePopularProductUseCase;
 import kr.hhplus.be.server.product.presentation.ProductController;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -38,6 +39,8 @@ public abstract class ControllerTestSupport {
     @MockitoBean
     protected RetrieveProductUseCase retrieveProductUseCase;
 
+    @MockitoBean
+    protected RetrievePopularProductUseCase retrievePopularProductUseCase;
 
     // Member
     @MockitoBean

@@ -43,6 +43,10 @@ public class RedisUtil {
         return stringRedisTemplate.opsForValue().get(key);
     }
 
+    public Set<String> keys(String keys) {
+        return stringRedisTemplate.keys(keys);
+    }
+
     /**
      * 객체를 JSON으로 저장
      */

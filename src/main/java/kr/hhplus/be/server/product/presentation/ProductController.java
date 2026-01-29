@@ -3,7 +3,7 @@ package kr.hhplus.be.server.product.presentation;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Positive;
 import kr.hhplus.be.server.product.application.usecase.RegisterProductUseCase;
-import kr.hhplus.be.server.product.application.usecase.RetrievePopularProductUseCase;
+import kr.hhplus.be.server.product.application.usecase.popular.RetrievePopularProductUseCase;
 import kr.hhplus.be.server.product.application.usecase.RetrieveProductUseCase;
 import kr.hhplus.be.server.product.presentation.dto.request.RegisterProductRequest;
 import kr.hhplus.be.server.product.presentation.dto.response.ProductResponse;

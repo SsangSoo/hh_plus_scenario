@@ -15,12 +15,16 @@ import kr.hhplus.be.server.payment.domain.model.PaymentState;
 import kr.hhplus.be.server.payment.domain.repository.PaymentRepository;
 import kr.hhplus.be.server.point.application.dto.request.UsePoint;
 import kr.hhplus.be.server.point.application.usecase.UsePointUseCase;
+import kr.hhplus.be.server.product.application.usecase.popular.RegisterPopularProductUseCase;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 
+import java.time.DayOfWeek;
 import java.time.Duration;
+import java.time.LocalDate;
+import java.time.temporal.TemporalAdjusters;
 import java.util.Objects;
 
 @Slf4j
@@ -36,7 +40,10 @@ public class PaymentService implements PaymentUseCase {
     private final CouponRepository couponRepository;
     private final CouponHistoryRepository couponHistoryRepository;
     private final UseCouponHistoryUseCase useCouponHistoryUseCase;
+
+
     private final StringRedisTemplate stringRedisTemplate;
+    private final RegisterPopularProductUseCase registerPopularProductUseCase;
 
 
     private void checkPaymentState(PaymentState paymentState) {
@@ -79,13 +86,13 @@ public class PaymentService implements PaymentUseCase {
             throw e;
         }
 
-        // Ranking 구현(Async)
-
-
-
         // 결제 상태 업데이트
-        payment.changeState(PaymentState.PAYMENT_COMPLETE);
+        payment.complete();
         changePaymentStateService.changeState(payment);
+
+        // Ranking 구현(Async)
+        registerPopularProductUseCase.registerPopularProducts(request.orderId(), request.memberId());
+
 
         return PaymentResponse.from(payment);
     }
@@ -119,5 +126,10 @@ public class PaymentService implements PaymentUseCase {
             useCouponHistoryUseCase.couponUse(couponHistory);
         }
         return totalAmount;
+    }
+
+    private LocalDate getThisSaturday() {
+        return LocalDate.now()
+                .with(TemporalAdjusters.nextOrSame(DayOfWeek.SATURDAY));
     }
 }

@@ -41,8 +41,10 @@ import kr.hhplus.be.server.pointhistory.domain.repository.PointHistoryRepository
 import kr.hhplus.be.server.pointhistory.infrastructure.persistence.PointHistoryJpaRepository;
 import kr.hhplus.be.server.product.application.usecase.RegisterProductUseCase;
 import kr.hhplus.be.server.product.application.usecase.RemoveProductUseCase;
-import kr.hhplus.be.server.product.application.usecase.RetrievePopularProductUseCase;
+import kr.hhplus.be.server.product.application.usecase.popular.RegisterPopularProductUseCase;
+import kr.hhplus.be.server.product.application.usecase.popular.RetrievePopularProductUseCase;
 import kr.hhplus.be.server.product.application.usecase.RetrieveProductUseCase;
+import kr.hhplus.be.server.product.domain.repository.ProductQueryRepository;
 import kr.hhplus.be.server.product.domain.repository.ProductRepository;
 import kr.hhplus.be.server.product.infrastructure.persistence.ProductJpaRepository;
 import kr.hhplus.be.server.stock.application.service.AddStockTransactionService;
@@ -196,13 +198,20 @@ public abstract class SpringBootTestSupport {
     protected RetrieveProductUseCase retrieveProductUseCase;
 
     @Autowired
-    protected RetrievePopularProductUseCase retrievePopularProductUseCase;
-
-    @Autowired
     protected ProductRepository productRepository;
 
     @Autowired
     protected ProductJpaRepository productJpaRepository;
+
+    // Popular
+    @Autowired
+    protected RegisterPopularProductUseCase registerPopularProductUseCase;
+
+    @Autowired
+    protected RetrievePopularProductUseCase retrievePopularProductUseCase;
+
+    @Autowired
+    protected ProductQueryRepository productQueryRepository;
 
 
     // Coupon

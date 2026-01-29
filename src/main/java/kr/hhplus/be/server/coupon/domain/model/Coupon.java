@@ -24,6 +24,9 @@ public class Coupon {
         return new Coupon(id, coupon, expiryDate, amount, discountRate);
     }
 
+    public void changeAmount(Integer amount) {
+        this.amount = amount;
+    }
 
     public Long calculateDiscountRate(Long totalAmount) {
         return (long) (totalAmount * (discountRate / 100d));

@@ -54,14 +54,22 @@ dependencies {
     // Swagger
     implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.14")
 
+    // lombok
+    compileOnly("org.projectlombok:lombok")
+    annotationProcessor("org.projectlombok:lombok")
+
     // redis
     implementation("org.springframework.boot:spring-boot-starter-data-redis")
+    implementation("org.apache.commons:commons-pool2")
 
     // redisson
     implementation("org.redisson:redisson-spring-boot-starter:3.52.0")
 
-    compileOnly("org.projectlombok:lombok")
-    annotationProcessor("org.projectlombok:lombok")
+    // QueryDSL
+    implementation ("com.querydsl:querydsl-jpa:5.0.0:jakarta")
+    annotationProcessor ("com.querydsl:querydsl-apt:5.0.0:jakarta")
+    annotationProcessor ("jakarta.annotation:jakarta.annotation-api")
+    annotationProcessor ("jakarta.persistence:jakarta.persistence-api")
 
     // DB
 	runtimeOnly("com.mysql:mysql-connector-j")

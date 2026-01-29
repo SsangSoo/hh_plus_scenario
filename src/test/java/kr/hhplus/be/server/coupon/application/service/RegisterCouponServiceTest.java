@@ -1,5 +1,6 @@
 package kr.hhplus.be.server.coupon.application.service;
 
+import kr.hhplus.be.server.common.redis.RedisUtil;
 import kr.hhplus.be.server.coupon.application.dto.request.RegisterCouponServiceRequest;
 import kr.hhplus.be.server.coupon.application.usecase.RegisterCouponUseCase;
 import kr.hhplus.be.server.coupon.domain.model.Coupon;
@@ -28,13 +29,16 @@ class RegisterCouponServiceTest {
     @Mock
     CouponRepository couponRepository;
 
+    @Mock
+    RedisUtil redisUtil;
+
 
     RegisterCouponUseCase registerCouponUseCase;
 
 
     @BeforeEach
     void setUp() {
-        registerCouponUseCase = new RegisterCouponService(couponRepository);
+        registerCouponUseCase = new RegisterCouponService(couponRepository, redisUtil);
     }
 
     @Test
@@ -59,7 +63,6 @@ class RegisterCouponServiceTest {
         Assertions.assertThat(couponResponse.getCoupon()).isEqualTo(coupon.getCoupon());
         Assertions.assertThat(couponResponse.getExpiryDate()).isEqualTo(coupon.getExpiryDate().toString());
         Assertions.assertThat(couponResponse.getDiscountRate()).isEqualTo(coupon.getDiscountRate());
-
 
 
     }

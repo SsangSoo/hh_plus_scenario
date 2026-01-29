@@ -1,6 +1,7 @@
 package kr.hhplus.be.server.product.presentation.dto.response;
 
 import kr.hhplus.be.server.product.domain.model.Product;
+import kr.hhplus.be.server.product.infrastructure.persistence.query.ProductProjection;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -18,6 +19,16 @@ public class ProductResponse {
                 .productName(product.getName())
                 .price(product.getPrice())
                 .quantity(quantity)
+                .build();
+    }
+
+
+    public static ProductResponse from(ProductProjection productProjection) {
+        return ProductResponse.builder()
+                .id(productProjection.getId())
+                .productName(productProjection.getProductName())
+                .price(productProjection.getPrice())
+                .quantity(productProjection.getQuantity())
                 .build();
     }
 

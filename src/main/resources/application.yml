@@ -33,3 +33,12 @@ spring:
     redis:
       host: localhost
       port: 6379
+      timeout: 3000ms           # Redis 서버 연결 타임아웃
+      lettuce:
+        pool:
+          enabled: true  # 이것도 명시
+          max-active: 100       # 절대 최대 (hard limit)
+          max-idle: 50          # 평소 유지 (트래픽 감소 시)
+          min-idle: 20          # 항상 유지 (Cold Start 방지)
+          max-wait: 3000ms      # Pool 대기 타임아웃
+        shutdown-timeout: 200ms # 종료 시 정리 시간

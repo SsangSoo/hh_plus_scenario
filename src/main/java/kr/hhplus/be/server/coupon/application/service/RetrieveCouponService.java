@@ -1,5 +1,6 @@
 package kr.hhplus.be.server.coupon.application.service;
 
+import kr.hhplus.be.server.common.redis.RedisUtil;
 import kr.hhplus.be.server.coupon.application.usecase.RetrieveCouponUseCase;
 import kr.hhplus.be.server.coupon.domain.model.Coupon;
 import kr.hhplus.be.server.coupon.domain.repository.CouponRepository;
@@ -13,11 +14,17 @@ import org.springframework.transaction.annotation.Transactional;
 public class RetrieveCouponService implements RetrieveCouponUseCase {
 
     private final CouponRepository couponsRepository;
+    private final RedisUtil redisUtil;
+
 
     @Override
     @Transactional(readOnly = true)
     public CouponResponse retrieve(Long couponId) {
         Coupon coupon = couponsRepository.retrieve(couponId);
+
+        String amount = redisUtil.get("coupon:" + coupon.getId());
+
+        coupon.changeAmount(Integer.parseInt(amount));
 
         return CouponResponse.from(coupon);
     }

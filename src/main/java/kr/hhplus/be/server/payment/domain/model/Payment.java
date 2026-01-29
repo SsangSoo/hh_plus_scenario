@@ -39,9 +39,12 @@ public class Payment {
         this.totalAmount -= discountAmount;
     }
 
-
     public void changeState(PaymentState paymentState) {
         this.paymentState = paymentState;
+    }
+
+    public void complete() {
+        this.paymentState = PaymentState.PAYMENT_COMPLETE;
     }
 
 }

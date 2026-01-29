@@ -4,9 +4,9 @@ import kr.hhplus.be.server.common.exeption.business.BusinessLogicMessage;
 import kr.hhplus.be.server.common.exeption.business.BusinessLogicRuntimeException;
 import kr.hhplus.be.server.product.application.dto.request.RegisterProductServiceRequest;
 import kr.hhplus.be.server.product.domain.model.Product;
-import kr.hhplus.be.server.product.domain.repository.ProductRepository;
+import kr.hhplus.be.server.product.domain.repository.ProductQueryRepository;
+import kr.hhplus.be.server.product.infrastructure.persistence.query.ProductProjection;
 import kr.hhplus.be.server.product.presentation.dto.response.ProductResponse;
-import kr.hhplus.be.server.stock.domain.repository.StockRepository;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -14,6 +14,8 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.anyLong;
@@ -25,16 +27,13 @@ import static org.mockito.Mockito.times;
 class RetrieveProductServiceTest {
 
     @Mock
-    ProductRepository productRepository;
-
-    @Mock
-    StockRepository stockRepository;
+    ProductQueryRepository productQueryRepository;
 
     RetrieveProductService retrieveProductService;
 
     @BeforeEach
     void setUp() {
-        retrieveProductService = new RetrieveProductService(productRepository, stockRepository);
+        retrieveProductService = new RetrieveProductService(productQueryRepository);
     }
 
 
@@ -50,14 +49,10 @@ class RetrieveProductServiceTest {
         Product product = Product.create(new RegisterProductServiceRequest(productName, productPrice));
         product.assignId(productId);
 
-        // id로 상품 조회
-        given(productRepository.findById(anyLong()))
-                .willReturn(product);
+        ProductProjection productProjection = new ProductProjection(productId, productName, productPrice, productQuantity);
 
-        // 상품 id로 재고 조회
-        given(stockRepository.retrieveStockByProductId(anyLong()))
-                .willReturn(productQuantity);
-
+        given(productQueryRepository.retrieveProductJoinStock(anyLong()))
+                .willReturn(Optional.ofNullable(productProjection));
 
         // when : service 에서 상품 조회 호출
         ProductResponse response =  retrieveProductService.retrieveProduct(1L);
@@ -69,8 +64,7 @@ class RetrieveProductServiceTest {
         assertThat(response.getQuantity()).isEqualTo(productQuantity);
 
         // 메서드 호출 횟수 검증
-        then(productRepository).should(times(1)).findById(productId);
-        then(stockRepository).should(times(1)).retrieveStockByProductId(productId);
+        then(productQueryRepository).should(times(1)).retrieveProductJoinStock(productId);
     }
 
 
@@ -81,7 +75,7 @@ class RetrieveProductServiceTest {
         Long notFoundProductId = 3L;
 
         // 상품 id로 재고 조회
-        given(productRepository.findById(notFoundProductId))
+        given(productQueryRepository.retrieveProductJoinStock(notFoundProductId))
                 .willThrow(new BusinessLogicRuntimeException(BusinessLogicMessage.NOT_FOUND_PRODUCT));
 
         // when // then
@@ -90,7 +84,6 @@ class RetrieveProductServiceTest {
                 .hasMessage("상품을 찾을 수 없습니다.");
 
         // 메서드 호출 횟수 검증
-        then(productRepository).should(times(1)).findById(notFoundProductId);
-        then(stockRepository).should(times(0)).retrieveStockByProductId(notFoundProductId);
+        then(productQueryRepository).should(times(1)).retrieveProductJoinStock(notFoundProductId);
     }
 }

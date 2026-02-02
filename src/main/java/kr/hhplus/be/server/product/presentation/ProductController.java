@@ -3,6 +3,7 @@ package kr.hhplus.be.server.product.presentation;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Positive;
 import kr.hhplus.be.server.product.application.usecase.RegisterProductUseCase;
+import kr.hhplus.be.server.product.application.usecase.popular.RetrievePopularProductUseCase;
 import kr.hhplus.be.server.product.application.usecase.RetrieveProductUseCase;
 import kr.hhplus.be.server.product.presentation.dto.request.RegisterProductRequest;
 import kr.hhplus.be.server.product.presentation.dto.response.ProductResponse;
@@ -13,6 +14,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @Slf4j
 @RestController
 @RequestMapping("/api/product")
@@ -22,6 +25,7 @@ public class ProductController {
 
     private final RegisterProductUseCase registerProductUseCase;
     private final RetrieveProductUseCase retrieveProductUseCase;
+    private final RetrievePopularProductUseCase retrievePopularProductUseCase;
 
     @PostMapping
     public ResponseEntity<ProductResponse> registerProduct(@RequestBody @Valid RegisterProductRequest request) {
@@ -34,5 +38,11 @@ public class ProductController {
             @PathVariable @Positive(message = "유효하지 않은 상품 Id입니다.") Long productId) {
         ProductResponse response = retrieveProductUseCase.retrieveProduct(productId);
         return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/popular")
+    public ResponseEntity<List<ProductResponse>> retrievePopularProducts() {
+        List<ProductResponse> productResponses = retrievePopularProductUseCase.retrievePopularProducts();
+        return ResponseEntity.ok(productResponses);
     }
 }

@@ -1,5 +1,6 @@
 package kr.hhplus.be.server.config;
 
+import kr.hhplus.be.server.common.redis.RedisUtil;
 import kr.hhplus.be.server.coupon.application.service.issuecoupon.IssueCouponTransactionService;
 import kr.hhplus.be.server.coupon.application.usecase.IssueCouponUseCase;
 import kr.hhplus.be.server.coupon.application.usecase.RegisterCouponUseCase;
@@ -40,7 +41,10 @@ import kr.hhplus.be.server.pointhistory.domain.repository.PointHistoryRepository
 import kr.hhplus.be.server.pointhistory.infrastructure.persistence.PointHistoryJpaRepository;
 import kr.hhplus.be.server.product.application.usecase.RegisterProductUseCase;
 import kr.hhplus.be.server.product.application.usecase.RemoveProductUseCase;
+import kr.hhplus.be.server.product.application.usecase.popular.RegisterPopularProductUseCase;
+import kr.hhplus.be.server.product.application.usecase.popular.RetrievePopularProductUseCase;
 import kr.hhplus.be.server.product.application.usecase.RetrieveProductUseCase;
+import kr.hhplus.be.server.product.domain.repository.ProductQueryRepository;
 import kr.hhplus.be.server.product.domain.repository.ProductRepository;
 import kr.hhplus.be.server.product.infrastructure.persistence.ProductJpaRepository;
 import kr.hhplus.be.server.stock.application.service.AddStockTransactionService;
@@ -199,6 +203,16 @@ public abstract class SpringBootTestSupport {
     @Autowired
     protected ProductJpaRepository productJpaRepository;
 
+    // Popular
+    @Autowired
+    protected RegisterPopularProductUseCase registerPopularProductUseCase;
+
+    @Autowired
+    protected RetrievePopularProductUseCase retrievePopularProductUseCase;
+
+    @Autowired
+    protected ProductQueryRepository productQueryRepository;
+
 
     // Coupon
     @Autowired
@@ -249,6 +263,7 @@ public abstract class SpringBootTestSupport {
     @Autowired
     protected StringRedisTemplate stringRedisTemplate;
 
-
+    @Autowired
+    protected RedisUtil redisUtil;
 
 }

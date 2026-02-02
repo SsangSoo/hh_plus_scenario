@@ -20,7 +20,7 @@ class PaymentTest {
     @Test
     @DisplayName("of 으로 테스트")
     void ofTest() {
-        Payment payment = Payment.of(1L, 1L,3000L ,PaymentState.PAYMENT_COMPLETE);
+        Payment payment = Payment.of(1L, 1L, 3000L, PaymentState.PAYMENT_COMPLETE);
 
         assertThat(payment.getId()).isNotNull();
         assertThat(payment.getId()).isEqualTo(1L);
@@ -41,22 +41,6 @@ class PaymentTest {
         assertThat(payment.getId()).isEqualTo(1L);
     }
 
-    @Test
-    @DisplayName("신용카드로 결제할 때, 결제 상태는 PENDING 상태다")
-    void payWhenCreditCardMethodTest() {
-        Payment payment = Payment.create(1L, 3000L);
-
-        assertThat(payment.getPaymentState()).isEqualTo(PaymentState.PENDING);
-    }
-
-
-    @Test
-    @DisplayName("무통장 입금으로 결제할 때, 결제 상태는 PENDING 상태다")
-    void payWhenBankTransferMethodMethodTest() {
-        Payment payment = Payment.create(1L, 3000L);
-
-        assertThat(payment.getPaymentState()).isEqualTo(PaymentState.PENDING);
-    }
 
     @Test
     @DisplayName("결제 상태를 변경할 수 있다.")
@@ -84,4 +68,15 @@ class PaymentTest {
         assertThat(payment.getTotalAmount()).isEqualTo(2000L);
     }
 
+    @Test
+    @DisplayName("결제 완료 메서드 호출시 결제 완료 상태가 된다.")
+    void callCompleteMethodAfterPaymentIsCompletedTest() {
+        Payment payment = Payment.create(1L, 3000L);
+
+        assertThat(payment.getPaymentState()).isEqualTo(PaymentState.PENDING);
+
+        payment.complete();
+
+        assertThat(payment.getPaymentState()).isEqualTo(PaymentState.PAYMENT_COMPLETE);
+    }
 }

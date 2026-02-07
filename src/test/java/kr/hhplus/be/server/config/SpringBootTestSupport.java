@@ -57,6 +57,7 @@ import kr.hhplus.be.server.stock.infrastructure.persistence.StockJpaRepository;
 import org.redisson.api.RedissonClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
@@ -149,17 +150,13 @@ public abstract class SpringBootTestSupport {
     @Autowired
     protected PaymentRepository paymentRepository;
 
-//    @Autowired
-//    protected PaymentDataTransportUseCase paymentDataTransportUseCase;
-
     @Autowired
     protected PaymentJpaRepository paymentJpaRepository;
 
 
-    // MockBean
+//    @Autowired
     @MockitoBean
     protected PaymentDataTransportUseCase paymentDataTransportUseCase;
-
 
 
     // Stock
@@ -266,4 +263,7 @@ public abstract class SpringBootTestSupport {
     @Autowired
     protected RedisUtil redisUtil;
 
+
+    @Autowired
+    protected ApplicationEventPublisher eventPublisher;
 }

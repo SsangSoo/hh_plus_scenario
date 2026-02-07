@@ -33,5 +33,11 @@ public class OutboxRepositoryImpl implements OutboxRepository {
         return outboxJpaEntity.toDomain();
     }
 
+    @Override
+    public void remove(Long paymentId, Long orderId) {
+        OutboxJpaEntity outboxJpaEntity = jpa.findByOrderId(orderId).orElseThrow(() -> new BusinessLogicRuntimeException(BusinessLogicMessage.NOT_FOUND_OUTBOX));
+        outboxJpaEntity.remove();
+    }
+
 
 }

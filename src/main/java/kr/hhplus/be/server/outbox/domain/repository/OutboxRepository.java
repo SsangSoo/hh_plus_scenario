@@ -10,5 +10,5 @@ public interface OutboxRepository {
 
     Outbox retrieve(Long orderId);
 
-
+    void remove(Long paymentId, Long orderId);
 }

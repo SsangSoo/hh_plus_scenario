@@ -18,13 +18,9 @@ import kr.hhplus.be.server.point.application.usecase.UsePointUseCase;
 import kr.hhplus.be.server.product.application.usecase.popular.RegisterPopularProductUseCase;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import java.time.DayOfWeek;
-import java.time.Duration;
-import java.time.LocalDate;
-import java.time.temporal.TemporalAdjusters;
 import java.util.Objects;
 
 @Slf4j
@@ -41,21 +37,11 @@ public class PaymentService implements PaymentUseCase {
     private final CouponHistoryRepository couponHistoryRepository;
     private final UseCouponHistoryUseCase useCouponHistoryUseCase;
 
-
-    private final StringRedisTemplate stringRedisTemplate;
     private final RegisterPopularProductUseCase registerPopularProductUseCase;
 
 
-    private void checkPaymentState(PaymentState paymentState) {
-        if (paymentState.equals(PaymentState.PAYMENT_COMPLETE)) {
-            throw new BusinessLogicRuntimeException(BusinessLogicMessage.PAYMENT_COMPLETE.getMessage());
-        }
-        if(paymentState.equals(PaymentState.PAYMENT_CANCEL)) {
-            throw new BusinessLogicRuntimeException(BusinessLogicMessage.PAYMENT_CANCEL.getMessage());
-        }
-    }
-
     @Override
+    @Transactional
     public PaymentResponse payment(PaymentServiceRequest request, String idempotencyKey) {
         // 결제 정보 조회
         log.info("결제 정보 조회");
@@ -64,15 +50,9 @@ public class PaymentService implements PaymentUseCase {
         // 결제 상태 확인
         checkPaymentState(payment.getPaymentState());
 
-        // 결제 상태 확인이 끝나면, 처리해야 할 결제이므로, 레디스에 중복 요청 방지
-        if(verifyDuplicatePayment(idempotencyKey)) {
-            throw new BusinessLogicRuntimeException(BusinessLogicMessage.ALREADY_PROCESSING_THIS_PAYMENT);
-        }
-
         // 쿠폰 사용시 변경됨.
         Long totalAmount = payment.getTotalAmount();
 
-        // 쿠폰 확인
         totalAmount = useCoupon(request, payment, totalAmount);
 
         log.info("포인트 결제 시작");
@@ -93,18 +73,18 @@ public class PaymentService implements PaymentUseCase {
         // Ranking 구현(Async)
         registerPopularProductUseCase.registerPopularProducts(request.orderId(), request.memberId());
 
-
         return PaymentResponse.from(payment);
     }
 
-    private Boolean verifyDuplicatePayment(String idempotencyKey) {
-        Boolean processing = stringRedisTemplate.opsForValue().setIfAbsent(
-                "idempotencyKey:" + idempotencyKey,
-                "PROCESSING",
-                Duration.ofMinutes(30)
-        );
-        return !processing;
+    private void checkPaymentState(PaymentState paymentState) {
+        if (paymentState.equals(PaymentState.PAYMENT_COMPLETE)) {
+            throw new BusinessLogicRuntimeException(BusinessLogicMessage.PAYMENT_COMPLETE.getMessage());
+        }
+        if(paymentState.equals(PaymentState.PAYMENT_CANCEL)) {
+            throw new BusinessLogicRuntimeException(BusinessLogicMessage.PAYMENT_CANCEL.getMessage());
+        }
     }
+
 
     private Long useCoupon(PaymentServiceRequest request, Payment payment, Long totalAmount) {
         log.info("쿠폰 확인");
@@ -128,8 +108,8 @@ public class PaymentService implements PaymentUseCase {
         return totalAmount;
     }
 
-    private LocalDate getThisSaturday() {
-        return LocalDate.now()
-                .with(TemporalAdjusters.nextOrSame(DayOfWeek.SATURDAY));
-    }
+//    private LocalDate getThisSaturday() {
+//        return LocalDate.now()
+//                .with(TemporalAdjusters.nextOrSame(DayOfWeek.SATURDAY));
+//    }
 }

@@ -102,8 +102,8 @@ class CouponIntegrationTest  extends SpringBootTestSupport {
         PaymentResponse paymentResponse = paymentFacade.payment(new PaymentServiceRequest(orderResponse.getOrderId(), registeredMember.getId(), orderResponse.getPaymentId(), registeredCoupon.getCouponId()), UUID.randomUUID().toString());
 
         // then
-        assertThat(paymentResponse.getTotalAmount()).isEqualTo(180000L);
-        assertThat(paymentResponse.getPaymentState()).isEqualTo(PaymentState.PAYMENT_COMPLETE.name());
+        assertThat(paymentResponse.totalAmount()).isEqualTo(180000L);
+        assertThat(paymentResponse.paymentState()).isEqualTo(PaymentState.PAYMENT_COMPLETE.name());
 
         CouponResponse retrievedCoupon = retrieveCouponUseCase.retrieve(registeredCoupon.getCouponId());
         assertThat(retrievedCoupon.getAmount()).isEqualTo(1);

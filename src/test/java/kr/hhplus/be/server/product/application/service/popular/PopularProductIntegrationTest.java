@@ -13,6 +13,7 @@ import kr.hhplus.be.server.product.application.dto.request.RegisterProductServic
 import kr.hhplus.be.server.product.presentation.dto.response.ProductResponse;
 import kr.hhplus.be.server.stock.application.dto.request.AddStock;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -23,6 +24,14 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.tuple;
 
 class PopularProductIntegrationTest extends SpringBootTestSupport {
+
+    @BeforeEach
+    void setUp() {
+        // 테스트 시작 전 Redis 정리 - 다른 테스트의 잔여 데이터 제거
+        stringRedisTemplate.getConnectionFactory()
+                .getConnection()
+                .flushAll();
+    }
 
     @AfterEach
     void tearDown() {
@@ -38,6 +47,7 @@ class PopularProductIntegrationTest extends SpringBootTestSupport {
                 .getConnection()
                 .flushAll();
     }
+
 
     @Test
     @DisplayName("인기 상품 api 통합 테스트 상품의 판매 건수 순으로 상품이 조회된다.")

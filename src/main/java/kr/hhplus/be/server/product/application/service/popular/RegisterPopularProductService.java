@@ -34,6 +34,9 @@ public class RegisterPopularProductService implements RegisterPopularProductUseC
             redisUtil.incrementZSetScore(POPULAR_PRODUCT_KEY, String.valueOf(productId), 1);
         }
 
+
+
+        // todo
         // Redis로 재구매율을 위해 등록
 //        for (Long productId : productIdList) {
 //            redisUtil.increment("SELL:PRODUCT:" + productId + ":MEMBER:" + memberId);

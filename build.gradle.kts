@@ -65,6 +65,9 @@ dependencies {
     // redisson
     implementation("org.redisson:redisson-spring-boot-starter:3.52.0")
 
+    implementation("org.springframework.retry:spring-retry")
+    implementation("org.springframework:spring-aspects")
+
     // QueryDSL
     implementation ("com.querydsl:querydsl-jpa:5.0.0:jakarta")
     annotationProcessor ("com.querydsl:querydsl-apt:5.0.0:jakarta")
@@ -82,11 +85,13 @@ dependencies {
 	testImplementation("org.springframework.restdocs:spring-restdocs-mockmvc")
 	testImplementation("com.epages:restdocs-api-spec-mockmvc:0.18.2")
     testImplementation ("io.rest-assured:rest-assured")
+    testImplementation("org.awaitility:awaitility:4.3.0")
 
-	testRuntimeOnly("org.junit.platform:junit-platform-launcher")
+    testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 
     testCompileOnly("org.projectlombok:lombok")
     testAnnotationProcessor("org.projectlombok:lombok")
+
 }
 
 tasks.withType<Test> {

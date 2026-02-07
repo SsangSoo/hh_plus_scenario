@@ -2,6 +2,7 @@ package kr.hhplus.be.server.product.application.service.popular;
 
 import kr.hhplus.be.server.config.SpringBootTestSupport;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -20,9 +21,16 @@ class PopularProductConcurrencyTest extends SpringBootTestSupport {
 
     private static final String POPULAR_PRODUCT_KEY = "SELL:PRODUCT:RANKING";
 
+    @BeforeEach
+    void setUp() {
+        // 테스트 시작 전 Redis 정리 - 다른 테스트의 잔여 데이터 제거
+        stringRedisTemplate.getConnectionFactory()
+                .getConnection()
+                .flushAll();
+    }
+
     @AfterEach
     void tearDown() {
-        // Redis 데이터 정리
         stringRedisTemplate.getConnectionFactory()
                 .getConnection()
                 .flushAll();

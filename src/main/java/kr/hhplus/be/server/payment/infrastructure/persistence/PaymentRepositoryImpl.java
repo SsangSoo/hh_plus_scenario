@@ -30,7 +30,7 @@ public class PaymentRepositoryImpl implements PaymentRepository {
     public Payment changeState(Payment payment) {
         PaymentJpaEntity retrieved = jpa.findById(payment.getId())
                 .orElseThrow(() -> new BusinessLogicRuntimeException(BusinessLogicMessage.NOT_FOUND_PAYMENT_INFO));
-        retrieved.changeState(payment.getPaymentState());
+        retrieved.changeState(payment);
         return jpa.save(retrieved).toDomain();
     }
 

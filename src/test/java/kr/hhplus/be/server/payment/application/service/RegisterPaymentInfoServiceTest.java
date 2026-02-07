@@ -47,10 +47,10 @@ class RegisterPaymentInfoServiceTest {
 
         // then
         Assertions.assertThat(paymentResponse).isNotNull();
-        Assertions.assertThat(paymentResponse.getPaymentState()).isEqualTo(PaymentState.PENDING.name());
-        Assertions.assertThat(paymentResponse.getId()).isEqualTo(1L);
-        Assertions.assertThat(paymentResponse.getTotalAmount()).isEqualTo(4500L);
-        Assertions.assertThat(paymentResponse.getOrderId()).isEqualTo(paymentServiceRequest.orderId());
+        Assertions.assertThat(paymentResponse.paymentState()).isEqualTo(PaymentState.PENDING.name());
+        Assertions.assertThat(paymentResponse.id()).isEqualTo(1L);
+        Assertions.assertThat(paymentResponse.totalAmount()).isEqualTo(4500L);
+        Assertions.assertThat(paymentResponse.orderId()).isEqualTo(paymentServiceRequest.orderId());
     }
 
 

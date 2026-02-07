@@ -6,9 +6,7 @@ public interface OutboxRepository {
 
     Outbox save(Outbox outbox);
 
-    Outbox paymentComplete(Long orderId);
-
-    Outbox retrieve(Long orderId);
+    Outbox retrieve(Long paymentId, Long orderId);
 
     void remove(Long paymentId, Long orderId);
 }

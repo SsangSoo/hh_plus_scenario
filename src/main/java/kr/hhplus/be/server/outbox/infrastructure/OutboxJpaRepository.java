@@ -8,4 +8,7 @@ public interface OutboxJpaRepository extends JpaRepository<OutboxJpaEntity,Long>
 
     Optional<OutboxJpaEntity> findByOrderId(Long orderId);
 
+    Optional<OutboxJpaEntity> findByPaymentIdAndOrderId(Long paymentId, Long orderId);
+
+
 }

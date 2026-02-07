@@ -3,17 +3,12 @@ package kr.hhplus.be.server.product.application.service;
 import kr.hhplus.be.server.common.exeption.business.BusinessLogicMessage;
 import kr.hhplus.be.server.common.exeption.business.BusinessLogicRuntimeException;
 import kr.hhplus.be.server.product.application.usecase.RetrieveProductUseCase;
-import kr.hhplus.be.server.product.domain.model.Product;
 import kr.hhplus.be.server.product.domain.repository.ProductQueryRepository;
-import kr.hhplus.be.server.product.domain.repository.ProductRepository;
 import kr.hhplus.be.server.product.infrastructure.persistence.query.ProductProjection;
 import kr.hhplus.be.server.product.presentation.dto.response.ProductResponse;
-import kr.hhplus.be.server.stock.domain.repository.StockRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor

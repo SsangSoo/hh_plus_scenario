@@ -57,4 +57,10 @@ public class Coupon {
         this.amount = amount;
         this.discountRate = discountRate;
     }
+
+    public void verifyUsable() {
+        if(LocalDate.now().isAfter(this.expiryDate)) {
+            throw new BusinessLogicRuntimeException(BusinessLogicMessage.USABLE_VALIDITY_PERIOD_HAS_PASSED);
+        }
+    }
 }

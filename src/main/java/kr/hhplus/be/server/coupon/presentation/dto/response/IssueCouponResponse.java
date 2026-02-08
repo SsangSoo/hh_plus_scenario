@@ -1,6 +1,7 @@
 package kr.hhplus.be.server.coupon.presentation.dto.response;
 
 import kr.hhplus.be.server.couponhistory.domain.model.CouponHistory;
+import lombok.Builder;
 import lombok.Getter;
 
 import java.time.LocalDateTime;
@@ -24,6 +25,7 @@ public class IssueCouponResponse {
         );
     }
 
+    @Builder
     private IssueCouponResponse(Long couponHistoryId, Long couponId, Long memberId, LocalDateTime couponIssuance, boolean couponUsed) {
         this.couponHistoryId = couponHistoryId;
         this.couponId = couponId;

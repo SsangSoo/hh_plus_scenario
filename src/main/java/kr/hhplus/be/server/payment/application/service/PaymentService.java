@@ -97,6 +97,9 @@ public class PaymentService implements PaymentUseCase {
 
             // 쿠폰으로 할인 금액 확인
             Coupon coupon = couponRepository.retrieve(couponHistory.getCouponId());
+
+            coupon.verifyUsable();
+
             Long discountApplyAmount = coupon.calculateDiscountRate(payment.getTotalAmount()); // 할인 금액 계산
             payment.discountAmount(discountApplyAmount); // 쿠폰 사용시 총 결제 금액에 할인 금액 반영
             totalAmount -= discountApplyAmount;

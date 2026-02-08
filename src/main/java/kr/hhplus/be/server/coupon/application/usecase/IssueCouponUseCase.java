@@ -5,6 +5,6 @@ import kr.hhplus.be.server.coupon.presentation.dto.response.IssueCouponResponse;
 
 public interface IssueCouponUseCase {
 
-    IssueCouponResponse issue(IssueCouponServiceRequest serviceRequest);
+    void issue(IssueCouponServiceRequest serviceRequest);
 
 }

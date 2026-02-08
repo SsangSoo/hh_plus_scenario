@@ -56,4 +56,8 @@ public class CouponJpaEntity extends BaseTimeEntity {
     public void modify(Integer amount) {
         this.amount = amount;
     }
+
+    public void decrease() {
+        this.amount--;
+    }
 }

@@ -14,17 +14,12 @@ import org.springframework.transaction.annotation.Transactional;
 public class RetrieveCouponService implements RetrieveCouponUseCase {
 
     private final CouponRepository couponsRepository;
-    private final RedisUtil redisUtil;
 
 
     @Override
     @Transactional(readOnly = true)
     public CouponResponse retrieve(Long couponId) {
         Coupon coupon = couponsRepository.retrieve(couponId);
-
-        String amount = redisUtil.get("coupon:" + coupon.getId());
-
-        coupon.changeAmount(Integer.parseInt(amount));
 
         return CouponResponse.from(coupon);
     }

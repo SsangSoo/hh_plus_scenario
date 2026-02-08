@@ -15,4 +15,7 @@ public interface CouponRepository {
     Coupon retrieveForUpdate(Long couponId);
 
     Coupon modify(Coupon coupon);
+
+    void decrease(Long couponId);
+
 }

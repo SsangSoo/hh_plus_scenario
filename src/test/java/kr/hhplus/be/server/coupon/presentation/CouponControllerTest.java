@@ -8,7 +8,7 @@ import kr.hhplus.be.server.coupon.domain.model.Coupon;
 import kr.hhplus.be.server.coupon.presentation.dto.request.IssueCouponRequest;
 import kr.hhplus.be.server.coupon.presentation.dto.request.RegisterCouponRequest;
 import kr.hhplus.be.server.coupon.presentation.dto.response.CouponResponse;
-import kr.hhplus.be.server.coupon.presentation.dto.response.IssueCouponResponse;
+import kr.hhplus.be.server.couponhistory.application.usecase.RetrieveCouponHistoryUseCase;
 import kr.hhplus.be.server.couponhistory.domain.model.CouponHistory;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
@@ -19,6 +19,7 @@ import java.time.LocalDate;
 import static com.epages.restdocs.apispec.MockMvcRestDocumentationWrapper.document;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.willDoNothing;
 import static org.mockito.Mockito.mock;
 import static org.springframework.restdocs.payload.PayloadDocumentation.*;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
@@ -32,11 +33,12 @@ class CouponControllerTest extends RestDocsControllerSupport {
     private final RegisterCouponUseCase registerCouponUseCase = mock(RegisterCouponUseCase.class);
     private final RetrieveCouponUseCase retrieveCouponUseCase = mock(RetrieveCouponUseCase.class);
     private final IssueCouponUseCase issueCouponUseCase = mock(IssueCouponUseCase.class);
+    private final RetrieveCouponHistoryUseCase retrieveCouponHistoryUseCase = mock(RetrieveCouponHistoryUseCase.class);
 
 
     @Override
     protected Object initContoller() {
-        return new CouponController(registerCouponUseCase, retrieveCouponUseCase, issueCouponUseCase);
+        return new CouponController(registerCouponUseCase, retrieveCouponUseCase, issueCouponUseCase, retrieveCouponHistoryUseCase);
     }
 
     @Test
@@ -137,8 +139,7 @@ class CouponControllerTest extends RestDocsControllerSupport {
         CouponHistory couponHistory = CouponHistory.create(couponId, memberId);
         couponHistory.assignId(couponHistoryId);
 
-        given(issueCouponUseCase.issue(any()))
-                .willReturn(IssueCouponResponse.from(couponHistory));
+        willDoNothing().given(issueCouponUseCase).issue(any());
 
         // when // then
         mockMvc.perform(

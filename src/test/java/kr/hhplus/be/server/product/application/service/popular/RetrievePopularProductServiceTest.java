@@ -16,8 +16,6 @@ import java.util.*;
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.BDDMockito.then;
-import static org.mockito.Mockito.never;
 
 @ExtendWith(MockitoExtension.class)
 class RetrievePopularProductServiceTest {

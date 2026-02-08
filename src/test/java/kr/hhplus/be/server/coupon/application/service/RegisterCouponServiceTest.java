@@ -32,7 +32,6 @@ class RegisterCouponServiceTest {
     @Mock
     RedisUtil redisUtil;
 
-
     RegisterCouponUseCase registerCouponUseCase;
 
 

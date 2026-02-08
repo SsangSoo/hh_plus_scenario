@@ -754,6 +754,59 @@
 
 ### 해당 스텝에서 배운 것
 
+#### 쿠폰 발행시, 이벤트 처리를 어떻게 할 것인가.
+
+쿠폰을 발행하고, 사용자에게 쿠폰 내역 저장, 쿠폰 개수 차감을 해야하는데, 이를 이벤트로 처리하려고 했다.
+쿠폰 발행 후, 이벤트 처리를 하는 차원에서 어떻게 처리해야 하는지가 의문이었다.
+
+두 가지 방식에 대한 고민이 있었는데, 하나는 아래와 같이.
+
+```java
+@Component
+@RequiredArgsConstructor
+public class CouponIssueEventListener {
+
+    private final DecreaseCouponUseCase decreaseCouponUseCase;
+    private final RegisterCouponHistoryUseCase registerCouponHistoryUseCase;
+
+    @Async
+    @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
+    public void onCouponIssueCompleted(CouponIssueEvent event) {
+        decreaseCouponUseCase.decrease(event.couponId());
+    }
+
+    @Async
+    @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
+    public void onMemberIssuedCouponCompleted(CouponIssueEvent event) {
+        registerCouponHistoryUseCase.register(event.couponId(), event.memberId());
+    }
+
+}
+```
+
+하나는 아래와 같이다.
+
+```java
+@Component
+@RequiredArgsConstructor
+public class CouponIssueEventListener {
+
+    private final DecreaseCouponUseCase decreaseCouponUseCase;
+    private final RegisterCouponHistoryUseCase registerCouponHistoryUseCase;
+
+    @Async
+    @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
+    public void onCouponIssueCompleted(CouponIssueEvent event) {
+        decreaseCouponUseCase.decrease(event.couponId());
+        registerCouponHistoryUseCase.register(event.couponId(), event.memberId());
+    }
+
+}
+```
+
+이 두 가지 방법 중 아래와 같이 해야한다.
+왜냐하면, 쿠폰 개수 차감과 쿠폰 발행 내역 생성은 사실 하나의 트랜잭션에서 같이 일어나야 하는 작업이기 때문이다.
+이를 통해서 역시 트랜잭션 경계에 대한 중요성을 한 번 더 배우고 간다.
 
 ### 해당 스텝에서 한 것
 

@@ -2,6 +2,7 @@ package kr.hhplus.be.server.config;
 
 import kr.hhplus.be.server.common.redis.RedisUtil;
 import kr.hhplus.be.server.coupon.application.service.issuecoupon.IssueCouponTransactionService;
+import kr.hhplus.be.server.coupon.application.usecase.DecreaseCouponUseCase;
 import kr.hhplus.be.server.coupon.application.usecase.IssueCouponUseCase;
 import kr.hhplus.be.server.coupon.application.usecase.RegisterCouponUseCase;
 import kr.hhplus.be.server.coupon.application.usecase.RetrieveCouponUseCase;
@@ -22,6 +23,9 @@ import kr.hhplus.be.server.order.infrastructure.persistence.OrderJpaRepository;
 import kr.hhplus.be.server.orderproduct.application.usecase.RegisterOrderProductUseCase;
 import kr.hhplus.be.server.orderproduct.domain.repository.OrderProductRepository;
 import kr.hhplus.be.server.orderproduct.infrastructure.persistence.OrderProductJpaRepository;
+import kr.hhplus.be.server.outbox.application.usecase.RegisterOutboxUseCase;
+import kr.hhplus.be.server.outbox.application.usecase.RemoveOutboxUseCase;
+import kr.hhplus.be.server.outbox.application.usecase.RetrieveOutboxUseCase;
 import kr.hhplus.be.server.outbox.domain.repository.OutboxRepository;
 import kr.hhplus.be.server.outbox.infrastructure.OutboxJpaRepository;
 import kr.hhplus.be.server.payment.application.facade.PaymentFacade;
@@ -231,6 +235,12 @@ public abstract class SpringBootTestSupport {
     protected CouponJpaRepository couponJpaRepository;
 
     @Autowired
+    protected DecreaseCouponUseCase decreaseCouponUseCase;
+
+
+    // couponHistory
+
+    @Autowired
     protected RegisterCouponHistoryUseCase registerCouponHistoryUseCase;
 
     @Autowired
@@ -253,17 +263,26 @@ public abstract class SpringBootTestSupport {
     protected OutboxJpaRepository outboxJpaRepository;
 
     @Autowired
-    protected RedissonClient redissonClient;
+    protected RegisterOutboxUseCase registerOutboxUseCase;
+
+    @Autowired
+    protected RemoveOutboxUseCase removeOutboxUseCase;
+
+    @Autowired
+    protected RetrieveOutboxUseCase retrieveOutboxUseCase;
 
 
     // Redis
+    @Autowired
+    protected RedissonClient redissonClient;
+
     @Autowired
     protected StringRedisTemplate stringRedisTemplate;
 
     @Autowired
     protected RedisUtil redisUtil;
 
-
+    // Event
     @Autowired
     protected ApplicationEventPublisher eventPublisher;
 }

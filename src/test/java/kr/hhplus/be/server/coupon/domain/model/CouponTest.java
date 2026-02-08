@@ -71,8 +71,15 @@ class CouponTest {
                 .hasMessage(BusinessLogicMessage.NOT_POSSIBLE_ISSUE_COUPON_BY_INSUFFICIENT_NUMBER.getMessage());
     }
 
+    @Test
+    @DisplayName("쿠폰 유효기간이 지나면 사용할 수 없다.")
+    void expiryDateValidateTest() {
+        Coupon coupon = Coupon.of(1L, "asd123", LocalDate.now().minusDays(1L), 1, 10);
 
-
+        assertThatThrownBy(() -> coupon.verifyUsable())
+                .isInstanceOf(BusinessLogicRuntimeException.class)
+                .hasMessage(BusinessLogicMessage.USABLE_VALIDITY_PERIOD_HAS_PASSED.getMessage());
+    }
 
 
 }

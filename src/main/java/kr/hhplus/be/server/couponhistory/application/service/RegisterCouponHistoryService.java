@@ -1,5 +1,6 @@
 package kr.hhplus.be.server.couponhistory.application.service;
 
+import kr.hhplus.be.server.common.redis.RedisUtil;
 import kr.hhplus.be.server.couponhistory.application.usecase.RegisterCouponHistoryUseCase;
 import kr.hhplus.be.server.couponhistory.domain.model.CouponHistory;
 import kr.hhplus.be.server.couponhistory.domain.repository.CouponHistoryRepository;
@@ -12,11 +13,18 @@ import org.springframework.transaction.annotation.Transactional;
 public class RegisterCouponHistoryService implements RegisterCouponHistoryUseCase {
 
     private final CouponHistoryRepository couponHistoryRepository;
+    private final RedisUtil redisUtil;
+
 
     @Override
     @Transactional
     public CouponHistory register(Long couponId, Long memberId) {
         CouponHistory couponHistory = CouponHistory.create(couponId, memberId);
-        return couponHistoryRepository.register(couponHistory);
+
+        CouponHistory registeredCouponHistory = couponHistoryRepository.register(couponHistory);
+
+        redisUtil.delete("coupon:" + couponId + ":member:" + memberId);
+
+        return registeredCouponHistory;
     }
 }

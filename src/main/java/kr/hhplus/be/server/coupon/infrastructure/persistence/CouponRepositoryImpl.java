@@ -56,5 +56,12 @@ public class CouponRepositoryImpl implements CouponRepository {
         return couponJpaEntity.toDomain();
     }
 
+    @Override
+    public void decrease(Long couponId) {
+        CouponJpaEntity couponJpaEntity = jpa.findById(couponId)
+                .orElseThrow(() -> new BusinessLogicRuntimeException(BusinessLogicMessage.NOT_FOUND_COUPON));
+        couponJpaEntity.decrease();
+    }
+
 
 }

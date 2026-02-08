@@ -5,6 +5,7 @@ import kr.hhplus.be.server.coupon.application.dto.request.IssueCouponServiceRequ
 import kr.hhplus.be.server.coupon.application.dto.request.RegisterCouponServiceRequest;
 import kr.hhplus.be.server.coupon.presentation.dto.response.CouponResponse;
 import kr.hhplus.be.server.coupon.presentation.dto.response.IssueCouponResponse;
+import kr.hhplus.be.server.couponhistory.domain.model.CouponHistory;
 import kr.hhplus.be.server.member.application.dto.RegisterMemberCommand;
 import kr.hhplus.be.server.member.domain.model.Member;
 import kr.hhplus.be.server.member.infrastructure.persistence.MemberJpaEntity;
@@ -79,9 +80,11 @@ class CouponIntegrationTest  extends SpringBootTestSupport {
         // given
         MemberResponse registeredMember = registerMemberUseCase.register(new RegisterMemberCommand("이름", "199010101", "주소"));
         CouponResponse registeredCoupon = registerCouponUseCase.register(new RegisterCouponServiceRequest("123456789012345", LocalDate.now().plusDays(1L), 2, 10));
-        IssueCouponResponse issueCouponResponse = issueCouponUseCase.issue(new IssueCouponServiceRequest(registeredCoupon.getCouponId(), registeredMember.getId()));
+        issueCouponUseCase.issue(new IssueCouponServiceRequest(registeredCoupon.getCouponId(), registeredMember.getId()));
 
-        assertThat(issueCouponResponse.isCouponUsed()).isFalse();
+        CouponHistory couponHistory = retrieveCouponHistoryUseCase.retrieveCouponHistory(registeredMember.getId(), registeredCoupon.getCouponId());
+
+        assertThat(couponHistory.isCouponUsed()).isFalse();
 
         ProductResponse registeredProduct = registerProductUseCase.register(new RegisterProductServiceRequest("상품", 10000L));
 

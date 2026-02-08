@@ -58,7 +58,7 @@ public class CouponRepositoryImpl implements CouponRepository {
 
     @Override
     public void decrease(Long couponId) {
-        CouponJpaEntity couponJpaEntity = jpa.findById(couponId)
+        CouponJpaEntity couponJpaEntity = jpa.findByIdForUpdate(couponId)
                 .orElseThrow(() -> new BusinessLogicRuntimeException(BusinessLogicMessage.NOT_FOUND_COUPON));
         couponJpaEntity.decrease();
     }

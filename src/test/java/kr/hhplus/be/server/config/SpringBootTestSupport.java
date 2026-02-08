@@ -2,6 +2,7 @@ package kr.hhplus.be.server.config;
 
 import kr.hhplus.be.server.common.redis.RedisUtil;
 import kr.hhplus.be.server.coupon.application.service.issuecoupon.IssueCouponTransactionService;
+import kr.hhplus.be.server.coupon.infrastructure.event.CouponIssueEventListener;
 import kr.hhplus.be.server.coupon.application.usecase.DecreaseCouponUseCase;
 import kr.hhplus.be.server.coupon.application.usecase.IssueCouponUseCase;
 import kr.hhplus.be.server.coupon.application.usecase.RegisterCouponUseCase;
@@ -287,4 +288,8 @@ public abstract class SpringBootTestSupport {
     // Event
     @Autowired
     protected ApplicationEventPublisher eventPublisher;
+
+    // 프로덕션 비동기 이벤트 리스너 비활성화 (테스트에서는 Redis 수량만 확인)
+    @MockitoBean
+    protected CouponIssueEventListener couponIssueEventListener;
 }

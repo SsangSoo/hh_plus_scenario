@@ -140,6 +140,8 @@ class CouponControllerTest extends RestDocsControllerSupport {
         couponHistory.assignId(couponHistoryId);
 
         willDoNothing().given(issueCouponUseCase).issue(any());
+        given(retrieveCouponHistoryUseCase.retrieveCouponHistory(any(), any()))
+                .willReturn(couponHistory);
 
         // when // then
         mockMvc.perform(

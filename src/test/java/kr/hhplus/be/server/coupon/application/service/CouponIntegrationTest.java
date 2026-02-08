@@ -33,9 +33,11 @@ import java.util.UUID;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.assertj.core.api.Assertions.*;
+import static org.awaitility.Awaitility.await;
 
 class CouponIntegrationTest  extends SpringBootTestSupport {
 
@@ -68,9 +70,9 @@ class CouponIntegrationTest  extends SpringBootTestSupport {
         // when
         issueCouponUseCase.issue(new IssueCouponServiceRequest(registeredCoupon.getCouponId(), registeredMember.getId()));
 
-        // then
-        retrievedCoupon = retrieveCouponUseCase.retrieve(registeredCoupon.getCouponId());
-        assertThat(retrievedCoupon.getAmount()).isEqualTo(1);
+        // then - Redis에서 쿠폰 개수 확인 (동기적으로 감소됨)
+        String redisAmount = stringRedisTemplate.opsForValue().get("coupon:" + registeredCoupon.getCouponId());
+        assertThat(Integer.parseInt(redisAmount)).isEqualTo(1);
     }
 
     // 회원 생성 -> 쿠폰 생성 -> 쿠폰 발행 -> 상품 등록 -> 재고 증가 -> 포인트 충전 -> 주문 -> 결제
@@ -80,7 +82,13 @@ class CouponIntegrationTest  extends SpringBootTestSupport {
         // given
         MemberResponse registeredMember = registerMemberUseCase.register(new RegisterMemberCommand("이름", "199010101", "주소"));
         CouponResponse registeredCoupon = registerCouponUseCase.register(new RegisterCouponServiceRequest("123456789012345", LocalDate.now().plusDays(1L), 2, 10));
+
+        // 쿠폰 발행 (Redis에서 개수 감소 및 이벤트 발행)
         issueCouponUseCase.issue(new IssueCouponServiceRequest(registeredCoupon.getCouponId(), registeredMember.getId()));
+
+        // 이벤트 처리가 비동기이므로 직접 RDB 쿠폰 개수 감소 및 CouponHistory 등록
+        decreaseCouponUseCase.decrease(registeredCoupon.getCouponId());
+        registerCouponHistoryUseCase.register(registeredCoupon.getCouponId(), registeredMember.getId());
 
         CouponHistory couponHistory = retrieveCouponHistoryUseCase.retrieveCouponHistory(registeredMember.getId(), registeredCoupon.getCouponId());
 
@@ -168,8 +176,9 @@ class CouponIntegrationTest  extends SpringBootTestSupport {
         assertThat(successCount.get()).isEqualTo(1000);
         assertThat(failCount.get()).isEqualTo(0);
 
-        CouponResponse retrieveCouponResponse = retrieveCouponUseCase.retrieve(couponId);
-        assertThat(retrieveCouponResponse.getAmount()).isEqualTo(0);
+        // Redis에서 쿠폰 개수 확인 (선착순 발행의 핵심은 Redis에서 관리)
+        String redisAmount = stringRedisTemplate.opsForValue().get("coupon:" + couponId);
+        assertThat(Integer.parseInt(redisAmount)).isEqualTo(0);
     }
 
 

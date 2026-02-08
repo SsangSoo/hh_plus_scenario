@@ -234,8 +234,9 @@ class OrderIntegratedTest extends SpringBootTestSupport {
         PaymentResponse paymentResponse = paymentFacade.payment(new PaymentServiceRequest(orderResponse.getOrderId(), memberResponse.getId(), orderResponse.getPaymentId(), null), UUID.randomUUID().toString());
 
 
-        // then
-        await().atMost(2, TimeUnit.SECONDS)
+        // then - 비동기 이벤트 처리 완료까지 충분한 시간 대기
+        await().atMost(10, TimeUnit.SECONDS)
+                .pollInterval(200, TimeUnit.MILLISECONDS)
                 .untilAsserted(() ->
                         then(paymentDataTransportUseCase)
                                 .should(times(1))

@@ -19,9 +19,11 @@ import org.junit.jupiter.api.Test;
 
 import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.tuple;
+import static org.awaitility.Awaitility.await;
 
 class PopularProductIntegrationTest extends SpringBootTestSupport {
 
@@ -104,6 +106,9 @@ class PopularProductIntegrationTest extends SpringBootTestSupport {
         )));
         PaymentResponse paymentResponse4 = paymentFacade.payment(new PaymentServiceRequest(orderResponse4.getOrderId(), member.getId(), orderResponse4.getPaymentId(), null), UUID.randomUUID().toString());
 
+        // 비동기 이벤트 처리 완료까지 대기 (4개 상품이 Redis에 등록될 때까지)
+        await().atMost(5, TimeUnit.SECONDS)
+                .until(() -> retrievePopularProductUseCase.retrievePopularProducts().size() >= 4);
 
         // when
         List<ProductResponse> productResponses = retrievePopularProductUseCase.retrievePopularProducts();
@@ -164,6 +169,10 @@ class PopularProductIntegrationTest extends SpringBootTestSupport {
         )));
         paymentFacade.payment(new PaymentServiceRequest(orderResponse.getOrderId(), member.getId(), orderResponse.getPaymentId(), null), UUID.randomUUID().toString());
 
+        // 비동기 이벤트 처리 완료까지 대기
+        await().atMost(5, TimeUnit.SECONDS)
+                .until(() -> retrievePopularProductUseCase.retrievePopularProducts().size() >= 3);
+
         // when - 여러 번 조회
         List<ProductResponse> responses1 = retrievePopularProductUseCase.retrievePopularProducts();
         List<ProductResponse> responses2 = retrievePopularProductUseCase.retrievePopularProducts();
@@ -211,6 +220,10 @@ class PopularProductIntegrationTest extends SpringBootTestSupport {
                 );
             }
         }
+
+        // 비동기 이벤트 처리 완료까지 대기 (11개 상품이 Redis에 등록될 때까지)
+        await().atMost(10, TimeUnit.SECONDS)
+                .until(() -> retrievePopularProductUseCase.retrievePopularProducts().size() >= 10);
 
         // when
         List<ProductResponse> popularProducts = retrievePopularProductUseCase.retrievePopularProducts();

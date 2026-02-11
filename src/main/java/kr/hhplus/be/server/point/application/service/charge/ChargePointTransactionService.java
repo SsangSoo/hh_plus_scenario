@@ -41,7 +41,7 @@ public class ChargePointTransactionService {
         Member member = memberRepository.retrieve(chargePoint.memberId());
 
         // 포인트 충전 (DB Lock 획득 - Defense in Depth)
-        Point point = pointRepository.findByMemberIdForUpdate(chargePoint.memberId());
+        Point point = pointRepository.findByMemberId(chargePoint.memberId());
         point.charge(chargePoint);
         LocalDateTime modifiedTime = pointRepository.modify(point.getId(), point.getPoint());
 

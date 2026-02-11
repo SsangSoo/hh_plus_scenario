@@ -342,7 +342,7 @@
 - 구조 변경하는 게 쉽지가 않다. 특히 테스트 코드까지 손봐야하는 경우, 오래 걸린다. 하지만, 계속 하게 되면, 빠르게 할 거 같지만,, 뛰엄뛰엄 하려하니 쉽진않다.
 
 
-</details>
+</details> 
 
 <details>
 <summary> <b>Step 4. DB 구조로 데이터 정합성 확보</b> </summary>
@@ -697,12 +697,74 @@
 
 ### 해당 스텝에서 한 것
 
+- 쿠폰 발행 로직 개선
+  - 기존 : Redis로만 저장
+  - 개선 : Redis 로 저장된 후, 이벤트를 발행시켜 RDB에 쿠폰 차감 적용 및 사용자 쿠폰 발행 내역 RDB에 저장하는 구조로 개선
+- 외부 API로 데이터 전송 구조 개선(실제 외부로 데이터 전송하진 않음)
+  - 기존 : 로직 중간에 비동기로 API 데이터 전송하는 구조, 데이터 전송 실패시 Outbox에 저장하는 구조
+  - 개선 : 로직 중 outbox에 데이터 저장, 로직이 다 끝난 후, 이벤트를 발행시켜 외부 API로 데이터를 전송, 외부 API로 데이터 전송 완료시 이벤트를 발행시켜 Outbox를 삭제하는 구조로 변경
 
+#### 쿠폰 발행시, 이벤트 처리를 어떻게 할 것인가.
+
+쿠폰을 발행하고, 사용자에게 쿠폰 내역 저장, 쿠폰 개수 차감을 해야하는데, 이를 이벤트로 처리하려고 했다.
+쿠폰 발행 후, 이벤트 처리를 하는 차원에서 어떻게 처리해야 하는지가 의문이었다.
+
+두 가지 방식에 대한 고민이 있었는데, 하나는 아래와 같이.
+
+```java
+@Component
+@RequiredArgsConstructor
+public class CouponIssueEventListener {
+
+    private final DecreaseCouponUseCase decreaseCouponUseCase;
+    private final RegisterCouponHistoryUseCase registerCouponHistoryUseCase;
+
+    @Async
+    @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
+    public void onCouponIssueCompleted(CouponIssueEvent event) {
+        decreaseCouponUseCase.decrease(event.couponId());
+    }
+
+    @Async
+    @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
+    public void onMemberIssuedCouponCompleted(CouponIssueEvent event) {
+        registerCouponHistoryUseCase.register(event.couponId(), event.memberId());
+    }
+
+}
+```
+
+하나는 아래와 같이다.
+
+```java
+@Component
+@RequiredArgsConstructor
+public class CouponIssueEventListener {
+
+    private final DecreaseCouponUseCase decreaseCouponUseCase;
+    private final RegisterCouponHistoryUseCase registerCouponHistoryUseCase;
+
+    @Async
+    @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
+    public void onCouponIssueCompleted(CouponIssueEvent event) {
+        decreaseCouponUseCase.decrease(event.couponId());
+        registerCouponHistoryUseCase.register(event.couponId(), event.memberId());
+    }
+
+}
+```
+
+이 두 가지 방법 중 아래와 같이 해야한다.
+왜냐하면, 쿠폰 개수 차감과 쿠폰 발행 내역 생성은 사실 하나의 트랜잭션에서 같이 일어나야 하는 작업이기 때문이다.
+이를 통해서 역시 트랜잭션 경계에 대한 중요성을 한 번 더 배우고 간다.
 
 
 ### 해당 스텝에서 얻은 것
 
-
+- 트랜잭션 경계의 중요성
+- 이벤트 처리 기술
+  - 트랜잭션 직전, 커밋 후, 롤백 이벤트 등등..
+- 보상 트랜잭션 및 SAGA 패턴
 
 ### 해당 스텝 이후 (구현)해야할 것
 
@@ -710,11 +772,29 @@
 
 ### 해보기 전에 내가 알아야 하는 것
 
+- Event 관련 애너테이션 및 용도
 
 ### 해당 스텝 이후 할 것
 
 
 ### 라이브 세션
+
+- 이벤트의 리스크를 인지하고 있는가
+- 왜 MSA?
+  - MSA의 가장 큰 목적은 관심사의 분리
+    - 귀찮지만, 관심사의 분리가 제대로 이루어졌을 때, 얻는 이점이 많기 때문이다.
+  - 인지 자원을 더 쓰고, 생각할 수 있는 범위를 줄여서 다루는 건 되게 큰 장점
+    - 이렇게 되면, 기능을 구현하고 운영하는 데 있어서 부작용 및 실수의 여지가 줄어든다.
+  - 인터페이스(API 엔드포인트) 분리를 함으로써 스펙을 변경하지 않고, 구조 변경 혹은 성능 개선 등의 작업을 수월하게 작업할 수 있음.
+  - 시스템 운영 관점에서는 A , B , C 서비스가 있을 떄, A 서비스가 무너져도 B, C 서비스는 살아있을 수 있어, 내구성을 챙길 수 있다. 
+- '마이크로 서비스'를 어떻게 정의할 것인가
+
+
+**이벤트**
+- 행위와 행위를 비동기로 분리시키는 것
+- 관심사의 분리가 가장 큼.
+- 기능 구현은 명확히 책임이 분리되어야 하는데, 기능 외적으로 다른 기능을 같이 구현하는 경우에는 이벤트를 활용할 수 있다.
+    - 예를 들어, 콘서트 좌석 예매 기능 구현시 콘서트 좌석 예매 외에 해당 콘서트를 랭킹에 반영하는(?) 코드가 같이 있는 경우, 이벤트를 통해 관심사를 분리할 수 있다.
 
 
 </details>
@@ -725,8 +805,100 @@
 
 ### 해당 스텝에서 배운 것
 
+#### Kafka
+
+- 대규모 실시간 데이터 처리를 위한 분산 메시징 시스템이라면?
+- 복잡한 분산 시스템을 위해 설계된 메시징 서비스가 필요하기 때문!
+  - 대용량 처리
+  - 고가용성
+  - 다양한 기능(예시: 메시지 유실 방지) -> offset 기능이 있기 때문에 메시지 유실을 방지할 수 있음.
+
+
+#### 카프카의 구성 요서
+
+**프로듀서(Producer)**
+- 메시지를 카프카 시스템에 발행하는 서비스
+
+**컨슈머(Consumer)**
+- 카프카 시스템에 발행된 메시지를 읽어오는 서비스
+
+**컨슈머 그룹(Consumer Group)**
+- 토픽에 있는 메시지를 구독하는 단위
+  - 컨슈머 단위가 아니라, 컨슈머 그룹으로 토픽 메세지를 구독하게 됨.
+- 보통 하나의 서비스를 나타냄
+- 메세지가 어떤 파티션에 담길지는 메시지의 키 값에 따라 결정 됨.
+- **컨슈머 그룹 개념이 있기 때문에 하나의 토픽에서 발행된 메시지를 여러 서비스에서 독립적으로 읽어갈 수 있다.**
+
+**오프셋(Offset)**
+- 컨슈머가 어디까지 메시지를 읽었는지를 기록해둔 데이터
+- 예를 들어, 프로듀서가 1,2,3,4,5 개의 메세지를 발행했고, 1,2까지 컨슈머가 받아서 처리했다면, Offset은 2까지 컨슈머가 메세지를 처리했다고 기록해둠.
+
+**브로커(Broker)**
+- 브로커 = 카프카 클러스터를 구성하는 물리적인 서버들
+  - 물리적인 서버들 = 인스턴스 개념
+- 프로듀서에게 메세지를 받아 이를 저장하고 이를 컨슈머로 전송하는 역할
+- 특별한 역할을 수행하는 브로거 : Controller, Coordinator
+  - Controller  : 브로커 간의 연결을 조정하는 역할을 함.
+  - Coordinator : 컨슈머와 실제 내부 Queue를 매칭해주는 역할을 함.
+- Bootstrap Server
+  - 클라이언트가 카프카 클러스터에 접속하기 위한 진입점이 되는 브로커
+
+**메시지(Message)**
+- 카프카를 통해 프로듀서에서 컨슈머로 이동하는 데이터를 의미
+- Key, Value로 구성되어 있음(보통은 Key에 리소스ID, Value에 리소스 상세 정보가 담김)
+
+**토픽(Topic)**
+- 메세지의 종류를 분류하는 기준이며, 컨슈머는 이 단위로 메세지를 구독함.
+
+
+**파티션(Partition)**
+- 실제 메시지가 담겨있는 큐이며, 토픽은 여러개의 파티션으로 구성되어있음
+- 하나의 파티션은 하나의 컨슈머만 사용할 수 있음에 주의
+- 메시지가 어떤 파티션에 담길지는 메시지의 키 값에 따라 결정 됨.
+
+
+**리밸런싱(Rebalancing)**
+- 중간에 컨슈머가 추가/삭제 되거나 새로운 파티션이 추가됐을 때, 컨슈머별로 할당된 파티션을 다시 고르게 분배하는 과정이 필요하며, 이를 리밸런싱이라고 함.
+- 리밸런싱 중에는 컨슈머가 카프카 시스템으로부터 메시지를 읽을 수 없음에 주의해야 한다.
+
+**클러스터(Cluster)**
+- 고가용성과 확장성을 위해 여러 브로커를 묶어 하나의 시스템으로 구성
+- 카프카는 운영 도중에 브로커 구성을 변경하여 유연한 스케일링이 가능함.
+
+**Replication**
+브로커 중 하나에 갑자기 장애가 생기면?
+- 카프카는 다른 브로커에 파티션 복제본(Replica)을 만들어두는 기능을 제공
+- Leader Replica vs Follower Replica = 메인용 vs 백업용
+
+
+#### 외부 API 데이터 전송 실패시
+
+- 원래는 이벤트를 사용할 때는 컨슈머가 수신을 받지 못한 경우, 데이터 전달에 대한 책임, 재전송 로직 등등을 고민해야 하는데, 카프카를 도입하면, 카프카가 알아서 재전송을 해준다.
+
+
+#### Kafka 관련 키워드
+
+**Auto-commit** vs **Manual-commit**
+
+**DLQ(Dead Letter Queue)**
+- 처리할 수 없는 메시지는 어떻게 다루면 좋을까?
+- 실패한 메시지를 담아놓는 큐
+
+**리텐션(Retention) 정책**
+- 카프카에 들어간 메시지는 영원히 보관될까?
+
+**멱등성(Idempotency)**
+- 같은 메시지를 여러 번 읽어도 괜찮은 시스템을 만들 수는 없을까?
+- 예를 들어, 잔액에 100원을 올려주는 메시지를 발행했다고 쳤을 때, 커밋의 이슈로 인해 중복된 메시지를 컨슈머가 받을 수도 있다. 1000원이라면, 결과적으로 1100원이 되어야하는데, 중복으로 한 번 더 요청되어서 1200원이 될 수도 있다. 이를 방지하기 위해서 100원을 플러스하는게 아니라, 결과인 1100원을 만들어라는 메시지를 통해서 멱등성을 지켜줄 수 있다.
+
+**Zero-Payload** vs **Full-Payload**
+- 카프카 메시지 안에는 어떤 내용을 담으면 좋을까?
+- Zero-Payload : key는 두고, value는 비워둔 메시지
+- Full-Payload : key, value를 모두 가지고 있는 메시지
+ 
 
 ### 해당 스텝에서 한 것
+
 
 
 ### 해당 스텝에서 얻은 것
@@ -740,10 +912,13 @@
 ### 해보기 전에 내가 알아야 하는 것
 
 
+
 ### 해당 스텝 이후 할 것
 
 
+
 ### 라이브 세션
+
 
 
 </details>
@@ -753,6 +928,7 @@
 <summary> <b> Step 10. 장애 대응 프로세스 </b> </summary>
 
 ### 해당 스텝에서 배운 것
+
 
 
 ### 해당 스텝에서 한 것

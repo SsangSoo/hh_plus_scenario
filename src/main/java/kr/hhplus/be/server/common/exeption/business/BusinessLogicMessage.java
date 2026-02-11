@@ -25,6 +25,7 @@ public enum BusinessLogicMessage {
     ALREADY_PROCESSING_THIS_PAYMENT("이미 결제 처리중입니다."),
     ALREADY_HAVE_THIS_COUPON("현재 가지고 있는 쿠폰입니다."),
     ALREADY_USED_THIS_COUPON("이미 사용된 쿠폰입니다."),
+    USABLE_VALIDITY_PERIOD_HAS_PASSED("쿠폰 유효기간이 지났습니다."),
 
     CHARGE_POINT_NOT_POSITIVE("충전하려는 포인트는 0 이상이어야 합니다."),
     POINT_IS_NOT_ENOUGH("현재 가지고 있는 포인트가 부족합니다."),

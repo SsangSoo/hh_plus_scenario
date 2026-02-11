@@ -11,6 +11,7 @@ import kr.hhplus.be.server.pointhistory.domain.model.State;
 import kr.hhplus.be.server.pointhistory.domain.repository.PointHistoryRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
@@ -25,7 +26,6 @@ import java.time.LocalDateTime;
 @RequiredArgsConstructor
 public class UsePointTransactionService {
 
-    private final MemberRepository memberRepository;
     private final PointRepository pointRepository;
     private final PointHistoryRepository pointHistoryRepository;
 
@@ -35,19 +35,17 @@ public class UsePointTransactionService {
      * @param usePoint 사용 정보
      * @return 포인트 응답
      */
-    @Transactional
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
     public PointResponse useInternal(UsePoint usePoint) {
-        // 회원 찾기
-        Member member = memberRepository.retrieve(usePoint.memberId());
+        Point point = pointRepository.findByMemberId(usePoint.memberId());
 
-        // 포인트 사용 (DB Lock 획득 - Defense in Depth)
-        Point point = pointRepository.findByMemberIdForUpdate(usePoint.memberId());
         point.use(usePoint.point());
+
         LocalDateTime modifiedTime = pointRepository.modify(point.getId(), point.getPoint());
 
         // 포인트 사용 내역 저장
         PointHistory pointHistory = PointHistory.create(
-                member.getId(),
+                usePoint.memberId(),
                 point.getId(),
                 usePoint.point(),
                 modifiedTime,

@@ -7,6 +7,8 @@ import kr.hhplus.be.server.coupon.presentation.dto.request.IssueCouponRequest;
 import kr.hhplus.be.server.coupon.presentation.dto.request.RegisterCouponRequest;
 import kr.hhplus.be.server.coupon.presentation.dto.response.IssueCouponResponse;
 import kr.hhplus.be.server.coupon.presentation.dto.response.CouponResponse;
+import kr.hhplus.be.server.couponhistory.application.usecase.RetrieveCouponHistoryUseCase;
+import kr.hhplus.be.server.couponhistory.domain.model.CouponHistory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,7 +21,10 @@ public class CouponController {
 
     private final RegisterCouponUseCase registerCouponUseCase;
     private final RetrieveCouponUseCase retrieveCouponUseCase;
+
     private final IssueCouponUseCase issueCouponUseCase;
+    private final RetrieveCouponHistoryUseCase retrieveCouponHistoryUseCase;
+
 
     @PostMapping
     public ResponseEntity<CouponResponse> register(@RequestBody RegisterCouponRequest request) {
@@ -38,9 +43,9 @@ public class CouponController {
 
     @PostMapping("/issue")
     public ResponseEntity<IssueCouponResponse> issue(@RequestBody IssueCouponRequest issueCouponRequest) {
-        IssueCouponResponse issueCouponResponse = issueCouponUseCase.issue(issueCouponRequest.toServiceRequest());
-
-        return ResponseEntity.ok(issueCouponResponse);
+        issueCouponUseCase.issue(issueCouponRequest.toServiceRequest());
+        CouponHistory couponHistory = retrieveCouponHistoryUseCase.retrieveCouponHistory(issueCouponRequest.memberId(), issueCouponRequest.couponId());
+        return ResponseEntity.ok(IssueCouponResponse.from(couponHistory));
     }
 
 

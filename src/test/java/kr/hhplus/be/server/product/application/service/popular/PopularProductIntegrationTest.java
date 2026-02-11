@@ -13,16 +13,27 @@ import kr.hhplus.be.server.product.application.dto.request.RegisterProductServic
 import kr.hhplus.be.server.product.presentation.dto.response.ProductResponse;
 import kr.hhplus.be.server.stock.application.dto.request.AddStock;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.tuple;
+import static org.awaitility.Awaitility.await;
 
 class PopularProductIntegrationTest extends SpringBootTestSupport {
+
+    @BeforeEach
+    void setUp() {
+        // 테스트 시작 전 Redis 정리 - 다른 테스트의 잔여 데이터 제거
+        stringRedisTemplate.getConnectionFactory()
+                .getConnection()
+                .flushAll();
+    }
 
     @AfterEach
     void tearDown() {
@@ -38,6 +49,7 @@ class PopularProductIntegrationTest extends SpringBootTestSupport {
                 .getConnection()
                 .flushAll();
     }
+
 
     @Test
     @DisplayName("인기 상품 api 통합 테스트 상품의 판매 건수 순으로 상품이 조회된다.")
@@ -94,6 +106,9 @@ class PopularProductIntegrationTest extends SpringBootTestSupport {
         )));
         PaymentResponse paymentResponse4 = paymentFacade.payment(new PaymentServiceRequest(orderResponse4.getOrderId(), member.getId(), orderResponse4.getPaymentId(), null), UUID.randomUUID().toString());
 
+        // 비동기 이벤트 처리 완료까지 대기 (4개 상품이 Redis에 등록될 때까지)
+        await().atMost(5, TimeUnit.SECONDS)
+                .until(() -> retrievePopularProductUseCase.retrievePopularProducts().size() >= 4);
 
         // when
         List<ProductResponse> productResponses = retrievePopularProductUseCase.retrievePopularProducts();
@@ -112,5 +127,117 @@ class PopularProductIntegrationTest extends SpringBootTestSupport {
                         tuple(vanillaLatte.getId(), "바닐라라떼", 5000L, 98L),
                         tuple(americano.getId(), "아메리카노", 4500L, 99L)
                 );
+    }
+
+    @Test
+    @DisplayName("인기 상품이 없을 때 빈 리스트를 반환한다")
+    void 인기_상품이_없을때_빈_리스트를_반환한다() {
+        // given - 아무런 구매가 없는 상태
+
+        // when
+        List<ProductResponse> productResponses = retrievePopularProductUseCase.retrievePopularProducts();
+
+        // then
+        assertThat(productResponses).isEmpty();
+    }
+
+    @Test
+    @DisplayName("판매량이 같은 상품들의 순서가 일관되게 유지된다")
+    void 판매량이_같은_상품들의_순서가_일관되게_유지된다() {
+        // given
+        // 회원 생성
+        MemberResponse member = registerMemberUseCase.register(new RegisterMemberCommand("쌩수", "19900101", "사는 곳"));
+
+        // 상품 생성
+        ProductResponse americano = registerProductUseCase.register(new RegisterProductServiceRequest("아메리카노", 4500L));
+        ProductResponse iceTea = registerProductUseCase.register(new RegisterProductServiceRequest("아이스티", 4000L));
+        ProductResponse caffeLatte = registerProductUseCase.register(new RegisterProductServiceRequest("카페라떼", 4500L));
+
+        // 재고 추가
+        addStockUseCase.addStock(new AddStock(americano.getId(), 100L));
+        addStockUseCase.addStock(new AddStock(iceTea.getId(), 100L));
+        addStockUseCase.addStock(new AddStock(caffeLatte.getId(), 100L));
+
+        // 포인트 충전
+        chargePointUseCase.charge(new ChargePoint(member.getId(), 100_000L));
+
+        // 각 상품을 1번씩 구매 (동점 상황)
+        OrderResponse orderResponse = placeOrderUseCase.order(new OrderCommand(member.getId(), List.of(
+                new OrderProductServiceRequest(americano.getId(), 1L),
+                new OrderProductServiceRequest(iceTea.getId(), 1L),
+                new OrderProductServiceRequest(caffeLatte.getId(), 1L)
+        )));
+        paymentFacade.payment(new PaymentServiceRequest(orderResponse.getOrderId(), member.getId(), orderResponse.getPaymentId(), null), UUID.randomUUID().toString());
+
+        // 비동기 이벤트 처리 완료까지 대기
+        await().atMost(5, TimeUnit.SECONDS)
+                .until(() -> retrievePopularProductUseCase.retrievePopularProducts().size() >= 3);
+
+        // when - 여러 번 조회
+        List<ProductResponse> responses1 = retrievePopularProductUseCase.retrievePopularProducts();
+        List<ProductResponse> responses2 = retrievePopularProductUseCase.retrievePopularProducts();
+        List<ProductResponse> responses3 = retrievePopularProductUseCase.retrievePopularProducts();
+
+        // then - 매번 같은 순서로 반환되어야 함
+        List<Long> ids1 = responses1.stream().map(ProductResponse::getId).toList();
+        List<Long> ids2 = responses2.stream().map(ProductResponse::getId).toList();
+        List<Long> ids3 = responses3.stream().map(ProductResponse::getId).toList();
+
+        assertThat(ids1).containsExactlyElementsOf(ids2);
+        assertThat(ids2).containsExactlyElementsOf(ids3);
+    }
+
+    @Test
+    @DisplayName("Top 10 경계 테스트 - 11개 상품 중 상위 10개만 반환된다")
+    void Top_10_경계_테스트_11개_상품_중_상위_10개만_반환된다() {
+        // given
+        MemberResponse member = registerMemberUseCase.register(new RegisterMemberCommand("쌩수", "19900101", "사는 곳"));
+
+        // 11개 상품 생성
+        List<ProductResponse> products = new java.util.ArrayList<>();
+        for (int i = 1; i <= 11; i++) {
+            ProductResponse product = registerProductUseCase.register(
+                    new RegisterProductServiceRequest("상품" + i, 1000L * i));
+            products.add(product);
+            addStockUseCase.addStock(new AddStock(product.getId(), 100L));
+        }
+
+        // 충분한 포인트 충전
+        chargePointUseCase.charge(new ChargePoint(member.getId(), 10_000_000L));
+
+        // 각 상품별로 다른 횟수만큼 구매 (상품1: 11회, 상품2: 10회, ..., 상품11: 1회)
+        for (int i = 0; i < products.size(); i++) {
+            ProductResponse product = products.get(i);
+            int purchaseCount = 11 - i;
+
+            for (int j = 0; j < purchaseCount; j++) {
+                OrderResponse orderResponse = placeOrderUseCase.order(new OrderCommand(member.getId(), List.of(
+                        new OrderProductServiceRequest(product.getId(), 1L)
+                )));
+                paymentFacade.payment(
+                        new PaymentServiceRequest(orderResponse.getOrderId(), member.getId(), orderResponse.getPaymentId(), null),
+                        UUID.randomUUID().toString()
+                );
+            }
+        }
+
+        // 비동기 이벤트 처리 완료까지 대기 (11개 상품이 Redis에 등록될 때까지)
+        await().atMost(10, TimeUnit.SECONDS)
+                .until(() -> retrievePopularProductUseCase.retrievePopularProducts().size() >= 10);
+
+        // when
+        List<ProductResponse> popularProducts = retrievePopularProductUseCase.retrievePopularProducts();
+
+        // then
+        // 정확히 10개만 반환
+        assertThat(popularProducts).hasSize(10);
+
+        // 가장 판매량이 적은 상품11(1회 구매)은 제외되어야 함
+        List<Long> popularIds = popularProducts.stream().map(ProductResponse::getId).toList();
+        assertThat(popularIds).doesNotContain(products.get(10).getId());
+
+        // 상위 10개 상품이 판매량 순서대로 정렬
+        assertThat(popularIds.get(0)).isEqualTo(products.get(0).getId()); // 상품1 (11회)
+        assertThat(popularIds.get(1)).isEqualTo(products.get(1).getId()); // 상품2 (10회)
     }
 }

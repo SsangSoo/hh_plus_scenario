@@ -14,6 +14,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import static org.assertj.core.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.*;
 
@@ -46,11 +47,11 @@ class RegisterPaymentInfoServiceTest {
         PaymentResponse paymentResponse = registerPaymentService.registerPaymentInfo(paymentServiceRequest);
 
         // then
-        Assertions.assertThat(paymentResponse).isNotNull();
-        Assertions.assertThat(paymentResponse.getPaymentState()).isEqualTo(PaymentState.PENDING.name());
-        Assertions.assertThat(paymentResponse.getId()).isEqualTo(1L);
-        Assertions.assertThat(paymentResponse.getTotalAmount()).isEqualTo(4500L);
-        Assertions.assertThat(paymentResponse.getOrderId()).isEqualTo(paymentServiceRequest.orderId());
+        assertThat(paymentResponse).isNotNull();
+        assertThat(paymentResponse.paymentState()).isEqualTo(PaymentState.PENDING.name());
+        assertThat(paymentResponse.id()).isEqualTo(1L);
+        assertThat(paymentResponse.totalAmount()).isEqualTo(4500L);
+        assertThat(paymentResponse.orderId()).isEqualTo(paymentServiceRequest.orderId());
     }
 
 

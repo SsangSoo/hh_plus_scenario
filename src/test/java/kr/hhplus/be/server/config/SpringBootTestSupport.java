@@ -2,6 +2,8 @@ package kr.hhplus.be.server.config;
 
 import kr.hhplus.be.server.common.redis.RedisUtil;
 import kr.hhplus.be.server.coupon.application.service.issuecoupon.IssueCouponTransactionService;
+import kr.hhplus.be.server.coupon.infrastructure.event.CouponIssueEventListener;
+import kr.hhplus.be.server.coupon.application.usecase.DecreaseCouponUseCase;
 import kr.hhplus.be.server.coupon.application.usecase.IssueCouponUseCase;
 import kr.hhplus.be.server.coupon.application.usecase.RegisterCouponUseCase;
 import kr.hhplus.be.server.coupon.application.usecase.RetrieveCouponUseCase;
@@ -22,6 +24,9 @@ import kr.hhplus.be.server.order.infrastructure.persistence.OrderJpaRepository;
 import kr.hhplus.be.server.orderproduct.application.usecase.RegisterOrderProductUseCase;
 import kr.hhplus.be.server.orderproduct.domain.repository.OrderProductRepository;
 import kr.hhplus.be.server.orderproduct.infrastructure.persistence.OrderProductJpaRepository;
+import kr.hhplus.be.server.outbox.application.usecase.RegisterOutboxUseCase;
+import kr.hhplus.be.server.outbox.application.usecase.RemoveOutboxUseCase;
+import kr.hhplus.be.server.outbox.application.usecase.RetrieveOutboxUseCase;
 import kr.hhplus.be.server.outbox.domain.repository.OutboxRepository;
 import kr.hhplus.be.server.outbox.infrastructure.OutboxJpaRepository;
 import kr.hhplus.be.server.payment.application.facade.PaymentFacade;
@@ -57,11 +62,14 @@ import kr.hhplus.be.server.stock.infrastructure.persistence.StockJpaRepository;
 import org.redisson.api.RedissonClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.context.annotation.Import;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 
 @SpringBootTest
+@Import(TestAsyncConfig.class)
 public abstract class SpringBootTestSupport {
 
     // Member
@@ -149,17 +157,13 @@ public abstract class SpringBootTestSupport {
     @Autowired
     protected PaymentRepository paymentRepository;
 
-//    @Autowired
-//    protected PaymentDataTransportUseCase paymentDataTransportUseCase;
-
     @Autowired
     protected PaymentJpaRepository paymentJpaRepository;
 
 
-    // MockBean
+//    @Autowired
     @MockitoBean
     protected PaymentDataTransportUseCase paymentDataTransportUseCase;
-
 
 
     // Stock
@@ -234,6 +238,12 @@ public abstract class SpringBootTestSupport {
     protected CouponJpaRepository couponJpaRepository;
 
     @Autowired
+    protected DecreaseCouponUseCase decreaseCouponUseCase;
+
+
+    // couponHistory
+
+    @Autowired
     protected RegisterCouponHistoryUseCase registerCouponHistoryUseCase;
 
     @Autowired
@@ -256,14 +266,30 @@ public abstract class SpringBootTestSupport {
     protected OutboxJpaRepository outboxJpaRepository;
 
     @Autowired
-    protected RedissonClient redissonClient;
+    protected RegisterOutboxUseCase registerOutboxUseCase;
+
+    @Autowired
+    protected RemoveOutboxUseCase removeOutboxUseCase;
+
+    @Autowired
+    protected RetrieveOutboxUseCase retrieveOutboxUseCase;
 
 
     // Redis
+    @Autowired
+    protected RedissonClient redissonClient;
+
     @Autowired
     protected StringRedisTemplate stringRedisTemplate;
 
     @Autowired
     protected RedisUtil redisUtil;
 
+    // Event
+    @Autowired
+    protected ApplicationEventPublisher eventPublisher;
+
+    // 프로덕션 비동기 이벤트 리스너 비활성화 (테스트에서는 Redis 수량만 확인)
+    @MockitoBean
+    protected CouponIssueEventListener couponIssueEventListener;
 }

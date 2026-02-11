@@ -21,17 +21,15 @@ public class OutboxRepositoryImpl implements OutboxRepository {
     }
 
     @Override
-    public Outbox paymentComplete(Long orderId) {
+    public Outbox retrieve(Long paymentId, Long orderId) {
         OutboxJpaEntity outboxJpaEntity = jpa.findByOrderId(orderId).orElseThrow(() -> new BusinessLogicRuntimeException(BusinessLogicMessage.NOT_FOUND_OUTBOX));
-        outboxJpaEntity.paymentComplete();
         return outboxJpaEntity.toDomain();
     }
 
     @Override
-    public Outbox retrieve(Long orderId) {
-        OutboxJpaEntity outboxJpaEntity = jpa.findByOrderId(orderId).orElseThrow(() -> new BusinessLogicRuntimeException(BusinessLogicMessage.NOT_FOUND_OUTBOX));
-        return outboxJpaEntity.toDomain();
+    public void remove(Long paymentId, Long orderId) {
+        OutboxJpaEntity outboxJpaEntity = jpa.findByPaymentIdAndOrderId(paymentId, orderId).orElseThrow(() -> new BusinessLogicRuntimeException(BusinessLogicMessage.NOT_FOUND_OUTBOX));
+        outboxJpaEntity.remove();
     }
-
 
 }

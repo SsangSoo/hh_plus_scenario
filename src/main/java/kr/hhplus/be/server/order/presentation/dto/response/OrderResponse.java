@@ -22,9 +22,9 @@ public class OrderResponse {
         orderResponse.memberId = order.getMemberId();
         orderResponse.orderDate = order.getOrderDate().withNano(0).toString();
 
-        orderResponse.paymentId = paymentResponse.getId();
-        orderResponse.totalAmount = paymentResponse.getTotalAmount();
-        orderResponse.paymentState = paymentResponse.getPaymentState();
+        orderResponse.paymentId = paymentResponse.id();
+        orderResponse.totalAmount = paymentResponse.totalAmount();
+        orderResponse.paymentState = paymentResponse.paymentState();
 
         return orderResponse;
     }

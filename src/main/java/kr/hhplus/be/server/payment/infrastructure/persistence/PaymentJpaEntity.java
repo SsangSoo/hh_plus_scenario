@@ -2,7 +2,6 @@ package kr.hhplus.be.server.payment.infrastructure.persistence;
 
 import jakarta.persistence.*;
 import kr.hhplus.be.server.common.base.BaseEntity;
-import kr.hhplus.be.server.order.presentation.dto.request.PaymentMethod;
 import kr.hhplus.be.server.payment.domain.model.Payment;
 import kr.hhplus.be.server.payment.domain.model.PaymentState;
 import lombok.AccessLevel;
@@ -26,9 +25,6 @@ public class PaymentJpaEntity extends BaseEntity {
 
     @Column(name = "total_amount")
     private Long totalAmount;
-
-    @Column(name = "payment_method")
-    private PaymentMethod paymentMethod;
 
     @Column(name = "payment_state")
     private PaymentState paymentState;
@@ -58,7 +54,8 @@ public class PaymentJpaEntity extends BaseEntity {
         );
     }
 
-    public void changeState(PaymentState paymentState) {
-        this.paymentState = paymentState;
+    public void changeState(Payment payment) {
+        this.totalAmount = payment.getTotalAmount();
+        this.paymentState = payment.getPaymentState();
     }
 }

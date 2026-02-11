@@ -36,7 +36,7 @@ public class OutboxJpaEntity extends BaseEntity {
 
 
     public Outbox toDomain() {
-        return Outbox.of(
+        return new Outbox(
                 paymentId,
                 orderId,
                 totalAmount,
@@ -47,10 +47,10 @@ public class OutboxJpaEntity extends BaseEntity {
 
     public static OutboxJpaEntity from(Outbox outbox) {
         return new OutboxJpaEntity(
-                outbox.getPaymentId(),
-                outbox.getOrderId(),
-                outbox.getTotalAmount(),
-                outbox.getPaymentState()
+                outbox.paymentId(),
+                outbox.orderId(),
+                outbox.totalAmount(),
+                outbox.paymentState()
         );
     }
 

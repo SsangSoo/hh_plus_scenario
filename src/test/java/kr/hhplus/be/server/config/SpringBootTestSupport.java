@@ -2,7 +2,9 @@ package kr.hhplus.be.server.config;
 
 import kr.hhplus.be.server.common.redis.RedisUtil;
 import kr.hhplus.be.server.coupon.application.service.issuecoupon.IssueCouponTransactionService;
-import kr.hhplus.be.server.coupon.infrastructure.event.CouponIssueEventListener;
+import kr.hhplus.be.server.coupon.infrastructure.kafka.CouponKafkaProducer;
+import kr.hhplus.be.server.outbox.infrastructure.kafka.OutboxKafkaProducer;
+import kr.hhplus.be.server.payment.infrastructure.kafka.PaymentKafkaProducer;
 import kr.hhplus.be.server.coupon.application.usecase.DecreaseCouponUseCase;
 import kr.hhplus.be.server.coupon.application.usecase.IssueCouponUseCase;
 import kr.hhplus.be.server.coupon.application.usecase.RegisterCouponUseCase;
@@ -161,8 +163,7 @@ public abstract class SpringBootTestSupport {
     protected PaymentJpaRepository paymentJpaRepository;
 
 
-//    @Autowired
-    @MockitoBean
+    @Autowired
     protected PaymentDataTransportUseCase paymentDataTransportUseCase;
 
 
@@ -289,7 +290,13 @@ public abstract class SpringBootTestSupport {
     @Autowired
     protected ApplicationEventPublisher eventPublisher;
 
-    // 프로덕션 비동기 이벤트 리스너 비활성화 (테스트에서는 Redis 수량만 확인)
+    // Kafka Producer Mock (테스트에서는 Kafka 연동 제외)
     @MockitoBean
-    protected CouponIssueEventListener couponIssueEventListener;
+    protected PaymentKafkaProducer paymentKafkaProducer;
+
+    @MockitoBean
+    protected CouponKafkaProducer couponKafkaProducer;
+
+    @MockitoBean
+    protected OutboxKafkaProducer outboxKafkaProducer;
 }

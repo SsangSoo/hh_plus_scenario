@@ -42,3 +42,17 @@ spring:
           min-idle: 20          # 항상 유지 (Cold Start 방지)
           max-wait: 3000ms      # Pool 대기 타임아웃
         shutdown-timeout: 200ms # 종료 시 정리 시간
+  kafka:
+    bootstrap-servers: localhost:9092
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+      acks: all
+      retries: 3
+    consumer:
+      group-id: hhplus-consumer-group
+      auto-offset-reset: earliest
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      properties:
+        spring.json.trusted.packages: "kr.hhplus.be.server.*"

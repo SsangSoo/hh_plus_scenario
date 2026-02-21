@@ -62,6 +62,9 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-data-redis")
     implementation("org.apache.commons:commons-pool2")
 
+    // kafka
+    implementation("org.springframework.kafka:spring-kafka")
+
     // redisson
     implementation("org.redisson:redisson-spring-boot-starter:3.52.0")
 
@@ -82,6 +85,8 @@ dependencies {
 	testImplementation("org.springframework.boot:spring-boot-testcontainers")
 	testImplementation("org.testcontainers:junit-jupiter")
 	testImplementation("org.testcontainers:mysql")
+    testImplementation("org.testcontainers:kafka")
+    testImplementation("org.springframework.kafka:spring-kafka-test")
 	testImplementation("org.springframework.restdocs:spring-restdocs-mockmvc")
 	testImplementation("com.epages:restdocs-api-spec-mockmvc:0.18.2")
     testImplementation ("io.rest-assured:rest-assured")

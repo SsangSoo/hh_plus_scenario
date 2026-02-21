@@ -211,7 +211,7 @@ class OrderIntegratedTest extends SpringBootTestSupport {
 
 
     @Test
-    @DisplayName("주문 / 결제에 대한 외부 전송 Mock 검증 테스트")
+    @DisplayName("주문 / 결제에 대한 Kafka Producer 전송 Mock 검증 테스트")
     void externalTransferMockValidationForOrderPaymentsTest() throws InterruptedException {
         // given
         // 회원생성
@@ -234,11 +234,11 @@ class OrderIntegratedTest extends SpringBootTestSupport {
         PaymentResponse paymentResponse = paymentFacade.payment(new PaymentServiceRequest(orderResponse.getOrderId(), memberResponse.getId(), orderResponse.getPaymentId(), null), UUID.randomUUID().toString());
 
 
-        // then - 비동기 이벤트 처리 완료까지 충분한 시간 대기
+        // then - 비동기 이벤트 처리 완료까지 충분한 시간 대기 (Kafka Producer 호출 검증)
         await().atMost(10, TimeUnit.SECONDS)
                 .pollInterval(200, TimeUnit.MILLISECONDS)
                 .untilAsserted(() ->
-                        then(paymentDataTransportUseCase)
+                        then(paymentKafkaProducer)
                                 .should(times(1))
                                 .send(any(PaymentEvent.class))
                 );

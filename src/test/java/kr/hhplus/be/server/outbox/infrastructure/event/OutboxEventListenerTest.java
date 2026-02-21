@@ -1,9 +1,9 @@
 package kr.hhplus.be.server.outbox.infrastructure.event;
 
-import kr.hhplus.be.server.outbox.application.usecase.RemoveOutboxUseCase;
 import kr.hhplus.be.server.outbox.domain.event.OutboxInfoEvent;
-import kr.hhplus.be.server.payment.domain.event.PaymentEvent;
+import kr.hhplus.be.server.outbox.infrastructure.kafka.OutboxKafkaProducer;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
@@ -16,18 +16,18 @@ import static org.mockito.Mockito.times;
 class OutboxEventListenerTest {
 
     @Mock
-    RemoveOutboxUseCase removeOutboxUseCase;
+    OutboxKafkaProducer outboxKafkaProducer;
 
     OutboxEventListener outboxEventListener;
 
-
     @BeforeEach
     void setUp() {
-        outboxEventListener = new OutboxEventListener(removeOutboxUseCase);
+        outboxEventListener = new OutboxEventListener(outboxKafkaProducer);
     }
 
     @Test
-    void onRemoveOutboxEvent() {
+    @DisplayName("OutboxInfoEvent 수신 시, Kafka Producer로 전달한다")
+    void onRemoveOutboxEvent_sendsToKafkaProducer() {
         // given
         OutboxInfoEvent outboxInfoEvent = new OutboxInfoEvent(1L, 1L);
 
@@ -35,6 +35,6 @@ class OutboxEventListenerTest {
         outboxEventListener.onDataTransportCompleted(outboxInfoEvent);
 
         // then
-        then(removeOutboxUseCase).should(times(1)).remove(outboxInfoEvent.paymentId(), outboxInfoEvent.orderId());
+        then(outboxKafkaProducer).should(times(1)).send(outboxInfoEvent);
     }
 }

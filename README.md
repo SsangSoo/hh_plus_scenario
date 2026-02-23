@@ -814,7 +814,7 @@ public class CouponIssueEventListener {
   - 다양한 기능(예시: 메시지 유실 방지) -> offset 기능이 있기 때문에 메시지 유실을 방지할 수 있음.
 
 
-#### 카프카의 구성 요서
+#### 카프카의 구성 요소
 
 **프로듀서(Producer)**
 - 메시지를 카프카 시스템에 발행하는 서비스
@@ -899,11 +899,48 @@ public class CouponIssueEventListener {
 
 ### 해당 스텝에서 한 것
 
+1. Kafka 인프라 구성
 
+- Kafka 토픽 설정 (KafkaTopicConfig.java)
+    - payment-completed: 결제 완료 이벤트 (파티션 3개)
+    - coupon-issued: 쿠폰 발행 이벤트 (파티션 3개)
+    - outbox-cleanup: Outbox 정리 이벤트 (파티션 1개)
+
+2. 기존 Spring 이벤트를 Kafka로 전환
+
+- 결제 이벤트 Kafka 전환
+    - PaymentKafkaProducer: 결제 완료 시 Kafka로 이벤트 발행
+    - PaymentKafkaConsumer: Kafka에서 수신 → 외부 데이터 플랫폼 전송
+- 쿠폰 이벤트 Kafka 전환
+    - CouponKafkaProducer: 쿠폰 발행 시 Kafka로 이벤트 발행
+    - CouponKafkaConsumer: Kafka에서 수신 → 쿠폰 수량 감소 + 발행 이력 저장
+    - @Retryable로 재시도 로직 구현 (최대 3회, 1초 간격)
+- Outbox 정리 이벤트 Kafka 전환
+    - OutboxKafkaProducer: 전송 성공 시 Kafka로 정리 이벤트 발행
+    - OutboxKafkaConsumer: Kafka에서 수신 → Outbox 레코드 삭제
+
+3. 문서 작성
+
+- 카프카 도입 제안서 (docs/ch09/카프카_도입_제안서.md)
+    - Kafka 개념 및 구성 요소 정리
+    - 현재 Spring 이벤트 방식의 한계점 분석
+    - Kafka 도입 후 아키텍처 설계
+    - 단계별 도입 계획 수립
+
+4. 통합 테스트 작성
+
+- PaymentKafkaIntegrationTest
+- CouponKafkaIntegrationTest
+- OutboxKafkaIntegrationTest
 
 ### 해당 스텝에서 얻은 것
 
+얻은 것에 추가할 만한 내용
 
+- Spring 이벤트(ApplicationEventPublisher)에서 Kafka로 전환하는 방법
+- Producer/Consumer 패턴 구현 경험
+- Consumer Group 개념 이해 및 적용
+- 비동기 메시지 처리와 재시도 전략 (@Retryable)
 
 ### 해당 스텝 이후 (구현)해야할 것
 

@@ -956,6 +956,9 @@ public class CouponIssueEventListener {
 
 ### 라이브 세션
 
+- 메시지큐, 반드시 필요한가?
+- 카프카 파티션 개념을 생각했을 때 올 수 있는 부작용
+- 결국은 관심사의 분리
 
 
 </details>

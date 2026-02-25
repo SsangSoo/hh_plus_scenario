@@ -1,8 +1,7 @@
 package kr.hhplus.be.server.coupon.infrastructure.event;
 
-import kr.hhplus.be.server.coupon.application.usecase.DecreaseCouponUseCase;
 import kr.hhplus.be.server.coupon.domain.event.CouponIssueEvent;
-import kr.hhplus.be.server.couponhistory.application.usecase.RegisterCouponHistoryUseCase;
+import kr.hhplus.be.server.coupon.infrastructure.kafka.CouponKafkaProducer;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -17,24 +16,18 @@ import static org.mockito.Mockito.times;
 class CouponIssueEventListenerTest {
 
     @Mock
-    DecreaseCouponUseCase decreaseCouponUseCase;
-
-    @Mock
-    RegisterCouponHistoryUseCase registerCouponHistoryUseCase;
+    CouponKafkaProducer couponKafkaProducer;
 
     CouponIssueEventListener couponIssueEventListener;
 
     @BeforeEach
     void setUp() {
-        couponIssueEventListener = new CouponIssueEventListener(
-                decreaseCouponUseCase,
-                registerCouponHistoryUseCase
-        );
+        couponIssueEventListener = new CouponIssueEventListener(couponKafkaProducer);
     }
 
     @Test
-    @DisplayName("CouponIssueEvent 수신 시, decrease와 register가 호출된다")
-    void 이벤트_수신시_decrease_와_register_호출() {
+    @DisplayName("CouponIssueEvent 수신 시, Kafka Producer로 전달한다")
+    void 이벤트_수신시_kafka_producer_호출() {
         // given
         Long couponId = 1L;
         Long memberId = 2L;
@@ -44,7 +37,6 @@ class CouponIssueEventListenerTest {
         couponIssueEventListener.onCouponIssueCompleted(event);
 
         // then
-        then(decreaseCouponUseCase).should(times(1)).decrease(couponId);
-        then(registerCouponHistoryUseCase).should(times(1)).register(couponId, memberId);
+        then(couponKafkaProducer).should(times(1)).send(event);
     }
 }

@@ -1,8 +1,9 @@
 package kr.hhplus.be.server.payment.infrastructure.event;
 
-import kr.hhplus.be.server.payment.application.usecase.PaymentDataTransportUseCase;
 import kr.hhplus.be.server.payment.domain.event.PaymentEvent;
+import kr.hhplus.be.server.payment.infrastructure.kafka.PaymentKafkaProducer;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
@@ -15,18 +16,18 @@ import static org.mockito.Mockito.times;
 class PaymentEventListenerTest {
 
     @Mock
-    PaymentDataTransportUseCase paymentDataTransportUseCase;
+    PaymentKafkaProducer paymentKafkaProducer;
 
     PaymentEventListener paymentEventListener;
 
-
     @BeforeEach
     void setUp() {
-        paymentEventListener = new PaymentEventListener(paymentDataTransportUseCase);
+        paymentEventListener = new PaymentEventListener(paymentKafkaProducer);
     }
 
     @Test
-    void onPaymentDataTransportEvent() {
+    @DisplayName("결제 이벤트 수신 시 Kafka Producer로 전달한다")
+    void onPaymentEvent_sendsToKafkaProducer() {
         // given
         PaymentEvent paymentEvent = new PaymentEvent(1L, 1L);
 
@@ -34,7 +35,6 @@ class PaymentEventListenerTest {
         paymentEventListener.onPaymentEvent(paymentEvent);
 
         // then
-        then(paymentDataTransportUseCase).should(times(1)).send(paymentEvent);
-
+        then(paymentKafkaProducer).should(times(1)).send(paymentEvent);
     }
 }
